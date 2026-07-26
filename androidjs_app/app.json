@@ -1,0 +1,15 @@
+{
+  "name": "Jadwal Mengajar Guru",
+  "package": "com.smpabbs.jadwalguru",
+  "version": "1.0.0",
+  "icon": "www/icon-192.png",
+  "splash": {
+    "image": "www/icon-512.png",
+    "backgroundColor": "#1a1511"
+  },
+  "permissions": ["INTERNET"],
+  "android": {
+    "theme": "Fullscreen",
+    "minimumSDK": 21
+  }
+}
