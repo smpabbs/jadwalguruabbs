@@ -287,40 +287,52 @@ function goTo(section) {
   if (section === 'longgar') initLonggar();
 }
 
-// Handle back via hardware button only
-document.addEventListener('backbutton', function(e) {
-  if (navStack.length > 1) {
-    e.preventDefault();
-    e.stopPropagation();
-    navStack.pop();
-    var prev = navStack[navStack.length - 1];
-    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
-    document.getElementById('landing').style.display = 'none';
-    if (prev === 'landing') {
-      document.getElementById('landing').style.display = 'flex';
-      navStack = ['landing'];
-    } else {
-      document.getElementById('panel-' + prev).classList.add('active');
-    }
+// Handle back via Capacitor App plugin + fallback
+function setupBackHandler() {
+  // Method 1: Capacitor 7 App plugin (from @capacitor/core)
+  if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+    window.Capacitor.Plugins.App.addListener('backButton', function(info) {
+      if (navStack.length > 1) {
+        navStack.pop();
+        var prev = navStack[navStack.length - 1];
+        document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+        document.getElementById('landing').style.display = 'none';
+        if (prev === 'landing') {
+          document.getElementById('landing').style.display = 'flex';
+          navStack = ['landing'];
+        } else {
+          document.getElementById('panel-' + prev).classList.add('active');
+        }
+      } else {
+        window.Capacitor.Plugins.App.exitApp();
+      }
+    });
+    return;
   }
-  // else: let default back behavior exit the app
-}, false);
-// Also try uppercase for Capacitor 7+
-document.addEventListener('backButton', function(e) {
-  if (navStack.length > 1) {
-    try { e.preventDefault(); } catch(ex) {}
-    navStack.pop();
-    var prev = navStack[navStack.length - 1];
-    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
-    document.getElementById('landing').style.display = 'none';
-    if (prev === 'landing') {
-      document.getElementById('landing').style.display = 'flex';
-      navStack = ['landing'];
-    } else {
-      document.getElementById('panel-' + prev).classList.add('active');
-    }
-  }
-}, false);
+  // Method 2: Cordova-style backbutton event (fallback)
+  try {
+    var handler = function(e) {
+      if (navStack.length > 1) {
+        try { e.preventDefault(); e.stopPropagation(); } catch(ex) {}
+        navStack.pop();
+        var prev = navStack[navStack.length - 1];
+        document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+        document.getElementById('landing').style.display = 'none';
+        if (prev === 'landing') {
+          document.getElementById('landing').style.display = 'flex';
+          navStack = ['landing'];
+        } else {
+          document.getElementById('panel-' + prev).classList.add('active');
+        }
+      }
+    };
+    document.addEventListener('backbutton', handler, false);
+    document.addEventListener('backButton', handler, false);
+  } catch(ex) {}
+}
+setupBackHandler();
+// Retry for Capacitor if it loads late
+setTimeout(setupBackHandler, 1000);
 
 // ===== JADWAL GURU (existing logic, simplified with sample data) =====
 var order = DATA.order;
