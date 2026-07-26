@@ -288,29 +288,23 @@ function goTo(section) {
   if (section === 'longgar') initLonggar();
 }
 
-// Handle back button (Android hardware + browser back)
-window.addEventListener('popstate', function(e) {
-  if (navStack.length <= 1) {
-    // Back to landing
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+// Handle back button (browser + Android hardware)
+function handleBack(e) {
+  if (e) { try { e.preventDefault(); } catch(ex) {} }
+  if (navStack.length <= 1) return; // let app close naturally
+  navStack.pop();
+  var prev = navStack[navStack.length - 1];
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('landing').style.display = 'none';
+  if (prev === 'landing') {
     document.getElementById('landing').style.display = 'flex';
     navStack = ['landing'];
-    history.pushState({section:'landing'}, '', '#');
   } else {
-    navStack.pop();
-    var prev = navStack[navStack.length - 1];
-    if (prev === 'landing') {
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      document.getElementById('landing').style.display = 'flex';
-    } else {
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      document.getElementById('panel-' + prev).classList.add('active');
-    }
+    document.getElementById('panel-' + prev).classList.add('active');
   }
-});
-
-// Initial history state
-history.replaceState({section:'landing'}, '', '#');
+}
+window.addEventListener('popstate', handleBack);
+document.addEventListener('backbutton', handleBack, false);
 
 // ===== JADWAL GURU (existing logic, simplified with sample data) =====
 var order = DATA.order;
