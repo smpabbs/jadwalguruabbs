@@ -41,11 +41,3 @@ jobs:
         with:
           name: JadwalGuru-APK
           path: JadwalGuru.apk
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: build-${{ github.run_number }}
-          name: "Jadwal Guru - Build ${{ github.run_number }}"
-          body: "APK Jadwal Mengajar Guru — SMP ABBS. Unduh file .apk, kirim ke HP, lalu install."
-          files: JadwalGuru.apk
