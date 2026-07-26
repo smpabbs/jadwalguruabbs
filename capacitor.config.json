@@ -1,0 +1,10 @@
+{
+  "appId": "com.smpabbs.jadwalguru",
+  "appName": "Jadwal Mengajar Guru",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "backgroundColor": "#1a1511",
+  "android": {
+    "backgroundColor": "#1a1511"
+  }
+}

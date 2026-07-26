@@ -1,1 +1,8 @@
-.vercel
+node_modules/
+android/
+.capacitor/
+dist/
+*.apk
+*.keystore
+.DS_Store
+.vercel/
