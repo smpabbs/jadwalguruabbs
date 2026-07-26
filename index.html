@@ -318,6 +318,12 @@ var DATA = {"order": ["Mr Amar", "Mr Arfian", "Mr Arvin", "Mr Febri", "Mr Hang",
     document.getElementById('timeNote').textContent = timeRules;
     document.getElementById('tableContainer').innerHTML = buildTable(t);
     buildStrip();
+    // Auto-scroll teacher strip to active teacher
+    setTimeout(function(){
+      var strip = document.getElementById('teacherStrip');
+      var active = strip.querySelector('.active');
+      if (active) active.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }, 50);
   }
 
   function buildStrip() {
