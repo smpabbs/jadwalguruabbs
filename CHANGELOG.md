@@ -1,6 +1,15 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v4 — Jam Leadership, Jadwal Piket, perbaikan desktop & tombol back
+- **Data pipeline disatukan** dengan project jadwal internal (satu sumber data, `scripts/gen_guru_data.py` + `scripts/gen_jadwal_supervisi.py`)
+- **Jam Leadership** (rapat kepemimpinan per angkatan) yang sebelumnya hilang total dari jadwal sekarang tampil benar ("Leadership 7/8/9") — memperbaiki juga fitur Cari Guru Longgar yang sempat salah merekomendasikan guru yang sedang rapat
+- **Tab baru "Jadwal Piket"**: rekap piket semua guru dalam 1 tabel (lokasi × hari), klik nama langsung ke jadwalnya
+- **Cari Guru Longgar**: tambah keterangan jam mengajar guru itu di hari yang dicari
+- **Perbaikan tampilan desktop**: lebar kolom & tinggi baris tabel jadwal sekarang benar-benar tetap (tidak bergeser lagi antar guru), chrome (nama guru, search+navigasi) dirapikan jadi 1 baris supaya tabel dapat ruang lebih lega
+- **Perbaikan tombol back Android**: `www/index.html` (sumber APK) sempat ketinggalan 1 versi dari perbaikan back-button terakhir (plugin @capacitor/app) — sekarang disamakan persis dengan versi web, tombol back kembali ke halaman sebelumnya, bukan langsung keluar aplikasi
+- APK: `JadwalGuru-v4.apk`
+
 ## v3 — Landing Page + Cari Guru Longgar
 - Landing page: 2 tombol (Jadwal Guru / Cari Guru Longgar)
 - Fitur "Cari Guru Longgar":
