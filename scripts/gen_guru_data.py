@@ -194,6 +194,68 @@ for code, slots in leadership_slots.items():
         for (day, lesson) in slots:
             per_teacher[t][(day, str(lesson))].append((LEADERSHIP_CLASS_MARKER, code))
 
+# --- Whole-class-group "mapel tanpa guru" (no-teacher subjects) for the per-class view only ---
+# Confirmed 2026-07-28: 4 more sheets besides LEADERSHIP have no teacher at all (matches
+# "Without teacher" in the Lessons sheet), so they're invisible in the per-teacher grid (nothing
+# to attribute) but should still show as occupied time in the per-class view:
+#   HOMEROOM TEACHER -> "HT": Monday P1 + Friday P1, all 20 classes
+#   SCOUT             -> "Scout": Saturday P5-6, grade 7+8 only (13 classes)
+#   SENI BUDAYA KESENIAN -> "SBK": Friday P8-9 (raw 7-8, remapped — verified with remap_lesson,
+#     don't trust the sheet's own raw Lesson# column directly, same trap as Friday elsewhere)
+#   SELF DEVELOPMENT  -> "SD": Thursday P8-9, grade 7+8 only
+# Same mirrored-duplicate data shape as LEADERSHIP (every column in the row repeats the identical
+# full class-list string) — take the class list from just the first non-empty cell, not a
+# per-column fan-out (that would multiply-count exactly like the LEADERSHIP gotcha above).
+CLASS_BLOCK_SHEETS = {
+    "HOMEROOM TEACHER.": "HT",
+    "SCOUT.": "Scout",
+    "SENI BUDAYA KESENIAN.": "SBK",
+    "SELF DEVELOPMENT.": "SD",
+}
+
+class_blocks = defaultdict(dict)  # class -> {"day|lesson": {"subject":.., "start":.., "end":..}}
+
+
+def _first_class_list(row):
+    first_val = next((c.value for c in row[3:] if c.value), None)
+    if not first_val:
+        return []
+    return [x.strip() for x in str(first_val).split(",") if x.strip() in all_classes]
+
+
+for sheetname, label in CLASS_BLOCK_SHEETS.items():
+    ws = wb_src[sheetname]
+    for row in ws.iter_rows(min_row=4, max_col=30):
+        d = row[1].value
+        raw_lesson = row[2].value
+        if d is None or raw_lesson is None or str(d).strip() == "":
+            continue
+        classes_here = _first_class_list(row)
+        if not classes_here:
+            continue
+        lesson = remap_lesson(d, int(raw_lesson))
+        tm = time_of(d, lesson, "boys")  # none of these touch period 3, gender-neutral is safe
+        for cls in classes_here:
+            class_blocks[cls][f"{d}|{lesson}"] = {"subject": label, "start": tm[0], "end": tm[1]}
+
+# Leadership again, this time keyed by real class (the pass above keys it by teacher with a fake
+# "Leadership N" class marker instead) — independent second pass over the same sheets, for the
+# per-class view.
+for sheetname in LEADERSHIP_SHEETS:
+    ws = wb_src[sheetname]
+    for row in ws.iter_rows(min_row=4, max_col=30):
+        d = row[1].value
+        raw_lesson = row[2].value
+        if d is None or raw_lesson is None or str(d).strip() == "":
+            continue
+        classes_here = _first_class_list(row)
+        if not classes_here:
+            continue
+        lesson = remap_lesson(d, int(raw_lesson))
+        tm = time_of(d, lesson, "boys")
+        for cls in classes_here:
+            class_blocks[cls][f"{d}|{lesson}"] = {"subject": "Leadership", "start": tm[0], "end": tm[1]}
+
 order = [n for n in TEACHER_ORDER if n in per_teacher]
 missing = [n for n in per_teacher if n not in TEACHER_ORDER]
 if missing:
@@ -258,6 +320,7 @@ data = {
     "day_id": DAY_ID,
     "lessons": LESSONS,
     "valid_lessons_by_day": {d: sorted(v) for d, v in VALID_LESSONS_BY_DAY.items()},
+    "class_blocks": {cls: blocks for cls, blocks in class_blocks.items()},
 }
 
 with open(OUT, "w", encoding="utf-8") as f:

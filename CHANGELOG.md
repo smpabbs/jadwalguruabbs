@@ -1,6 +1,15 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5 — Jadwal per Kelas, SOP Piket, tema terang
+- **Tab baru "Jadwal per Kelas"**: jadwal mingguan per kelas (7A-9F), sel tabel tampilkan mapel (nama guru dipindah ke ringkasan "Mapel → Guru" di bawah grid, termasuk team-teaching Quran)
+- **5 mapel tanpa guru ditambahkan** ke Jadwal per Kelas: Homeroom Teacher (HT), Leadership, Self Development, SBK, Scout — sebelumnya tidak diproses sama sekali
+- Sel "off" (Jumat jam6, Sabtu jam7-9) diganti jadi blank hitam polos
+- **SOP Piket** ditambahkan di tab Jadwal Piket — 6 kartu prosedur per lokasi, sekaligus perbaikan nama lokasi "Piket Gang Alfamart" → **"Piket Gang Bu Tum"** (salah nama sejak awal)
+- Fix: strip guru tidak ikut auto-scroll ke guru aktif saat navigasi prev/next (bug regresi dari versi lama sebelum redesain mobile)
+- **Rombak total ke tema terang**: latar krem hangat, kartu putih, teks espresso — seluruh 23 warna diaudit kontras WCAG (bukan cuma dibalik dari tema gelap), semua pasangan teks+latar lolos standar AA
+- APK: `JadwalGuru-v5.apk`
+
 ## v4 — Jam Leadership, Jadwal Piket, perbaikan desktop & tombol back
 - **Data pipeline disatukan** dengan project jadwal internal (satu sumber data, `scripts/gen_guru_data.py` + `scripts/gen_jadwal_supervisi.py`)
 - **Jam Leadership** (rapat kepemimpinan per angkatan) yang sebelumnya hilang total dari jadwal sekarang tampil benar ("Leadership 7/8/9") — memperbaiki juga fitur Cari Guru Longgar yang sempat salah merekomendasikan guru yang sedang rapat

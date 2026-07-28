@@ -10,3 +10,4 @@ dist/
 scripts/export.xlsx
 scripts/scratch_all_teachers.json
 scripts/server.log
+scripts/__pycache__/
