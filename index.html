@@ -469,11 +469,31 @@ function goTo(section) {
   if (section === 'longgar') initLonggar();
 }
 
+// ===== TEMP DIAGNOSTIC OVERLAY (back-button bug hunt, remove once root cause confirmed) =====
+var backDebugBox, backDebugStart = Date.now(), backEventCount = 0;
+function backDebugInit() {
+  backDebugBox = document.createElement('div');
+  backDebugBox.style.cssText = 'position:fixed;left:4px;bottom:4px;z-index:99999;max-width:96vw;max-height:40vh;overflow:auto;background:rgba(0,0,0,.85);color:#0f0;font:10px monospace;padding:6px;border-radius:6px;white-space:pre-wrap;pointer-events:none;';
+  document.body.appendChild(backDebugBox);
+}
+function backDebugLog(msg) {
+  if (!backDebugBox) backDebugInit();
+  var line = '+' + (Date.now() - backDebugStart) + 'ms  ' + msg;
+  backDebugBox.textContent = line + '\n' + backDebugBox.textContent;
+}
+
 // Handle back via Capacitor App plugin + fallback
 function setupBackHandler() {
+  backDebugInit();
+  backDebugLog('setupBackHandler: Capacitor=' + !!window.Capacitor +
+    ' isNative=' + (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) +
+    ' platform=' + (window.Capacitor && window.Capacitor.getPlatform && window.Capacitor.getPlatform()) +
+    ' App=' + !!(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App));
   // Method 1: Capacitor 7 App plugin (from @capacitor/core)
   if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
-    window.Capacitor.Plugins.App.addListener('backButton', function(info) {
+    var addListenerPromise = window.Capacitor.Plugins.App.addListener('backButton', function(info) {
+      backEventCount++;
+      backDebugLog('#' + backEventCount + ' backButton fired. canGoBack=' + (info && info.canGoBack) + ' navStack=[' + navStack.join(',') + ']');
       if (navStack.length > 1) {
         navStack.pop();
         var prev = navStack[navStack.length - 1];
@@ -485,15 +505,24 @@ function setupBackHandler() {
         } else {
           document.getElementById('panel-' + prev).classList.add('active');
         }
+        backDebugLog('#' + backEventCount + ' -> navigated to "' + prev + '", navStack now=[' + navStack.join(',') + ']');
       } else {
+        backDebugLog('#' + backEventCount + ' -> navStack was already [landing], calling exitApp()');
         window.Capacitor.Plugins.App.exitApp();
       }
     });
+    if (addListenerPromise && addListenerPromise.then) {
+      addListenerPromise.then(function(){ backDebugLog('addListener(backButton) registered OK'); })
+        .catch(function(err){ backDebugLog('addListener(backButton) FAILED: ' + err); });
+    }
     return;
   }
   // Method 2: Cordova-style backbutton event (fallback)
+  backDebugLog('Falling back to Method 2 (Cordova backbutton DOM event)');
   try {
     var handler = function(e) {
+      backEventCount++;
+      backDebugLog('#' + backEventCount + ' Method-2 backbutton DOM event fired, navStack=[' + navStack.join(',') + ']');
       if (navStack.length > 1) {
         try { e.preventDefault(); e.stopPropagation(); } catch(ex) {}
         navStack.pop();

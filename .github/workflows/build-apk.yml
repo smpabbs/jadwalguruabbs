@@ -43,10 +43,10 @@ jobs:
         run: cd android && ./gradlew assembleDebug --no-daemon
 
       - name: Rename APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk JadwalGuru-v5.2.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk JadwalGuru-debug.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: JadwalGuru-v5.2-APK
-          path: JadwalGuru-v5.2.apk
+          name: JadwalGuru-debug-APK
+          path: JadwalGuru-debug.apk
