@@ -1,6 +1,16 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.2 — Fix tombol back kembali lalu keluar sendiri
+- Setelah fix signing (v5.1) tombol back sudah bisa navigasi mundur, tapi aplikasi lalu keluar sendiri
+  sesaat setelahnya. Ternyata ini gejala yang sudah didokumentasikan tim Capacitor sendiri: fitur
+  **Predictive Back Gesture** Android 13+ (swipe dari tepi layar) membuat back-handling `@capacitor/app`
+  tidak konsisten pada sebagian device/versi Android.
+- Fix: matikan predictive back di `AndroidManifest.xml` (`android:enableOnBackInvokedCallback="false"`)
+  lewat patch otomatis di CI setelah `cap add android`, supaya sistem selalu pakai dispatch back klasik
+  yang jadi target desain `setupBackHandler()` sejak awal.
+- Rilis ini juga tetap butuh uninstall dulu sebelum install (perubahan level native/manifest).
+
 ## v5.1 — Cari Guru Longgar tanpa batas jam, fix signing APK
 - **Cari Guru Longgar**: batas maksimal 3 jam yang bisa dipilih sekaligus dihapus — sekarang semua 9 jam bisa dipilih bersamaan
 - **Fix CI**: debug keystore Android sekarang di-cache antar-build (sebelumnya di-generate ulang acak tiap build, bikin sertifikat APK beda-beda tiap rilis sehingga update di HP bisa gagal/nyangkut tanpa uninstall dulu — kandidat kuat penyebab laporan tombol back "rusak lagi" padahal kodenya tidak berubah). Mulai rilis ini seterusnya update APK seharusnya bisa pasang menimpa versi lama tanpa perlu uninstall — **kecuali untuk rilis ini sendiri**, yang tetap perlu uninstall dulu karena sertifikatnya beda dari APK v5 sebelumnya.
