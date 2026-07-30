@@ -1,8 +1,10 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
-## v5.1 — Cari Guru Longgar tanpa batas jam
+## v5.1 — Cari Guru Longgar tanpa batas jam, fix signing APK
 - **Cari Guru Longgar**: batas maksimal 3 jam yang bisa dipilih sekaligus dihapus — sekarang semua 9 jam bisa dipilih bersamaan
+- **Fix CI**: debug keystore Android sekarang di-cache antar-build (sebelumnya di-generate ulang acak tiap build, bikin sertifikat APK beda-beda tiap rilis sehingga update di HP bisa gagal/nyangkut tanpa uninstall dulu — kandidat kuat penyebab laporan tombol back "rusak lagi" padahal kodenya tidak berubah). Mulai rilis ini seterusnya update APK seharusnya bisa pasang menimpa versi lama tanpa perlu uninstall — **kecuali untuk rilis ini sendiri**, yang tetap perlu uninstall dulu karena sertifikatnya beda dari APK v5 sebelumnya.
+- Fix nama file APK/artifact di GitHub Actions yang masih hardcode "v3" sejak rilis v4 & v5
 
 ## v5 — Jadwal per Kelas, SOP Piket, tema terang
 - **Tab baru "Jadwal per Kelas"**: jadwal mingguan per kelas (7A-9F), sel tabel tampilkan mapel (nama guru dipindah ke ringkasan "Mapel → Guru" di bawah grid, termasuk team-teaching Quran)
