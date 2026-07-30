@@ -827,7 +827,6 @@ document.getElementById('nextBtn').addEventListener('click',function(){currentJa
 // ===== CARI GURU LONGGAR =====
 var selectedHari = [];
 var selectedJam = [];
-var MAX_JAM = 3;
 
 function initLonggar() {
   // Day chips
@@ -867,10 +866,8 @@ function initLonggar() {
           this.classList.remove('selected');
           selectedJam = selectedJam.filter(function(j){return j!==lesson;});
         } else {
-          if(selectedJam.length < MAX_JAM) {
-            this.classList.add('selected');
-            selectedJam.push(lesson);
-          }
+          this.classList.add('selected');
+          selectedJam.push(lesson);
         }
         updateBtnCari();
       });

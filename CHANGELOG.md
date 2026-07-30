@@ -1,6 +1,9 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.1 — Cari Guru Longgar tanpa batas jam
+- **Cari Guru Longgar**: batas maksimal 3 jam yang bisa dipilih sekaligus dihapus — sekarang semua 9 jam bisa dipilih bersamaan
+
 ## v5 — Jadwal per Kelas, SOP Piket, tema terang
 - **Tab baru "Jadwal per Kelas"**: jadwal mingguan per kelas (7A-9F), sel tabel tampilkan mapel (nama guru dipindah ke ringkasan "Mapel → Guru" di bawah grid, termasuk team-teaching Quran)
 - **5 mapel tanpa guru ditambahkan** ke Jadwal per Kelas: Homeroom Teacher (HT), Leadership, Self Development, SBK, Scout — sebelumnya tidak diproses sama sekali
