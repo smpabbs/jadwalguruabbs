@@ -1,6 +1,24 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.3 — Fix akar masalah asli tombol back: listener terdaftar dobel
+- User konfirmasi setelah tes v5.2 di device: bug masih persis sama (kembali ke menu utama lalu langsung
+  keluar sendiri). Kedua kandidat sebelumnya (signing v5.1, predictive-back-gesture v5.2) gugur.
+- **Akar masalah sebenarnya, ketemu lewat baca ulang `setupBackHandler()`**: fungsi ini dipanggil 2x —
+  sekali langsung, sekali lagi lewat `setTimeout(..., 1000)` untuk jaga-jaga kalau Capacitor telat load.
+  Tapi begitu `window.Capacitor.Plugins.App` sudah tersedia di panggilan pertama (selalu terjadi di APK
+  native), kedua panggilan itu **sama-sama berhasil mendaftarkan listener `backButton` sendiri-sendiri** —
+  jadi 2 listener aktif, bukan 1.
+- Satu kali tekan tombol back fisik → event terkirim ke kedua listener berurutan dalam tick yang sama:
+  listener pertama pop `navStack` (2→1) dan pindah ke menu utama (tampak seperti "navigasi back berhasil"),
+  listener kedua langsung jalan sesudahnya dengan `navStack` yang sudah panjang 1 → masuk cabang exit →
+  `App.exitApp()` terpanggil. Ini persis cocok dengan gejala yang dilaporkan dari awal.
+- Fix: flag `backHandlerRegistered` supaya pemanggilan kedua (dari `setTimeout`) langsung `return` tanpa
+  mendaftarkan listener baru. Diterapkan sama persis di `index.html` dan `www/index.html`.
+- Overlay debug on-screen (ditambah setelah v5.2) **sengaja belum dihapus** — dipakai untuk konfirmasi
+  visual di rilis ini: seharusnya cuma muncul 1 baris `#1 backButton fired` per satu tekan tombol back, tidak
+  ada lagi `#2` yang langsung menyusul.
+
 ## v5.2 — Fix tombol back kembali lalu keluar sendiri
 - Setelah fix signing (v5.1) tombol back sudah bisa navigasi mundur, tapi aplikasi lalu keluar sendiri
   sesaat setelahnya. Ternyata ini gejala yang sudah didokumentasikan tim Capacitor sendiri: fitur

@@ -483,7 +483,12 @@ function backDebugLog(msg) {
 }
 
 // Handle back via Capacitor App plugin + fallback
+var backHandlerRegistered = false;
 function setupBackHandler() {
+  if (backHandlerRegistered) {
+    backDebugLog('setupBackHandler: already registered, skipping duplicate call');
+    return;
+  }
   backDebugInit();
   backDebugLog('setupBackHandler: Capacitor=' + !!window.Capacitor +
     ' isNative=' + (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) +
@@ -491,6 +496,7 @@ function setupBackHandler() {
     ' App=' + !!(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App));
   // Method 1: Capacitor 7 App plugin (from @capacitor/core)
   if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+    backHandlerRegistered = true;
     var addListenerPromise = window.Capacitor.Plugins.App.addListener('backButton', function(info) {
       backEventCount++;
       backDebugLog('#' + backEventCount + ' backButton fired. canGoBack=' + (info && info.canGoBack) + ' navStack=[' + navStack.join(',') + ']');
@@ -518,6 +524,7 @@ function setupBackHandler() {
     return;
   }
   // Method 2: Cordova-style backbutton event (fallback)
+  backHandlerRegistered = true;
   backDebugLog('Falling back to Method 2 (Cordova backbutton DOM event)');
   try {
     var handler = function(e) {
