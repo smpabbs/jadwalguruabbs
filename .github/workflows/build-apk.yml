@@ -37,7 +37,15 @@ jobs:
         run: npx cap add android
 
       - name: Disable predictive back gesture (use legacy back dispatch)
-        run: sed -i 's/android:allowBackup="true"/android:allowBackup="true"\n        android:enableOnBackInvokedCallback="false"/' android/app/src/main/AndroidManifest.xml
+        run: |
+          sed -i 's/android:allowBackup="true"/android:allowBackup="true"\n        android:enableOnBackInvokedCallback="false"/' android/app/src/main/AndroidManifest.xml
+          echo "----- <application> tag after patch: -----"
+          grep -A 5 '<application' android/app/src/main/AndroidManifest.xml
+          if ! grep -q 'enableOnBackInvokedCallback="false"' android/app/src/main/AndroidManifest.xml; then
+            echo "::error::sed pattern did not match — enableOnBackInvokedCallback was NOT set. Manifest content:"
+            cat android/app/src/main/AndroidManifest.xml
+            exit 1
+          fi
 
       - name: Build APK
         run: cd android && ./gradlew assembleDebug --no-daemon
