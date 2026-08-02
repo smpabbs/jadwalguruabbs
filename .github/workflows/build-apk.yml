@@ -50,11 +50,16 @@ jobs:
       - name: Build APK
         run: cd android && ./gradlew assembleDebug --no-daemon
 
-      - name: Rename APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk JadwalGuru-debug.apk
+      - name: Rename APK (versi dari package.json)
+        id: apkname
+        run: |
+          VER=$(node -p "require('./package.json').version")
+          cp android/app/build/outputs/apk/debug/app-debug.apk "JadwalGuru-v${VER}.apk"
+          echo "APK_FILE=JadwalGuru-v${VER}.apk" >> "$GITHUB_OUTPUT"
+          echo "APK_NAME=JadwalGuru-v${VER}-APK" >> "$GITHUB_OUTPUT"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: JadwalGuru-debug-APK
-          path: JadwalGuru-debug.apk
+          name: ${{ steps.apkname.outputs.APK_NAME }}
+          path: ${{ steps.apkname.outputs.APK_FILE }}

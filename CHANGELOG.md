@@ -1,6 +1,23 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.4 — Tombol back: single listener + navigasi dari DOM + cooldown
+- **Registrasi listener back SATU kali saja** — `setTimeout(setupBackHandler, 1000)` (retry) dihapus total.
+  Capacitor di APK selalu sudah siap sejak `<head>`, jadi retry yang menjadi sumber listener dobel
+  (akar bug v5.3) tidak pernah diperlukan. Mengikuti pola yang sudah terbukti di aplikasi Quran.
+- **navStack dihapus** — back target ditentukan dari kondisi DOM (`.tab-panel.active`):
+  sub-panel aktif → kembali ke landing; di landing → `exitApp()`. Tidak ada lagi array riwayat
+  yang bisa korup/reset.
+- **Cooldown 700ms** — event back kedua dalam 700ms dibuang. Sekalipun perangkat memuntahkan 2 event
+  dalam satu tekan (quirk OEM/predictive-back), satu tekan = satu aksi; pola "balik lalu langsung
+  keluar" dalam satu tick menjadi mustahil.
+- **Browser/PWA**: pakai pola guard history (sama seperti quran-apk) — tombol back browser menutup
+  panel ke landing dulu, bukan langsung meninggalkan halaman.
+- Overlay debug dipertahankan di rilis ini (bukti visual: kotak hijau muncul saat startup + 1 baris
+  `#N` per tekan back). Rencana dihapus setelah konfirmasi di device.
+- Nama APK/artifact otomatis mengikuti versi `package.json` → `JadwalGuru-v5.4.apk`.
+- Verifikasi: syntax check + 13 simulasi node (landing→exit, panel→landing, event ganda→cooldown) lulus semua.
+
 ## v5.3 — Fix akar masalah asli tombol back: listener terdaftar dobel
 - User konfirmasi setelah tes v5.2 di device: bug masih persis sama (kembali ke menu utama lalu langsung
   keluar sendiri). Kedua kandidat sebelumnya (signing v5.1, predictive-back-gesture v5.2) gugur.

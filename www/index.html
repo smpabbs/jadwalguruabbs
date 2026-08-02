@@ -451,20 +451,17 @@ var DATA = {"order": ["Ms Dila", "Ms Fatma", "Ms Robi", "Ms Rohmah", "Ms Wafda",
 var PIKET = {"Mr Arvin": [{"hari": "Jumat", "lokasi": "Piket KBM"}, {"hari": "Kamis", "lokasi": "Piket Penertiban"}], "Mr Febri": [{"hari": "Jumat", "lokasi": "Piket Gang Bu Tum"}], "Mr Hang": [{"hari": "Rabu", "lokasi": "Piket Penertiban"}, {"hari": "Selasa", "lokasi": "Piket Gang Bu Tum"}], "Mr Jack": [{"hari": "Selasa", "lokasi": "Piket Pemanggilan"}], "Mr Joe": [{"hari": "Selasa", "lokasi": "Piket Penertiban"}, {"hari": "Rabu", "lokasi": "Piket Gang Bu Tum"}], "Mr Musfiq": [{"hari": "Senin", "lokasi": "Piket Penertiban"}], "Mr Sharih": [{"hari": "Kamis", "lokasi": "Piket Pemanggilan"}], "Ms Dila": [{"hari": "Senin", "lokasi": "Piket Pagi Depan"}], "Ms Fitri": [{"hari": "Sabtu", "lokasi": "Piket KBM"}], "Ms Isti": [{"hari": "Rabu", "lokasi": "Piket Pagi Depan"}, {"hari": "Selasa", "lokasi": "Piket Pagi Belakang"}], "Ms Khoim": [{"hari": "Rabu", "lokasi": "Piket Pagi Belakang"}, {"hari": "Sabtu", "lokasi": "Piket Pagi Belakang"}], "Ms Leita": [{"hari": "Kamis", "lokasi": "Piket Pagi Belakang"}], "Ms Nourma": [{"hari": "Senin", "lokasi": "Piket KBM"}, {"hari": "Sabtu", "lokasi": "Piket Pagi Depan"}], "Ms Qisthi": [{"hari": "Jumat", "lokasi": "Piket Pagi Depan"}, {"hari": "Rabu", "lokasi": "Piket Pemanggilan"}], "Ms Robi": [{"hari": "Rabu", "lokasi": "Piket KBM"}, {"hari": "Kamis", "lokasi": "Piket Pagi Depan"}], "Ms Rohmah": [{"hari": "Sabtu", "lokasi": "Piket Pemanggilan"}], "Ms Syarah": [{"hari": "Selasa", "lokasi": "Piket Pagi Depan"}], "Ms Wafda": [{"hari": "Jumat", "lokasi": "Piket Pagi Belakang"}, {"hari": "Senin", "lokasi": "Piket Pemanggilan"}], "Ms Yona": [{"hari": "Selasa", "lokasi": "Piket KBM"}, {"hari": "Sabtu", "lokasi": "Piket Penertiban"}], "Ust Amin": [{"hari": "Kamis", "lokasi": "Piket KBM"}, {"hari": "Kamis", "lokasi": "Piket Gang Bu Tum"}], "Ust Andi": [{"hari": "Senin", "lokasi": "Piket Gang Bu Tum"}], "Ust Fahmi": [{"hari": "Sabtu", "lokasi": "Piket Gang Bu Tum"}], "Us Naya": [{"hari": "Senin", "lokasi": "Piket Pagi Belakang"}], "Ust Rizqia": [{"hari": "Jumat", "lokasi": "Piket Pemanggilan"}], "Ust Yoki": [{"hari": "Jumat", "lokasi": "Piket Penertiban"}]};
 
 // ===== NAVIGATION =====
-var navStack = ['landing'];
-
+// v5.4: tanpa navStack — back target ditentukan dari DOM (panel aktif).
 function goTo(section) {
   document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
   document.getElementById('landing').style.display = 'none';
   if (section === 'landing') {
     document.getElementById('landing').style.display = 'flex';
-    navStack = ['landing'];
     return;
   }
   var panel = document.getElementById('panel-' + section);
   if (panel) {
     panel.classList.add('active');
-    navStack.push(section);
   }
   if (section === 'longgar') initLonggar();
 }
@@ -482,75 +479,72 @@ function backDebugLog(msg) {
   backDebugBox.textContent = line + '\n' + backDebugBox.textContent;
 }
 
-// Handle back via Capacitor App plugin + fallback
-var backHandlerRegistered = false;
-function setupBackHandler() {
-  if (backHandlerRegistered) {
-    backDebugLog('setupBackHandler: already registered, skipping duplicate call');
-    return;
-  }
-  backDebugInit();
-  backDebugLog('setupBackHandler: Capacitor=' + !!window.Capacitor +
-    ' isNative=' + (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) +
-    ' platform=' + (window.Capacitor && window.Capacitor.getPlatform && window.Capacitor.getPlatform()) +
-    ' App=' + !!(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App));
-  // Method 1: Capacitor 7 App plugin (from @capacitor/core)
-  if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
-    backHandlerRegistered = true;
-    var addListenerPromise = window.Capacitor.Plugins.App.addListener('backButton', function(info) {
-      backEventCount++;
-      backDebugLog('#' + backEventCount + ' backButton fired. canGoBack=' + (info && info.canGoBack) + ' navStack=[' + navStack.join(',') + ']');
-      if (navStack.length > 1) {
-        navStack.pop();
-        var prev = navStack[navStack.length - 1];
-        document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
-        document.getElementById('landing').style.display = 'none';
-        if (prev === 'landing') {
-          document.getElementById('landing').style.display = 'flex';
-          navStack = ['landing'];
-        } else {
-          document.getElementById('panel-' + prev).classList.add('active');
-        }
-        backDebugLog('#' + backEventCount + ' -> navigated to "' + prev + '", navStack now=[' + navStack.join(',') + ']');
-      } else {
-        backDebugLog('#' + backEventCount + ' -> navStack was already [landing], calling exitApp()');
-        window.Capacitor.Plugins.App.exitApp();
-      }
-    });
-    if (addListenerPromise && addListenerPromise.then) {
-      addListenerPromise.then(function(){ backDebugLog('addListener(backButton) registered OK'); })
-        .catch(function(err){ backDebugLog('addListener(backButton) FAILED: ' + err); });
-    }
-    return;
-  }
-  // Method 2: Cordova-style backbutton event (fallback)
-  backHandlerRegistered = true;
-  backDebugLog('Falling back to Method 2 (Cordova backbutton DOM event)');
-  try {
-    var handler = function(e) {
-      backEventCount++;
-      backDebugLog('#' + backEventCount + ' Method-2 backbutton DOM event fired, navStack=[' + navStack.join(',') + ']');
-      if (navStack.length > 1) {
-        try { e.preventDefault(); e.stopPropagation(); } catch(ex) {}
-        navStack.pop();
-        var prev = navStack[navStack.length - 1];
-        document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
-        document.getElementById('landing').style.display = 'none';
-        if (prev === 'landing') {
-          document.getElementById('landing').style.display = 'flex';
-          navStack = ['landing'];
-        } else {
-          document.getElementById('panel-' + prev).classList.add('active');
-        }
-      }
-    };
-    document.addEventListener('backbutton', handler, false);
-    document.addEventListener('backButton', handler, false);
-  } catch(ex) {}
+// ===== BACK HANDLER v5.4 =====
+// 1) SATU listener saja, tanpa setTimeout retry — Capacitor di APK selalu sudah
+//    siap sejak <head> (akar bug v5.2/v5.3 = listener dobel karena retry timer).
+// 2) Back target ditentukan dari kondisi DOM (panel aktif), bukan array riwayat —
+//    tidak ada state yang bisa korup/reset.
+// 3) Cooldown 700ms: event back kedua dalam 700ms dibuang — sekalipun perangkat
+//    memuntahkan 2 event dalam satu tekan (quirk OEM), satu tekan = satu aksi,
+//    pola "balik lalu langsung keluar" dalam satu tick mustahil.
+var backCooldownUntil = 0;
+
+function activePanel() {
+  var p = document.querySelector('.tab-panel.active');
+  return p ? p.id.replace('panel-', '') : null;
 }
-setupBackHandler();
-// Retry for Capacitor if it loads late
-setTimeout(setupBackHandler, 1000);
+
+function handleBackPress() {
+  var now = Date.now();
+  if (now < backCooldownUntil) {
+    backDebugLog('#' + (++backEventCount) + ' backButton IGNORED (cooldown, ' + (backCooldownUntil - now) + 'ms left)');
+    return;
+  }
+  backCooldownUntil = now + 700;
+  backEventCount++;
+  var panel = activePanel();
+  if (panel) {
+    // Sub-panel aktif -> kembali ke landing
+    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+    document.getElementById('landing').style.display = 'flex';
+    backDebugLog('#' + backEventCount + ' backButton fired, active="' + panel + '" -> back to landing');
+  } else {
+    // Di landing -> keluar app (perilaku standar Android)
+    backDebugLog('#' + backEventCount + ' backButton fired, active=none (landing) -> exitApp()');
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+      window.Capacitor.Plugins.App.exitApp();
+    }
+  }
+}
+
+// APK (Capacitor): listener backButton tunggal, tanpa retry
+if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+  backDebugInit();
+  backDebugLog('v5.4 back: Capacitor App plugin ready, single listener');
+  var addP = window.Capacitor.Plugins.App.addListener('backButton', function(info) {
+    backDebugLog('native backButton event, canGoBack=' + (info && info.canGoBack));
+    handleBackPress();
+  });
+  if (addP && addP.then) {
+    addP.then(function(){ backDebugLog('addListener(backButton) registered OK'); })
+      .catch(function(err){ backDebugLog('addListener(backButton) FAILED: ' + err); });
+  }
+} else {
+  // Browser/PWA: guard history (pola quran-apk) — back browser menutup panel dulu
+  backDebugInit();
+  backDebugLog('v5.4 back: no Capacitor App plugin, history guard mode');
+  try { history.pushState({ guard: 1 }, ''); } catch(ex) {}
+  window.addEventListener('popstate', function () {
+    backDebugLog('popstate fired');
+    if (activePanel()) {
+      handleBackPress();
+      try { history.pushState({ guard: 1 }, ''); } catch(ex) {}
+    } else {
+      backDebugLog('popstate: landing, leaving page');
+      history.back();
+    }
+  });
+}
 
 // ===== JADWAL GURU (existing logic, simplified with sample data) =====
 var order = DATA.order;
