@@ -466,19 +466,6 @@ function goTo(section) {
   if (section === 'longgar') initLonggar();
 }
 
-// ===== TEMP DIAGNOSTIC OVERLAY (back-button bug hunt, remove once root cause confirmed) =====
-var backDebugBox, backDebugStart = Date.now(), backEventCount = 0;
-function backDebugInit() {
-  backDebugBox = document.createElement('div');
-  backDebugBox.style.cssText = 'position:fixed;left:4px;bottom:4px;z-index:99999;max-width:96vw;max-height:40vh;overflow:auto;background:rgba(0,0,0,.85);color:#0f0;font:10px monospace;padding:6px;border-radius:6px;white-space:pre-wrap;pointer-events:none;';
-  document.body.appendChild(backDebugBox);
-}
-function backDebugLog(msg) {
-  if (!backDebugBox) backDebugInit();
-  var line = '+' + (Date.now() - backDebugStart) + 'ms  ' + msg;
-  backDebugBox.textContent = line + '\n' + backDebugBox.textContent;
-}
-
 // ===== BACK HANDLER v5.4 =====
 // 1) SATU listener saja, tanpa setTimeout retry — Capacitor di APK selalu sudah
 //    siap sejak <head> (akar bug v5.2/v5.3 = listener dobel karena retry timer).
@@ -496,51 +483,29 @@ function activePanel() {
 
 function handleBackPress() {
   var now = Date.now();
-  if (now < backCooldownUntil) {
-    backDebugLog('#' + (++backEventCount) + ' backButton IGNORED (cooldown, ' + (backCooldownUntil - now) + 'ms left)');
-    return;
-  }
+  if (now < backCooldownUntil) return;   // event ganda dalam satu tekan dibuang
   backCooldownUntil = now + 700;
-  backEventCount++;
-  var panel = activePanel();
-  if (panel) {
+  if (activePanel()) {
     // Sub-panel aktif -> kembali ke landing
     document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
     document.getElementById('landing').style.display = 'flex';
-    backDebugLog('#' + backEventCount + ' backButton fired, active="' + panel + '" -> back to landing');
-  } else {
+  } else if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
     // Di landing -> keluar app (perilaku standar Android)
-    backDebugLog('#' + backEventCount + ' backButton fired, active=none (landing) -> exitApp()');
-    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
-      window.Capacitor.Plugins.App.exitApp();
-    }
+    window.Capacitor.Plugins.App.exitApp();
   }
 }
 
 // APK (Capacitor): listener backButton tunggal, tanpa retry
 if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
-  backDebugInit();
-  backDebugLog('v5.4 back: Capacitor App plugin ready, single listener');
-  var addP = window.Capacitor.Plugins.App.addListener('backButton', function(info) {
-    backDebugLog('native backButton event, canGoBack=' + (info && info.canGoBack));
-    handleBackPress();
-  });
-  if (addP && addP.then) {
-    addP.then(function(){ backDebugLog('addListener(backButton) registered OK'); })
-      .catch(function(err){ backDebugLog('addListener(backButton) FAILED: ' + err); });
-  }
+  window.Capacitor.Plugins.App.addListener('backButton', handleBackPress);
 } else {
   // Browser/PWA: guard history (pola quran-apk) — back browser menutup panel dulu
-  backDebugInit();
-  backDebugLog('v5.4 back: no Capacitor App plugin, history guard mode');
   try { history.pushState({ guard: 1 }, ''); } catch(ex) {}
   window.addEventListener('popstate', function () {
-    backDebugLog('popstate fired');
     if (activePanel()) {
       handleBackPress();
       try { history.pushState({ guard: 1 }, ''); } catch(ex) {}
     } else {
-      backDebugLog('popstate: landing, leaving page');
       history.back();
     }
   });

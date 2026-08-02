@@ -1,6 +1,13 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.4.1 — Hapus overlay debug (fix back v5.4 sudah dikonfirmasi normal di device)
+- Overlay debug (kotak hijau kiri-bawah + `backDebugInit/backDebugLog/backEventCount`) dihapus total
+  dari `index.html` dan `www/index.html` — user konfirmasi perilaku tombol back sudah normal.
+- Back handler v5.4 tetap utuh: single listener tanpa retry + navigasi dari DOM (`activePanel()`)
+  + cooldown 700ms. Hanya logging yang dibuang, logika tidak berubah.
+- APK: `JadwalGuru-v5.4.1.apk`.
+
 ## v5.4 — Tombol back: single listener + navigasi dari DOM + cooldown
 - **Registrasi listener back SATU kali saja** — `setTimeout(setupBackHandler, 1000)` (retry) dihapus total.
   Capacitor di APK selalu sudah siap sejak `<head>`, jadi retry yang menjadi sumber listener dobel
