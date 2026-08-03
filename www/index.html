@@ -841,9 +841,9 @@ function buildPiketTable() {
     PIKET_HARI.forEach(function(hari){
       var nicks = grid[lokasi+'|'+hari];
       if(nicks && nicks.length){
-        html += '<td>'+nicks.map(function(n){
+        html += '<td class="multi">'+nicks.map(function(n){
           return '<span class="name" onclick="lihatJadwal(\''+n+'\')">'+n+'</span>';
-        }).join('')+'</td>';
+        }).join('<br>')+'</td>';
       } else {
         html += '<td class="empty">–</td>';
       }
