@@ -34,6 +34,7 @@ body {
 .landing .menu-card .icon.gold { background: #f3e4c2; }
 .landing .menu-card .icon.blue { background: #d9e7f2; }
 .landing .menu-card .icon.rose { background: #f5dde3; }
+.landing .menu-card .icon.teal { background: #dceee8; }
 .landing .menu-card .info h3 { font-size: 16px; font-weight: 600; }
 .landing .menu-card .info p { font-size: 12px; color: #7d6a58; margin-top: 2px; }
 
@@ -320,6 +321,93 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
   .result-item .info .detail { font-size: 12px; }
   .result-item .badge { font-size: 24px; }
 }
+/* ===== CARI GURU PENGGANTI (fitur ke-5) — scoped #panel-pengganti ===== */
+#panel-pengganti .pg-flex { display:flex; flex-direction:column; height:100%; min-height:0; flex:1; }
+#panel-pengganti .pg-chat { flex:1; overflow-y:auto; padding:12px 10px; display:flex; flex-direction:column; gap:10px; -webkit-overflow-scrolling:touch; }
+#panel-pengganti .pg-chat::-webkit-scrollbar { width:4px; }
+#panel-pengganti .pg-chat::-webkit-scrollbar-thumb { background:#d6c39e; border-radius:4px; }
+#panel-pengganti .pg-status { flex:0 0 auto; display:flex; align-items:center; gap:8px; padding:10px 12px; border-top:1px solid #e3d5b8; }
+#panel-pengganti .pg-status .pg-s-text { font-size:12px; color:#5f4d33; flex:1; }
+#panel-pengganti .pg-status .pg-s-text b { color:#8a5f18; }
+#panel-pengganti .pg-status .pg-btn-ok { border:none; cursor:pointer; font-size:12px; font-weight:700; padding:8px 18px; border-radius:18px; background:#26211c; color:#d4a857; }
+#panel-pengganti .pg-status .pg-btn-ok:disabled { opacity:.4; cursor:default; }
+#panel-pengganti .pg-guru-strip { flex:0 0 auto; padding:8px 10px; display:flex; gap:7px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; border-top:1px solid #e3d5b8; }
+#panel-pengganti .pg-guru-strip::-webkit-scrollbar { display:none; }
+#panel-pengganti .pg-gstrip-btn { flex:0 0 auto; background:#fff; border:1.5px solid #e3d5b8; color:#3a2f22; font-size:12px; font-weight:700; padding:7px 13px; border-radius:18px; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; gap:6px; }
+#panel-pengganti .pg-gstrip-btn .pg-gt { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+#panel-pengganti .pg-gstrip-btn:active { background:#f3e4c2; border-color:#8f671a; }
+#panel-pengganti .pg-gstrip-btn.pg-active { background:#1a1511; border-color:#1a1511; color:#d4a857; }
+#panel-pengganti .pg-chips { flex:0 0 auto; padding:8px 10px; display:flex; gap:7px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+#panel-pengganti .pg-chips::-webkit-scrollbar { display:none; }
+#panel-pengganti .pg-chip { flex:0 0 auto; background:#fff; border:1.5px solid #d6c39e; color:#5f4d33; font-size:12px; font-weight:600; padding:7px 14px; border-radius:18px; cursor:pointer; white-space:nowrap; }
+#panel-pengganti .pg-chip:active { background:#f3e4c2; border-color:#8f671a; color:#8a5f18; }
+#panel-pengganti .pg-chip.pg-primary { background:#26211c; border-color:#26211c; color:#ece3d9; }
+#panel-pengganti .pg-input-bar { flex:0 0 auto; display:flex; gap:8px; padding:8px 10px 12px; position:relative; }
+#panel-pengganti #pgACWrap { position:relative; flex:1; display:flex; gap:8px; }
+#panel-pengganti #pgAC { position:absolute; left:0; right:52px; bottom:calc(100% + 6px); background:#fff; border:1px solid #e3d5b8; border-radius:10px; box-shadow:0 4px 14px rgba(58,47,34,.16); max-height:190px; overflow-y:auto; z-index:20; display:none; }
+#panel-pengganti .pg-ac-item { padding:9px 12px; font-size:12.5px; border-bottom:1px solid #f0e8d8; cursor:pointer; display:flex; align-items:center; gap:8px; }
+#panel-pengganti .pg-ac-item:last-child { border-bottom:none; }
+#panel-pengganti .pg-ac-item:active { background:#f3e4c2; }
+#panel-pengganti .pg-ac-nick { font-weight:700; color:#3a2f22; }
+#panel-pengganti .pg-ac-full { font-size:11px; color:#7d6a58; }
+#panel-pengganti .pg-ac-badge { margin-left:auto; font-size:10px; color:#8f671a; font-weight:700; }
+#panel-pengganti #pgInput { flex:1; border:1.5px solid #d6c39e; border-radius:20px; padding:10px 14px; font-size:13px; background:#fff; color:#3a2f22; outline:none; }
+#panel-pengganti #pgInput:focus { border-color:#8f671a; }
+#panel-pengganti #pgSend { width:40px; height:40px; border-radius:50%; border:none; background:#26211c; color:#d4a857; font-size:17px; cursor:pointer; flex-shrink:0; }
+#panel-pengganti .pg-msg { padding:9px 12px; border-radius:14px; font-size:13px; line-height:1.5; white-space:pre-wrap; word-wrap:break-word; max-width:100%; }
+#panel-pengganti .pg-msg.pg-bot { align-self:flex-start; background:#fff; border:1px solid #e3d5b8; border-top-left-radius:4px; box-shadow:0 1px 2px rgba(58,47,34,.05); }
+#panel-pengganti .pg-msg.pg-user { max-width:80%; align-self:flex-end; background:#e9dcc0; border:1px solid #d6c39e; border-top-right-radius:4px; }
+#panel-pengganti .pg-msg .pg-time { display:block; font-size:9px; color:#a89a85; text-align:right; margin-top:3px; }
+#panel-pengganti .pg-bot-name { font-size:10px; font-weight:700; color:#8f671a; margin-bottom:4px; display:flex; align-items:center; gap:5px; }
+#panel-pengganti .pg-bot-name .pg-tag { font-weight:600; font-size:9px; background:#f3e4c2; color:#8f671a; padding:1px 6px; border-radius:8px; }
+#panel-pengganti .pg-typing { display:inline-flex; gap:4px; padding:4px 2px; }
+#panel-pengganti .pg-typing span { width:7px; height:7px; border-radius:50%; background:#c9b896; animation:pgblink 1.2s infinite; }
+#panel-pengganti .pg-typing span:nth-child(2){ animation-delay:.2s; }
+#panel-pengganti .pg-typing span:nth-child(3){ animation-delay:.4s; }
+@keyframes pgblink { 0%,80%,100%{opacity:.3} 40%{opacity:1} }
+#panel-pengganti .pg-summary { background:#f3e4c2; border:1px solid #d6c39e; border-radius:10px; padding:9px 12px; font-size:12px; color:#5f4d33; line-height:1.5; }
+#panel-pengganti .pg-summary b { color:#8a5f18; }
+#panel-pengganti .pg-card { background:#fbf7ee; border:1px solid #e3d5b8; border-radius:12px; padding:10px 12px; }
+#panel-pengganti .pg-card + .pg-card { margin-top:8px; }
+#panel-pengganti .pg-card .pg-jam-head { font-weight:700; font-size:13px; color:#3a2f22; }
+#panel-pengganti .pg-card.pg-primary { border-color:#c9a55a; background:linear-gradient(180deg,#fdf8ec,#fbf3df); }
+#panel-pengganti .pg-card.pg-primary .pg-star { color:#b8860b; font-size:14px; margin-right:4px; }
+#panel-pengganti .pg-r-table { width:100%; table-layout:fixed; border-collapse:collapse; font-size:12px; }
+#panel-pengganti .pg-r-table th { background:#26211c; color:#ece3d9; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.3px; padding:8px 8px; text-align:left; }
+#panel-pengganti .pg-r-table th:nth-child(1){ width:48px; }
+#panel-pengganti .pg-r-table th:nth-child(2){ width:27%; }
+#panel-pengganti .pg-r-table td { padding:9px 8px; border-bottom:1px solid #eee1c6; vertical-align:top; overflow-wrap:break-word; }
+#panel-pengganti .pg-r-table tr:last-child td { border-bottom:none; }
+#panel-pengganti .pg-c-jam { font-weight:800; color:#8a5f18; font-size:13px; white-space:nowrap; }
+#panel-pengganti .pg-c-time { font-size:9.5px; color:#a89a85; font-weight:500; margin-top:1px; }
+#panel-pengganti .pg-c-km { font-size:11.5px; color:#5f4d33; line-height:1.4; }
+#panel-pengganti .pg-c-km .pg-m { font-weight:700; color:#3a2f22; }
+#panel-pengganti .pg-r-empty { color:#a89a85; font-style:italic; }
+#panel-pengganti .pg-rc-row { display:flex; align-items:flex-start; gap:6px; margin-bottom:6px; }
+#panel-pengganti .pg-rc-row:last-child { margin-bottom:0; }
+#panel-pengganti .pg-rc-t { flex:0 0 auto; margin-top:3px; font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.3px; padding:2px 6px; border-radius:6px; }
+#panel-pengganti .pg-rc-t.pg-t1{ background:#f3e4c2; color:#8a5f18; }
+#panel-pengganti .pg-rc-t.pg-t2a{ background:#eaf2f8; color:#39769d; }
+#panel-pengganti .pg-rc-t.pg-t2b{ background:#edf3e3; color:#6b8f3c; }
+#panel-pengganti .pg-rc-t.pg-t3{ background:#faeef1; color:#a55972; }
+#panel-pengganti .pg-rc-names { flex:1; min-width:0; display:flex; flex-wrap:wrap; gap:5px; }
+#panel-pengganti .pg-cand { display:inline-flex; align-items:center; gap:5px; background:#fff; border:1px solid #e3d5b8; border-radius:14px; padding:3px 10px; cursor:pointer; font-size:12px; line-height:1.25; }
+#panel-pengganti .pg-cand:active { background:#e9dcc0; }
+#panel-pengganti .pg-cand.pg-selected { background:#1a1511; border-color:#1a1511; color:#d4a857; font-weight:700; }
+#panel-pengganti .pg-cand .pg-free { font-size:9.5px; color:#6b8f3c; font-weight:700; white-space:nowrap; }
+#panel-pengganti .pg-chosen-sel { font-size:12.5px; font-weight:700; color:#39769d; white-space:nowrap; }
+#panel-pengganti .pg-legenda { font-size:9.5px; color:#a89a85; text-align:center; padding:8px 6px 2px; }
+#panel-pengganti .pg-sharebar { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+#panel-pengganti .pg-sharebar .pg-btn { flex:1; min-width:120px; border:none; cursor:pointer; font-size:12.5px; font-weight:700; padding:11px 12px; border-radius:22px; }
+#panel-pengganti .pg-btn-primary { background:#26211c; color:#d4a857; }
+#panel-pengganti .pg-btn-primary:active { background:#3d352e; }
+#panel-pengganti .pg-manual-copy textarea { width:100%; margin-top:6px; border:1px solid #d6c39e; border-radius:8px; padding:8px; font-size:11px; font-family:monospace; background:#fff; color:#3a2f22; }
+#panel-pengganti .pg-quiz-box { margin-top:8px; display:flex; flex-direction:column; gap:8px; }
+#panel-pengganti .pg-quiz-item { display:flex; align-items:center; gap:12px; background:#fff; border:1.5px solid #e3d5b8; border-radius:12px; padding:13px 14px; cursor:pointer; width:100%; text-align:left; min-height:52px; }
+#panel-pengganti .pg-quiz-item:active { background:#f3e4c2; border-color:#8f671a; }
+#panel-pengganti .pg-q-letter { width:30px; height:30px; border-radius:50%; flex-shrink:0; background:#f0e8d8; border:1px solid #d6c39e; color:#8a5f18; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+#panel-pengganti .pg-q-name { flex:1; font-size:14px; font-weight:700; color:#3a2f22; }
+#panel-pengganti .pg-q-info { font-size:11px; color:#a89a85; font-weight:500; }
 </style>
 </head>
 <body>
@@ -340,6 +428,11 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
     <div class="menu-card" onclick="goTo('piket')">
       <div class="icon blue">🧹</div>
       <div class="info"><h3>Jadwal Piket</h3><p>Rekap piket semua guru per hari</p></div>
+    </div>
+
+    <div class="menu-card" onclick="goTo('pengganti')">
+      <div class="icon teal">🔄</div>
+      <div class="info"><h3>Cari Guru Pengganti</h3><p>Pilih guru & hari → rekomendasi pengganti</p></div>
     </div>
     <div class="menu-card" onclick="goTo('kelas')">
       <div class="icon rose">🏫</div>
@@ -441,6 +534,27 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
         <div class="nav-btns"><button class="nav-btn" id="prevKelasBtn">←</button><button class="nav-btn" id="nextKelasBtn">→</button></div>
       </div>
       <div class="bot-row2"><div class="teacher-strip" id="kelasStrip"></div></div>
+    </div>
+  </div>
+<!-- TAB PANEL: CARI GURU PENGGANTI (fitur ke-5) -->
+  <div class="tab-panel" id="panel-pengganti">
+    <header>
+      <button class="back-btn" onclick="goTo('landing')">←</button>
+      <h1>Cari Guru Pengganti</h1>
+      <div class="sub">Pilih guru berhalangan → rekomendasi pengganti</div>
+    </header>
+    <div class="pg-flex">
+      <div id="pgChat" class="pg-chat"></div>
+      <div id="pgStatus" class="pg-status" style="display:none"></div>
+      <div id="pgGuruStrip" class="pg-guru-strip" style="display:none"></div>
+      <div id="pgChips" class="pg-chips"></div>
+      <div class="pg-input-bar">
+        <div id="pgACWrap">
+          <div id="pgAC"></div>
+          <input id="pgInput" type="text" placeholder="Ketik nama guru yang berhalangan…" autocomplete="off">
+          <button id="pgSend">➤</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -718,6 +832,7 @@ function goTo(section) {
     panel.classList.add('active');
   }
   if (section === 'longgar') initLonggar();
+  if (section === 'pengganti') initPengganti();
 }
 
 // ===== BACK HANDLER v5.4 =====
@@ -1215,6 +1330,156 @@ function lihatJadwal(nick) {
   renderJadwal();
 }
 
+// ===== FITUR: CARI GURU PENGGANTI =====
+/* ====== FITUR 5: CARI GURU PENGGANTI (modul global, prefix pg) ====== */
+var pgGSel=null, pgDSel=null, pgJamLst=null, pgBlok=null, pgSEL={}, pgCur=[], pgCand=null, pgHasilEl=null, pgCopyl='';
+var pgInitDone=false;
+var pgACEl=null, pgChatEl=null, pgHURRUF=['A','B','C','D','E','F'];
+var pgTL={t1:['T1','✅ KBM'],t2a:['T2a','🎯 Mapel'],t2b:['T2b','📚 Rumpun'],t3:['T3','👥 Lain']};
+var pgRUMP={Math:'MIPA',Sc:'MIPA',ICT:'MIPA',BI:'Bahasa',Eng:'Bahasa',Soc:'IPS & PPKn',Cv:'IPS & PPKn',IFE:'Agama',Quran:'Agama',Sprt:'Olahraga'};
+
+function pgJstr(){var n=new Date();return ('0'+n.getHours()).slice(-2)+':'+('0'+n.getMinutes()).slice(-2);}
+function pgLonggar(g,d,j){var c=teachers[g].cells[d+'|'+j];return !(c&&c.length);}
+function pgJamMengajar(g,d){return validByDay[d].filter(function(j){var c=teachers[g].cells[d+'|'+j];return c&&c.length;});}
+function pgKbmHari(d){var h=dayId[d],o=[];Object.keys(PIKET).forEach(function(n){PIKET[n].forEach(function(x){if(x.hari===h&&x.lokasi==='Piket KBM')o.push(n);});});return o;}
+function pgSubjSlot(g,d,j){var c=teachers[g].cells[d+'|'+j],s={};c.forEach(function(e){if(e.subject)s[e.subject]=1;});return Object.keys(s);}
+function pgKelasSlot(g,d,j){var c=teachers[g].cells[d+'|'+j],s={};c.forEach(function(e){s[e['class']]=1;});return Object.keys(s).join(', ');}
+function pgWaktuSlot(g,d,j){var c=teachers[g].cells[d+'|'+j];return c[0].start+'\u2013'+c[0].end;}
+function pgLonggarPenuh(g,d,js){return js.every(function(j){return pgLonggar(g,d,j);});}
+function pgBuildBlok(g,d,jl){var o=[];jl.forEach(function(j){var sj=pgSubjSlot(g,d,j).slice().sort(),kl=pgKelasSlot(g,d,j),l=o[o.length-1];
+    if(l&&j===l.jams[l.jams.length-1]+1&&l.kelas===kl&&l.subjek.join('|')===sj.join('|')){l.jams.push(j);l.key=l.jams[0]+'-'+l.jams[l.jams.length-1];}
+    else o.push({jams:[j],key:String(j),kelas:kl,subjek:sj});});return o;}
+function pgWaktuBlok(g,d,b){var f=g.cells[d+'|'+b.jams[0]][0];var l=b.jams.length>1?g.cells[d+'|'+b.jams[b.jams.length-1]][0]:f;return f.start+'\u2013'+l.end;}
+function pgGenderGuru(n){return /^Mr|^Ust/.test(n)?'putra':'putri';}
+var pgLT={};
+function pgBuildL(){pgLT={};order.forEach(function(n){var t=teachers[n];Object.keys(t.cells).forEach(function(k){t.cells[k].forEach(function(e){if(/^Leadership/.test(e['class'])){(pgLT[e['class']]=pgLT[e['class']]||[]);if(pgLT[e['class']].indexOf(n)===-1)pgLT[e['class']].push(n);}});});});}
+pgBuildL();
+function pgIsLead(b){return /^Leadership/.test(b.kelas||'');}
+function pgAllSubj(g,d,jl){var s={};jl.forEach(function(j){pgSubjSlot(g,d,j).forEach(function(x){s[x]=1;});});return Object.keys(s);}
+function pgRecPenuh(g,d,jl){var t1=[],t2a=[],t2b=[],t3=[],sj=pgAllSubj(g,d,jl),rs={};sj.forEach(function(s){if(pgRUMP[s])rs[pgRUMP[s]]=1;});
+    var kb=pgKbmHari(d),klg=[];kb.forEach(function(n){if(n===g)return;if(pgLonggarPenuh(n,d,jl)){t1.push(n);klg.push(n);}});
+    order.forEach(function(n){if(n===g||klg.indexOf(n)!==-1)return;if(!pgLonggarPenuh(n,d,jl))return;var st=teachers[n].stats.subjects;
+      if(sj.some(function(s){return st.indexOf(s)!==-1;})){t2a.push(n);return;}
+      if(st.some(function(s){return pgRUMP[s]&&rs[pgRUMP[s]];})){t2b.push(n);return;}t3.push(n);});return {t1:t1,t2a:t2a,t2b:t2b,t3:t3};}
+function pgRecBlok(g,d,js,lead){if(lead){var t1=[],t2=[],g2=pgGenderGuru(g),ls=pgLT[lead]||[];
+      order.forEach(function(n){if(n===g)return;if(!pgLonggarPenuh(n,d,js))return;if(pgGenderGuru(n)!==g2)return;if(ls.indexOf(n)!==-1)t2.push(n);else t1.push(n);});
+      return {t1:t1,t2a:t2,t2b:[],t3:[],lead:true,kelasLead:lead};}return pgRecPenuh(g,d,js);}
+function pgPick(r){if(r.t1.length)return r.t2a.length?['t1','t2a']:['t1'];if(r.t2a.length)return r.t2b.length?['t2a','t2b']:['t2a'];if(r.t2b.length)return r.t3.length?['t2b','t3']:['t2b'];if(r.t3.length)return['t3'];return[];}
+function pgChip(n,jk){var isSel=jk==='ALL'?(pgBlok.length>0&&Object.keys(pgSEL).length===pgBlok.length&&pgBlok.every(function(b){return pgSEL[b.key]===n;})):pgSEL[jk]===n;
+    var f=pgCur.filter(function(j){return pgLonggar(n,pgDSel,j);});var sx=f.length?'<span class="pg-free">✓ '+f.join(',')+'</span>':'';
+    return '<span class="pg-cand'+(isSel?' pg-selected':'')+'" onclick="pgPilih('+(jk==='ALL'?"'ALL'":"'"+jk+"'")+",'"+n+"')"+'">'+n+sx+'</span>';}
+function pgRowChips(r,jk){var ks=pgPick(r);if(!ks.length)return '<span class="pg-r-empty">—</span>';var h='';
+    ks.forEach(function(k){var lbl=pgTL[k][1];if(r.lead){lbl=k==='t1'?'T1 · '+(pgGenderGuru(pgGSel)==='putra'?'♂ Putra':'♀ Putri'):(k==='t2a'?('T2 · Leadership '+r.kelasLead.replace('Leadership ','')):lbl);}
+      var nm=r[k].map(function(n){return pgChip(n,jk);}).join(' ');h+='<div class="pg-rc-row"><span class="pg-rc-t pg-'+k+'">'+lbl+'</span><span class="pg-rc-names">'+nm+'</span></div>';});return h;}
+function pgPilih(jk,n){if(jk==='ALL'){pgBlok.forEach(function(b){if(!b.jams.every(function(j){return pgLonggar(n,pgDSel,j);}))return;if(pgIsLead(b)&&pgGenderGuru(n)!==pgGenderGuru(pgGSel))return;pgSEL[b.key]=n;});}
+    else{if(pgSEL[jk]===n)delete pgSEL[jk];else pgSEL[jk]=n;}pgRBox();pgRStatus();}
+var pgHON=/\b(mr|mrs|ms|ustadzah|ustadz|ustadza|ustad|ust|us|pak|bu|bapak|ibu|kak|dr|hj|hajjah|haji)\b/g;
+function pgNorm(s){return String(s).toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(pgHON,' ').replace(/\s+/g,' ').trim();}
+function pgLev(a,b){var m=a.length,n=b.length;if(!m)return n;if(!n)return m;var p=new Array(n+1),c=new Array(n+1),i,j;
+  for(j=0;j<=n;j++)p[j]=j;for(i=1;i<=m;i++){c[0]=i;for(j=1;j<=n;j++){var cost=a[i-1]===b[j-1]?0:1;c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+cost);}var t=p;p=c;c=t;}return p[n];}
+function pgSkKey(k,q){if(!k||!q)return 0;if(k===q)return 100;if(k.indexOf(q)===0)return 85;if(k.indexOf(q)!==-1)return 75;var thr=q.length>=6?2:1;if(q.length>=3&&pgLev(k,q)<=thr)return 55;return 0;}
+var pgKeys=null;
+function pgBKeys(){pgKeys=[];order.forEach(function(n){var t=teachers[n],nk=pgNorm(n),f=pgNorm(t.fullname||''),k=[nk];if(f)k.push(f);(nk+' '+f).split(' ').forEach(function(tok){if(tok.length>=3&&k.indexOf(tok)===-1)k.push(tok);});pgKeys.push({nick:n,keys:k});});}
+function pgResGuru(t){if(!pgKeys)pgBKeys();var q=pgNorm(t);if(!q)return[];var sc=[];
+  pgKeys.forEach(function(e){var best=0;e.keys.forEach(function(k){var s=pgSkKey(k,q);if(s>best)best=s;});if(best>0)sc.push({nick:e.nick,score:best});});
+  sc.sort(function(a,b){return b.score-a.score;});return sc;}
+function pgAmbil(t){var r=pgResGuru(t),best=null;r.forEach(function(x){if(!best||x.score>best.score)best=x;});
+  var q=pgNorm(t);q.split(' ').forEach(function(tok){if(tok.length<3)return;var rr=pgResGuru(tok);if(rr.length&&rr[0].score>=75){if(!best||rr[0].score>best.score)best=rr[0];}});
+  if(!best&&r.length&&r[0].score>=55)best=r[0];return best;}
+function pgParseHari(t){var m={'senin':'Monday','selasa':'Tuesday','rabu':'Wednesday','kamis':'Thursday','jumat':'Friday','sabtu':'Saturday','monday':'Monday','tuesday':'Tuesday','wednesday':'Wednesday','thursday':'Thursday','friday':'Friday','saturday':'Saturday'};var l=t.toLowerCase();for(var k in m)if(l.indexOf(k)!==-1)return m[k];return null;}
+function pgRContoh(ex){var p=order.filter(function(n){return n!=='Mr Amar'&&n!==ex;});return p[Math.floor(Math.random()*p.length)];}
+function pgSuggest(){var p=order.filter(function(n){return n!=='Mr Amar';});for(var i=p.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=p[i];p[i]=p[j];p[j]=t;}return p.slice(0,6);}
+function pgGStrip(n){return pgGenderGuru(n)==='putra'?'#39769d':'#a55972';}
+function pgScrollB(){pgChatEl.scrollTop=pgChatEl.scrollHeight;}
+function pgAddBot(h){var d=document.createElement('div');d.className='pg-msg pg-bot';
+  d.innerHTML='<div class="pg-bot-name">Asisten Pengganti <span class="pg-tag">otomatis</span></div>'+h+'<span class="pg-time">'+pgJstr()+'</span>';
+  pgChatEl.appendChild(d);pgScrollB();return d;}
+function pgAddUser(t){var d=document.createElement('div');d.className='pg-msg pg-user';d.textContent=t;
+  var s=document.createElement('span');s.className='pg-time';s.textContent=pgJstr();d.appendChild(s);pgChatEl.appendChild(d);pgScrollB();}
+function pgTyping(cb){var d=document.createElement('div');d.className='pg-msg pg-bot';
+  d.innerHTML='<div class="pg-bot-name">Asisten Pengganti</div><div class="pg-typing"><span></span><span></span><span></span></div>';
+  pgChatEl.appendChild(d);pgScrollB();setTimeout(function(){pgChatEl.removeChild(d);cb();},500+Math.random()*350);}
+function pgSetChips(l){var row=document.getElementById('pgChips');row.innerHTML='';l.forEach(function(x){var b=document.createElement('button');b.className='pg-chip';b.textContent=x;b.addEventListener('click',function(){pgHandle(x);});row.appendChild(b);});}
+function pgClearChips(){document.getElementById('pgChips').innerHTML='';}
+function pgSetStatus(){document.getElementById('pgStatus').style.display='flex';}
+function pgHideStatus(){document.getElementById('pgStatus').style.display='none';}
+function pgHideStrip(){document.getElementById('pgGuruStrip').style.display='none';}
+function pgRenderStrip(active){var st=document.getElementById('pgGuruStrip');st.innerHTML='';order.forEach(function(n){
+  var b=document.createElement('button');b.className='pg-gstrip-btn'+(n===active?' pg-active':'');
+  b.innerHTML='<span class="pg-gt" style="background:'+pgGStrip(n)+'"></span>'+n;
+  b.addEventListener('click',function(){pgPilihGuruManual(n);});st.appendChild(b);});
+  st.style.display='flex';if(active)setTimeout(function(){var a=st.querySelector('.pg-active');if(a)a.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});},50);}
+function pgShowGuruGrid(){pgClearChips();var c1=pgRContoh(),c2=pgRContoh(c1);
+  pgTypeMsg('Guru siapa yang berhalangan? 🤔 Ketik namanya (mis. <b>"'+c1+'"</b>, <b>"'+c2+'"</b>) — ada saran otomatis, atau geser daftar guru di bawah lalu pilih:',function(){pgRenderStrip();});}
+function pgPilihGuruManual(n){pgGSel=n;pgAddUser(n);pgTyping(function(){pgKonfirmasi();pgShowQuiz();});}
+function pgTypeMsg(t,cb){pgTyping(function(){pgAddBot(t);cb();});}
+function pgKonfirmasi(){var t=teachers[pgGSel];pgAddBot('Baik, <b>'+pgGSel+'</b> ('+(t.fullname||'')+') · '+t.stats.subjects.join(', ')+' · '+t.stats.total_lessons+' jam/minggu.');}
+function pgShowQuiz(){var h='<div class="pg-quiz-box">';DAYS.forEach(function(d,i){var n=pgJamMengajar(pgGSel,d).length;
+  h+='<button class="pg-quiz-item" onclick="pgPilihHari('+i+')"><span class="pg-q-letter">'+pgHURRUF[i]+'</span><span class="pg-q-name">'+dayId[d]+'</span><span class="pg-q-info">'+(n?n+' jam mengajar':'libur')+'</span></button>';});
+  h+='</div>';pgTyping(function(){pgAddBot('<b>'+pgGSel+'</b> berhalangan hari apa? (pilih salah satu)</b>'+h);});}
+function pgPilihHari(idx){pgDSel=DAYS[idx];pgAddUser(dayId[pgDSel]);pgJamLst=pgJamMengajar(pgGSel,pgDSel);pgCur=pgJamLst;pgBlok=pgBuildBlok(pgGSel,pgDSel,pgJamLst);pgSEL={};pgTyping(function(){pgRHasil();});}
+function pgRBox(){if(!pgHasilEl||!pgGSel||!pgDSel)return;var g=teachers[pgGSel],lead=pgBlok.some(pgIsLead),h='';
+  var kb=pgKbmHari(pgDSel);h+='<div class="pg-summary"><b>'+pgGSel+'</b> — '+dayId[pgDSel]+' · '+pgJamLst.length+' jam'+(kb.length?' · KBM: <b>'+kb.join(', ')+'</b>':'')+'</div>';
+  var pf=pgRecPenuh(pgGSel,pgDSel,pgJamLst);if(lead){var gg=pgGenderGuru(pgGSel);pf.t1=pf.t1.filter(function(n){return pgGenderGuru(n)===gg;});pf.t2a=pf.t2a.filter(function(n){return pgGenderGuru(n)===gg;});pf.t2b=pf.t2b.filter(function(n){return pgGenderGuru(n)===gg;});pf.t3=pf.t3.filter(function(n){return pgGenderGuru(n)===gg;});}
+  if(pf.t1.length+pf.t2a.length+pf.t2b.length+pf.t3.length){h+='<div class="pg-card pg-primary"><div class="pg-jam-head"><span class="pg-star">★</span> Satu guru utk semua jam — klik utk pilih</div>'+pgRowChips(pf,'ALL')+'</div>';}
+  h+='<div class="pg-card"><table class="pg-r-table"><thead><tr><th>Jam</th><th>Kelas · Mapel</th><th>Rekomendasi Guru Pengganti</th></tr></thead><tbody>';
+  pgBlok.forEach(function(b){var rr=pgRecBlok(pgGSel,pgDSel,b.jams,pgIsLead(b)?b.kelas:null);
+    h+='<tr><td class="pg-c-jam">'+b.key+'<div class="pg-c-time">'+pgWaktuBlok(g,pgDSel,b)+'</div></td><td class="pg-c-km"><span class="pg-m">'+b.kelas+'</span> · '+(b.subjek.join(', ')||'\u2014')+'</td><td>'+pgRowChips(rr,b.key)+'</td></tr>';});
+  h+='</tbody></table><div class="pg-legenda">✓ hijau = jam longgar · klik nama utk pilih/ganti'+(lead?' · Leadership: hanya guru sejenis':'')+'</div></div>';
+  pgHasilEl.innerHTML=h;pgScrollB();}
+function pgRStatus(){if(!pgGSel||!pgDSel){pgHideStatus();return;}var tr=pgBlok.filter(function(b){return pgSEL[b.key];}).length,jml=pgBlok.length,pf=tr===jml;
+  var s=document.getElementById('pgStatus');pgSetStatus();s.innerHTML='<span class="pg-s-text">Pilih pengganti: <b>'+tr+'</b>/'+jml+' blok</span><button class="pg-btn-ok" onclick="pgOk()" '+(pf?'':'disabled')+'>OK · Rekap</button>';}
+function pgRHasil(){if(pgHasilEl){var o=pgHasilEl.closest('.pg-msg');if(o&&o.parentNode)o.parentNode.removeChild(o);pgHasilEl=null;}
+  var box=document.createElement('div');box.className='pg-msg pg-bot';
+  box.innerHTML='<div class="pg-bot-name">Asisten Pengganti <span class="pg-tag">klik guru di bawah</span></div><div id="pgHasil"></div><span class="pg-time">'+pgJstr()+'</span>';
+  pgChatEl.appendChild(box);pgHasilEl=document.getElementById('pgHasil');pgRBox();pgRStatus();pgSetChips(['Ganti guru','Ganti hari','Mulai ulang']);pgScrollB();}
+function pgTeks(){var g=teachers[pgGSel],l=['JADWAL GURU PENGGANTI',pgGSel+' (berhalangan) · '+dayId[pgDSel]+', menggantikan jam:',''];
+  pgBlok.forEach(function(b){if(!pgSEL[b.key])return;l.push('• Jam '+b.key+' ('+pgWaktuBlok(g,pgDSel,b)+') '+b.kelas+' · '+(b.subjek.join(', ')||'-')+' → '+pgSEL[b.key]);});return l.join('\n');}
+function pgOk(){if(pgBlok.some(function(b){return !pgSEL[b.key];}))return;pgHideStatus();pgClearChips();pgHideStrip();
+  var g=teachers[pgGSel],h='<div class="pg-card pg-primary"><div class="pg-jam-head"><span class="pg-star">★</span> Rekap Pengganti — '+pgGSel+' · '+dayId[pgDSel]+'</div><table class="pg-r-table"><thead><tr><th>Jam</th><th>Kelas · Mapel</th><th>Guru Pengganti</th></tr></thead><tbody>';
+  pgBlok.forEach(function(b){h+='<tr><td class="pg-c-jam">'+b.key+'<div class="pg-c-time">'+pgWaktuBlok(g,pgDSel,b)+'</div></td><td class="pg-c-km"><span class="pg-m">'+b.kelas+'</span> · '+(b.subjek.join(', ')||'\u2014')+'</td><td class="pg-chosen-sel">✔ '+pgSEL[b.key]+'</td></tr>';});
+  h+='</tbody></table></div><div class="pg-sharebar"><button class="pg-btn pg-btn-primary" onclick="pgSalin()">📋 Salin Teks</button></div>';
+  pgAddBot(h);pgSetChips(['Cari lagi','Ganti guru','Mulai ulang']);}
+function pgSalin(){var txt=pgTeks(),ok=false;
+  try{var ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;top:0;left:0;width:10px;height:10px;opacity:0;';document.body.appendChild(ta);ta.focus();ta.select();ta.setSelectionRange(0,txt.length);ok=document.execCommand('copy');document.body.removeChild(ta);}catch(e){ok=false;}
+  if(!ok&&navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){pgShowOk(txt);},function(){pgShowMan(txt);});return;}
+  if(ok)pgShowOk(txt);else pgShowMan(txt);}
+function pgShowOk(t){pgCopyl=t;pgAddBot('✓ Teks rekap berhasil disalin ke clipboard.');pgSetChips(['Cari lagi','Mulai ulang']);}
+function pgShowMan(t){pgCopyl=t;var esc=String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  pgAddBot('<div class="pg-manual-copy"><div class="pg-jam-head">📋 Salin manual (klik & tahan):</div><textarea rows="8" readonly onclick="this.select()">'+esc+'</textarea></div>');pgSetChips(['Cari lagi','Mulai ulang']);}
+function pgAC(q){if(!q){pgACEl.style.display='none';return;}var r=pgResGuru(q).slice(0,6);if(!r.length){pgACEl.style.display='none';return;}
+  pgACEl.innerHTML='';r.forEach(function(x){var it=document.createElement('div');it.className='pg-ac-item';
+    it.innerHTML='<span class="pg-ac-nick">'+x.nick+'</span><span class="pg-ac-full">'+(teachers[x.nick].fullname||'')+'</span><span class="pg-ac-badge">'+(x.score>=75?'✓':'~'+x.score)+'</span>';
+    it.addEventListener('mousedown',function(ev){ev.preventDefault();pgPickAC(x.nick);});
+    it.addEventListener('touchstart',function(ev){ev.preventDefault();pgPickAC(x.nick);});
+    pgACEl.appendChild(it);});pgACEl.style.display='block';}
+function pgPickAC(n){pgACEl.style.display='none';document.getElementById('pgInput').value=n;pgHandle(n);}
+function pgHandle(t){t=t.trim();if(!t)return;pgAddUser(t);document.getElementById('pgInput').value='';
+  if(t==='Mulai ulang'||t==='Cari lagi'){pgReset();pgShowGuruGrid();return;}
+  if(t==='Ganti guru'){pgGSel=null;pgDSel=null;pgHideStatus();pgClearChips();pgShowGuruGrid();return;}
+  if(t==='Ganti hari'&&pgGSel&&pgDSel){pgDSel=null;pgTyping(function(){pgShowQuiz();});return;}
+  if(t==='Batal'){pgSetChips(['Cari lagi','Mulai ulang']);return;}
+  if(pgGSel&&pgDSel&&pgHasilEl){pgAddBot('Sedang melihat hasil. Ketik <b>Mulai ulang</b> utk cari lagi, atau klik nama guru di tabel utk pilih/ubah.');pgSetChips(['Ganti guru','Ganti hari','Mulai ulang']);return;}
+  var g=pgAmbil(t),h=pgParseHari(t);
+  if(g){if(g.score<75){pgTyping(function(){pgAddBot('Maksud Anda <b>'+g.nick+'</b> ('+(teachers[g.nick].fullname||'')+')? Ketik <b>iya</b> utk lanjut.');});pgCand=null;setTimeout(function(){pgCand=g;pgSetChips(['Iya, benar','Batal']);},0);return;}
+    pgGSel=g.nick;if(h){pgTyping(function(){pgKonfirmasi();pgPilihHari(DAYS.indexOf(h));});}else{pgTyping(function(){pgKonfirmasi();pgShowQuiz();});}return;}
+  if((t==='iya'||t==='ya'||t==='Iya, benar')&&pgCand){var gg=pgCand;pgCand=null;pgGSel=gg.nick;pgTyping(function(){pgKonfirmasi();pgShowQuiz();});return;}
+  if((t==='batal'||t==='Batal')&&pgCand){pgCand=null;pgTyping(function(){pgAddBot('Baik, silakan pilih guru.');});pgShowGuruGrid();return;}
+  if(h&&pgGSel&&!pgDSel){pgTyping(function(){pgPilihHari(DAYS.indexOf(h));});return;}
+  if(h&&!pgGSel){pgTyping(function(){pgAddBot('Hari '+dayId[h]+' ya. Sekarang pilih guru yang berhalangan:');});pgShowGuruGrid();return;}
+  pgTyping(function(){pgAddBot('Maaf belum jelas. Ketik nama guru (mis. <b>"'+pgRContoh()+'"</b>) atau pilih dari tombol saran:');});
+  if(!pgGSel)pgShowGuruGrid();else pgSetChips(['Ganti guru','Mulai ulang']);}
+function pgReset(){pgGSel=null;pgDSel=null;pgSEL={};pgHideStatus();pgClearChips();pgHideStrip();pgHasilEl=null;pgChatEl.innerHTML='';}
+function initPengganti(){if(pgInitDone)return;pgInitDone=true;
+  pgChatEl=document.getElementById('pgChat');pgACEl=document.getElementById('pgAC');
+  document.getElementById('pgSend').addEventListener('click',function(){pgACEl.style.display='none';pgHandle(document.getElementById('pgInput').value);});
+  var inp=document.getElementById('pgInput');
+  inp.addEventListener('input',function(){pgAC(this.value.trim());});
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter'){pgACEl.style.display='none';pgHandle(inp.value);}});
+  document.addEventListener('click',function(e){if(pgACEl.contains&&!pgACEl.contains(e.target)&&e.target.id!=='pgInput')pgACEl.style.display='none';});
+  pgReset();
+  var c1=pgRContoh(),c2=pgRContoh(c1);
+  pgTyping(function(){pgAddBot('Halo! <b>Cari Guru Pengganti</b> 👋<br>Guru siapa yang berhalangan? Ketik namanya (mis. <b>"'+c1+'"</b>, <b>"'+c2+'"</b>) — ada saran otomatis, atau geser daftar guru di bawah lalu pilih:');pgRenderStrip();});}
 // ===== INIT =====
 renderJadwal();
 renderKelas();

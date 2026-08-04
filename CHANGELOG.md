@@ -1,6 +1,18 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.5.0 — Fitur baru: Cari Guru Pengganti (panel ke-5)
+- **Panel ke-5 "Cari Guru Pengganti"** di landing: pilih guru berhalangan → hari → rekomendasi pengganti.
+- Alur CHAT (seperti AI tanpa AI), state machine; ketik manual + auto-search/auto-correct nama guru + strip guru horizontal swipe (dot gender) + opsi hari gaya pilihan ganda (A–F).
+- Rekomendasi: kartu emas ★ "Satu guru utk semua jam" (bila ada) + TABEL 3 kolom `Jam | Kelas·Mapel | Rekomendasi`.
+- Prioritas tier: T1 Piket KBM (wajib dicek longgar dulu) → T2a mapel sama → T2b rumpun sama → T3 lain; max 2 tier tampil (tier terisi pertama + 1 di bawahnya).
+- Blok 2 jam: gabung jadi 1 baris HANYA jika mapel & kelas sama (pengganti 1 guru longgar di kedua jam, rekap 1 baris "Jam 4-5", waktu = jam-awal s/d jam-akhir).
+- Leadership: T1 = guru sesuai gender longgar, T2 = sesuai gender + mengajar Leadership sama; khusus Leadership saja, mapel lain aturan umum; label "T1 · ♀/♂" & "T2 · Leadership X".
+- Alur seleksi: klik nama kandidat pilih per blok / klik kartu emas utk semua-blok; status dock "X/Y blok" + tombol OK · Rekap (aktif saat semua blok terisi); Kartu Rekap + tombol 📋 Salin Teks (execCommand→clipboard→manual fallback).
+- Integrasi: modul mandiri `pg*` (prefix), reuse `DATA`/`PIKET`/`order`, CSS di-scope `#panel-pengganti`, dikerjakan identik di `index.html` & `www/index.html`.
+- Versi package.json: 5.5.0 → APK akan dinamai `JadwalGuru-v5.5.0.apk`.
+- Verifikasi: JS syntax OK + test integrasi 16 PASS + regresi engine 1383 PASS + back-handler (panel ikut pola `.tab-panel`).
+
 ## v5.4.1 — Hapus overlay debug (fix back v5.4 sudah dikonfirmasi normal di device)
 - Overlay debug (kotak hijau kiri-bawah + `backDebugInit/backDebugLog/backEventCount`) dihapus total
   dari `index.html` dan `www/index.html` — user konfirmasi perilaku tombol back sudah normal.
