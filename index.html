@@ -1414,10 +1414,10 @@ function pgShowGuruGrid(){pgClearChips();var c1=pgRContoh(),c2=pgRContoh(c1);
 function pgPilihGuruManual(n){pgGSel=n;pgAddUser(n);pgTyping(function(){pgKonfirmasi();pgShowQuiz();});}
 function pgTypeMsg(t,cb){pgTyping(function(){pgAddBot(t);cb();});}
 function pgKonfirmasi(){var t=teachers[pgGSel];pgAddBot('Baik, <b>'+pgGSel+'</b> ('+(t.fullname||'')+') · '+t.stats.subjects.join(', ')+' · '+t.stats.total_lessons+' jam/minggu.');}
-function pgShowQuiz(){var h='<div class="pg-quiz-box">';DAYS.forEach(function(d,i){var n=pgJamMengajar(pgGSel,d).length;
+function pgShowQuiz(){var h='<div class="pg-quiz-box">';days.forEach(function(d,i){var n=pgJamMengajar(pgGSel,d).length;
   h+='<button class="pg-quiz-item" onclick="pgPilihHari('+i+')"><span class="pg-q-letter">'+pgHURRUF[i]+'</span><span class="pg-q-name">'+dayId[d]+'</span><span class="pg-q-info">'+(n?n+' jam mengajar':'libur')+'</span></button>';});
   h+='</div>';pgTyping(function(){pgAddBot('<b>'+pgGSel+'</b> berhalangan hari apa? (pilih salah satu)</b>'+h);});}
-function pgPilihHari(idx){pgDSel=DAYS[idx];pgAddUser(dayId[pgDSel]);pgJamLst=pgJamMengajar(pgGSel,pgDSel);pgCur=pgJamLst;pgBlok=pgBuildBlok(pgGSel,pgDSel,pgJamLst);pgSEL={};pgTyping(function(){pgRHasil();});}
+function pgPilihHari(idx){pgDSel=days[idx];pgAddUser(dayId[pgDSel]);pgJamLst=pgJamMengajar(pgGSel,pgDSel);pgCur=pgJamLst;pgBlok=pgBuildBlok(pgGSel,pgDSel,pgJamLst);pgSEL={};pgTyping(function(){pgRHasil();});}
 function pgRBox(){if(!pgHasilEl||!pgGSel||!pgDSel)return;var g=teachers[pgGSel],lead=pgBlok.some(pgIsLead),h='';
   var kb=pgKbmHari(pgDSel);h+='<div class="pg-summary"><b>'+pgGSel+'</b> — '+dayId[pgDSel]+' · '+pgJamLst.length+' jam'+(kb.length?' · KBM: <b>'+kb.join(', ')+'</b>':'')+'</div>';
   var pf=pgRecPenuh(pgGSel,pgDSel,pgJamLst);if(lead){var gg=pgGenderGuru(pgGSel);pf.t1=pf.t1.filter(function(n){return pgGenderGuru(n)===gg;});pf.t2a=pf.t2a.filter(function(n){return pgGenderGuru(n)===gg;});pf.t2b=pf.t2b.filter(function(n){return pgGenderGuru(n)===gg;});pf.t3=pf.t3.filter(function(n){return pgGenderGuru(n)===gg;});}
@@ -1462,10 +1462,10 @@ function pgHandle(t){t=t.trim();if(!t)return;pgAddUser(t);document.getElementByI
   if(pgGSel&&pgDSel&&pgHasilEl){pgAddBot('Sedang melihat hasil. Ketik <b>Mulai ulang</b> utk cari lagi, atau klik nama guru di tabel utk pilih/ubah.');pgSetChips(['Ganti guru','Ganti hari','Mulai ulang']);return;}
   var g=pgAmbil(t),h=pgParseHari(t);
   if(g){if(g.score<75){pgTyping(function(){pgAddBot('Maksud Anda <b>'+g.nick+'</b> ('+(teachers[g.nick].fullname||'')+')? Ketik <b>iya</b> utk lanjut.');});pgCand=null;setTimeout(function(){pgCand=g;pgSetChips(['Iya, benar','Batal']);},0);return;}
-    pgGSel=g.nick;if(h){pgTyping(function(){pgKonfirmasi();pgPilihHari(DAYS.indexOf(h));});}else{pgTyping(function(){pgKonfirmasi();pgShowQuiz();});}return;}
+    pgGSel=g.nick;if(h){pgTyping(function(){pgKonfirmasi();pgPilihHari(days.indexOf(h));});}else{pgTyping(function(){pgKonfirmasi();pgShowQuiz();});}return;}
   if((t==='iya'||t==='ya'||t==='Iya, benar')&&pgCand){var gg=pgCand;pgCand=null;pgGSel=gg.nick;pgTyping(function(){pgKonfirmasi();pgShowQuiz();});return;}
   if((t==='batal'||t==='Batal')&&pgCand){pgCand=null;pgTyping(function(){pgAddBot('Baik, silakan pilih guru.');});pgShowGuruGrid();return;}
-  if(h&&pgGSel&&!pgDSel){pgTyping(function(){pgPilihHari(DAYS.indexOf(h));});return;}
+  if(h&&pgGSel&&!pgDSel){pgTyping(function(){pgPilihHari(days.indexOf(h));});return;}
   if(h&&!pgGSel){pgTyping(function(){pgAddBot('Hari '+dayId[h]+' ya. Sekarang pilih guru yang berhalangan:');});pgShowGuruGrid();return;}
   pgTyping(function(){pgAddBot('Maaf belum jelas. Ketik nama guru (mis. <b>"'+pgRContoh()+'"</b>) atau pilih dari tombol saran:');});
   if(!pgGSel)pgShowGuruGrid();else pgSetChips(['Ganti guru','Mulai ulang']);}
