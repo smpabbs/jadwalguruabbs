@@ -1,6 +1,35 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.6.0 — Cari Guru Pengganti: banyak guru sekaligus, 2 bug data nyata diperbaiki
+- **Pilih beberapa guru absen sekaligus** (bukan cuma satu): strip guru di langkah 1 sekarang toggle
+  multi-pilih + tombol "Lanjut (N)". Satu hari yang sama dipilih untuk seluruh guru dalam batch (skenario
+  intinya: beberapa guru absen di hari yang sama, bukan pencarian berturut-turut).
+- **BARU — cegah bentrok lintas-guru**: begitu seorang guru pengganti dipilih untuk 1 blok, dia otomatis
+  hilang dari daftar kandidat blok manapun (guru absen manapun) yang jamnya tumpang tindih — bukan cuma
+  ditandai. Direservasi lewat `pgReservedMap`, dihitung ulang langsung dari pilihan yang sudah dibuat
+  (tidak ada state terpisah yang bisa basi).
+- **Bug data nyata #1 (ditemukan &amp; diperbaiki sebelum rilis)**: percobaan pertama menyimpan reservasi
+  per-jam-saja (1 slot per jam) — padahal 1 jam bisa sah-sah saja ditutup oleh 2 pengganti berbeda untuk
+  2 guru absen berbeda (kelas beda, guru pengganti beda). Ketahuan lewat mockup interaktif berbasis data
+  Sabtu sungguhan (Mr Hang + Mr Sharih, sama-sama ngajar Jam 1-2): pilihan guru kedua diam-diam menimpa
+  catatan guru pertama. Diperbaiki: reservasi sekarang per (jam, nama pengganti), bukan per jam saja.
+- **Bug data nyata #2 (ditemukan &amp; diperbaiki sebelum rilis)**: sebelum ada perbaikan ini, guru yang
+  sendiri sedang absen bisa muncul sebagai rekomendasi pengganti untuk guru absen LAINNYA (mesin cuma
+  cek "jadwalnya kosong", bukan cek "dia sendiri lagi absen"). Bukti nyata: Mr Hang (absen) sempat
+  muncul sebagai kandidat T2a utk kelas Mr Sharih (juga absen), hari Sabtu yang sama. Diperbaiki: sesama
+  anggota batch guru absen sekarang saling di-skip dari rekomendasi satu sama lain.
+- **Kartu emas "Satu guru utk semua jam"** tetap ada per guru absen (hanya muncul kalau guru itu punya
+  2+ blok), sekarang otomatis menghormati reservasi dari guru absen lain di batch yang sama.
+- **Rekap**: format per-guru-absen tidak berubah, ditambah kartu baru "Rekap per Guru Pengganti" yang
+  mengelompokkan berdasarkan siapa penggantinya — supaya piket bisa lihat total beban baru tiap
+  pengganti sekali lihat. Berlaku juga di teks hasil salin (📋).
+- Tombol back Android **tidak disentuh sama sekali** (diverifikasi lewat diff) — fix v5.4 tetap berlaku.
+- Verifikasi: 21 skenario diuji langsung terhadap fungsi asli (data Sabtu sungguhan: Mr Hang, Mr Sharih,
+  Ms Fitri dkk, termasuk jalur Leadership nyata) + 22 skenario klik-sungguhan lewat DOM asli (jsdom) —
+  cover bentrok lintas-guru, batch self-exclusion, kartu emas, toggle-off, regresi N=1, dan rekap.
+- APK: `JadwalGuru-v5.6.0.apk`.
+
 ## v5.5.0 — Fitur baru: Cari Guru Pengganti (panel ke-5)
 - **Panel ke-5 "Cari Guru Pengganti"** di landing: pilih guru berhalangan → hari → rekomendasi pengganti.
 - Alur CHAT (seperti AI tanpa AI), state machine; ketik manual + auto-search/auto-correct nama guru + strip guru horizontal swipe (dot gender) + opsi hari gaya pilihan ganda (A–F).

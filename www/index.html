@@ -408,6 +408,16 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
 #panel-pengganti .pg-q-letter { width:30px; height:30px; border-radius:50%; flex-shrink:0; background:#f0e8d8; border:1px solid #d6c39e; color:#8a5f18; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center; }
 #panel-pengganti .pg-q-name { flex:1; font-size:14px; font-weight:700; color:#3a2f22; }
 #panel-pengganti .pg-q-info { font-size:11px; color:#a89a85; font-weight:500; }
+#panel-pengganti .pg-gsec { margin-bottom:14px; }
+#panel-pengganti .pg-gsec:last-child { margin-bottom:0; }
+#panel-pengganti .pg-gsec-head { font-size:11.5px; font-weight:700; color:#5f4d33; padding:2px 2px 6px; border-bottom:1px dashed #d6c39e; margin-bottom:8px; }
+#panel-pengganti .pg-gsec-head b { color:#3a2f22; font-size:13px; }
+#panel-pengganti .pg-agg-sub { padding:6px 0; border-bottom:1px solid #eee1c6; }
+#panel-pengganti .pg-agg-sub:last-child { border-bottom:none; }
+#panel-pengganti .pg-agg-name { font-weight:700; font-size:13px; color:#3a2f22; }
+#panel-pengganti .pg-agg-count { font-weight:500; font-size:11px; color:#a89a85; margin-left:4px; }
+#panel-pengganti .pg-agg-item { font-size:11.5px; color:#5f4d33; line-height:1.5; padding-left:10px; }
+#panel-pengganti .pg-agg-item b { color:#3a2f22; }
 </style>
 </head>
 <body>
@@ -541,7 +551,7 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
     <header>
       <button class="back-btn" onclick="goTo('landing')">←</button>
       <h1>Cari Guru Pengganti</h1>
-      <div class="sub">Pilih guru berhalangan → rekomendasi pengganti</div>
+      <div class="sub">Pilih guru berhalangan (bisa lebih dari satu) → rekomendasi pengganti</div>
     </header>
     <div class="pg-flex">
       <div id="pgChat" class="pg-chat"></div>
@@ -1331,8 +1341,8 @@ function lihatJadwal(nick) {
 }
 
 // ===== FITUR: CARI GURU PENGGANTI =====
-/* ====== FITUR 5: CARI GURU PENGGANTI (modul global, prefix pg) ====== */
-var pgGSel=null, pgDSel=null, pgJamLst=null, pgBlok=null, pgSEL={}, pgCur=[], pgCand=null, pgHasilEl=null, pgCopyl='';
+/* ====== FITUR 5: CARI GURU PENGGANTI (modul global, prefix pg) — v5.6.0: banyak guru sekaligus ====== */
+var pgAbsenPick={}, pgAbsenList=[], pgDSel=null, pgJamLst={}, pgBlok={}, pgSEL={}, pgCand=null, pgHasilEl=null, pgCopyl='';
 var pgInitDone=false;
 var pgACEl=null, pgChatEl=null, pgHURRUF=['A','B','C','D','E','F'];
 var pgTL={t1:['T1','✅ KBM'],t2a:['T2a','🎯 Mapel'],t2b:['T2b','📚 Rumpun'],t3:['T3','👥 Lain']};
@@ -1345,7 +1355,6 @@ function pgKbmHari(d){var h=dayId[d],o=[];Object.keys(PIKET).forEach(function(n)
 function pgSubjSlot(g,d,j){var c=teachers[g].cells[d+'|'+j],s={};c.forEach(function(e){if(e.subject)s[e.subject]=1;});return Object.keys(s);}
 function pgKelasSlot(g,d,j){var c=teachers[g].cells[d+'|'+j],s={};c.forEach(function(e){s[e['class']]=1;});return Object.keys(s).join(', ');}
 function pgWaktuSlot(g,d,j){var c=teachers[g].cells[d+'|'+j];return c[0].start+'\u2013'+c[0].end;}
-function pgLonggarPenuh(g,d,js){return js.every(function(j){return pgLonggar(g,d,j);});}
 function pgBuildBlok(g,d,jl){var o=[];jl.forEach(function(j){var sj=pgSubjSlot(g,d,j).slice().sort(),kl=pgKelasSlot(g,d,j),l=o[o.length-1];
     if(l&&j===l.jams[l.jams.length-1]+1&&l.kelas===kl&&l.subjek.join('|')===sj.join('|')){l.jams.push(j);l.key=l.jams[0]+'-'+l.jams[l.jams.length-1];}
     else o.push({jams:[j],key:String(j),kelas:kl,subjek:sj});});return o;}
@@ -1356,23 +1365,39 @@ function pgBuildL(){pgLT={};order.forEach(function(n){var t=teachers[n];Object.k
 pgBuildL();
 function pgIsLead(b){return /^Leadership/.test(b.kelas||'');}
 function pgAllSubj(g,d,jl){var s={};jl.forEach(function(j){pgSubjSlot(g,d,j).forEach(function(x){s[x]=1;});});return Object.keys(s);}
-function pgRecPenuh(g,d,jl){var t1=[],t2a=[],t2b=[],t3=[],sj=pgAllSubj(g,d,jl),rs={};sj.forEach(function(s){if(pgRUMP[s])rs[pgRUMP[s]]=1;});
-    var kb=pgKbmHari(d),klg=[];kb.forEach(function(n){if(n===g)return;if(pgLonggarPenuh(n,d,jl)){t1.push(n);klg.push(n);}});
-    order.forEach(function(n){if(n===g||klg.indexOf(n)!==-1)return;if(!pgLonggarPenuh(n,d,jl))return;var st=teachers[n].stats.subjects;
+// pgReservedMap: jam -> ARRAY of {sub,forTeacher,blockKey} already committed elsewhere in this batch
+// (derived fresh from pgSEL every call, so there's no separate state that can go stale). Keyed by jam
+// alone but holding an ARRAY, not a single slot -- a jam can legitimately have several different
+// substitutes reserved at once (each covering a different absent teacher's own classroom at that
+// period); a single-slot map was tried first and silently lost earlier reservations whenever two
+// different names landed on the same jam. exG/exKey excludes one specific (teacher[,block]) from
+// counting against itself -- exKey=null excludes ALL of exG's own picks (needed for the per-teacher
+// gold card, whose periods span every block of that one teacher, including ones already picked).
+function pgReservedMap(exG,exKey){var res={};pgAbsenList.forEach(function(g){var selG=pgSEL[g]||{};
+    Object.keys(selG).forEach(function(jk){if(g===exG&&(exKey==null||jk===exKey))return;var sub=selG[jk];
+      var blk=(pgBlok[g]||[]).filter(function(b){return b.key===jk;})[0];if(!blk)return;
+      blk.jams.forEach(function(j){(res[j]=res[j]||[]).push({sub:sub,forTeacher:g,blockKey:jk});});});});return res;}
+function pgLonggarPenuhR(g,d,js,exG,exKey){var res=pgReservedMap(exG,exKey);
+    return js.every(function(j){if(!pgLonggar(g,d,j))return false;var arr=res[j];if(!arr)return true;return !arr.some(function(s){return s.sub===g;});});}
+function pgRecPenuh(g,d,jl,exG,exKey){var t1=[],t2a=[],t2b=[],t3=[],sj=pgAllSubj(g,d,jl),rs={};sj.forEach(function(s){if(pgRUMP[s])rs[pgRUMP[s]]=1;});
+    var kb=pgKbmHari(d),klg=[];kb.forEach(function(n){if(pgAbsenList.indexOf(n)!==-1)return;if(pgLonggarPenuhR(n,d,jl,exG,exKey)){t1.push(n);klg.push(n);}});
+    order.forEach(function(n){if(pgAbsenList.indexOf(n)!==-1||klg.indexOf(n)!==-1)return;if(!pgLonggarPenuhR(n,d,jl,exG,exKey))return;var st=teachers[n].stats.subjects;
       if(sj.some(function(s){return st.indexOf(s)!==-1;})){t2a.push(n);return;}
       if(st.some(function(s){return pgRUMP[s]&&rs[pgRUMP[s]];})){t2b.push(n);return;}t3.push(n);});return {t1:t1,t2a:t2a,t2b:t2b,t3:t3};}
-function pgRecBlok(g,d,js,lead){if(lead){var t1=[],t2=[],g2=pgGenderGuru(g),ls=pgLT[lead]||[];
-      order.forEach(function(n){if(n===g)return;if(!pgLonggarPenuh(n,d,js))return;if(pgGenderGuru(n)!==g2)return;if(ls.indexOf(n)!==-1)t2.push(n);else t1.push(n);});
-      return {t1:t1,t2a:t2,t2b:[],t3:[],lead:true,kelasLead:lead};}return pgRecPenuh(g,d,js);}
+function pgRecBlok(g,d,js,lead,exG,exKey){if(lead){var t1=[],t2=[],g2=pgGenderGuru(g),ls=pgLT[lead]||[];
+      order.forEach(function(n){if(pgAbsenList.indexOf(n)!==-1)return;if(!pgLonggarPenuhR(n,d,js,exG,exKey))return;if(pgGenderGuru(n)!==g2)return;if(ls.indexOf(n)!==-1)t2.push(n);else t1.push(n);});
+      return {t1:t1,t2a:t2,t2b:[],t3:[],lead:true,kelasLead:lead};}return pgRecPenuh(g,d,js,exG,exKey);}
 function pgPick(r){if(r.t1.length)return r.t2a.length?['t1','t2a']:['t1'];if(r.t2a.length)return r.t2b.length?['t2a','t2b']:['t2a'];if(r.t2b.length)return r.t3.length?['t2b','t3']:['t2b'];if(r.t3.length)return['t3'];return[];}
-function pgChip(n,jk){var isSel=jk==='ALL'?(pgBlok.length>0&&Object.keys(pgSEL).length===pgBlok.length&&pgBlok.every(function(b){return pgSEL[b.key]===n;})):pgSEL[jk]===n;
-    var f=pgCur.filter(function(j){return pgLonggar(n,pgDSel,j);});var sx=f.length?'<span class="pg-free">✓ '+f.join(',')+'</span>':'';
-    return '<span class="pg-cand'+(isSel?' pg-selected':'')+'" onclick="pgPilih('+(jk==='ALL'?"'ALL'":"'"+jk+"'")+",'"+n+"')"+'">'+n+sx+'</span>';}
-function pgRowChips(r,jk){var ks=pgPick(r);if(!ks.length)return '<span class="pg-r-empty">—</span>';var h='';
-    ks.forEach(function(k){var lbl=pgTL[k][1];if(r.lead){lbl=k==='t1'?'T1 · '+(pgGenderGuru(pgGSel)==='putra'?'♂ Putra':'♀ Putri'):(k==='t2a'?('T2 · Leadership '+r.kelasLead.replace('Leadership ','')):lbl);}
-      var nm=r[k].map(function(n){return pgChip(n,jk);}).join(' ');h+='<div class="pg-rc-row"><span class="pg-rc-t pg-'+k+'">'+lbl+'</span><span class="pg-rc-names">'+nm+'</span></div>';});return h;}
-function pgPilih(jk,n){if(jk==='ALL'){pgBlok.forEach(function(b){if(!b.jams.every(function(j){return pgLonggar(n,pgDSel,j);}))return;if(pgIsLead(b)&&pgGenderGuru(n)!==pgGenderGuru(pgGSel))return;pgSEL[b.key]=n;});}
-    else{if(pgSEL[jk]===n)delete pgSEL[jk];else pgSEL[jk]=n;}pgRBox();pgRStatus();}
+function pgChip(g,n,jk){var blkg=pgBlok[g]||[],selG=pgSEL[g]||{};
+    var isSel=jk==='ALL'?(blkg.length>0&&blkg.every(function(b){return selG[b.key]===n;})):selG[jk]===n;
+    var f=(pgJamLst[g]||[]).filter(function(j){return pgLonggar(n,pgDSel,j);});var sx=f.length?'<span class="pg-free">✓ '+f.join(',')+'</span>':'';
+    return '<span class="pg-cand'+(isSel?' pg-selected':'')+'" onclick="pgPilih(\''+g+'\','+(jk==='ALL'?"'ALL'":"'"+jk+"'")+",'"+n+"')"+'">'+n+sx+'</span>';}
+function pgRowChips(g,r,jk){var ks=pgPick(r);if(!ks.length)return '<span class="pg-r-empty">—</span>';var h='';
+    ks.forEach(function(k){var lbl=pgTL[k][1];if(r.lead){lbl=k==='t1'?'T1 · '+(pgGenderGuru(g)==='putra'?'♂ Putra':'♀ Putri'):(k==='t2a'?('T2 · Leadership '+r.kelasLead.replace('Leadership ','')):lbl);}
+      var nm=r[k].map(function(n){return pgChip(g,n,jk);}).join(' ');h+='<div class="pg-rc-row"><span class="pg-rc-t pg-'+k+'">'+lbl+'</span><span class="pg-rc-names">'+nm+'</span></div>';});return h;}
+function pgPilih(g,jk,n){if(!pgSEL[g])pgSEL[g]={};
+    if(jk==='ALL'){(pgBlok[g]||[]).forEach(function(b){if(!pgLonggarPenuhR(n,pgDSel,b.jams,g,null))return;if(pgIsLead(b)&&pgGenderGuru(n)!==pgGenderGuru(g))return;pgSEL[g][b.key]=n;});}
+    else{if(pgSEL[g][jk]===n)delete pgSEL[g][jk];else pgSEL[g][jk]=n;}pgRAll();}
 var pgHON=/\b(mr|mrs|ms|ustadzah|ustadz|ustadza|ustad|ust|us|pak|bu|bapak|ibu|kak|dr|hj|hajjah|haji)\b/g;
 function pgNorm(s){return String(s).toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(pgHON,' ').replace(/\s+/g,' ').trim();}
 function pgLev(a,b){var m=a.length,n=b.length;if(!m)return n;if(!n)return m;var p=new Array(n+1),c=new Array(n+1),i,j;
@@ -1404,41 +1429,75 @@ function pgClearChips(){document.getElementById('pgChips').innerHTML='';}
 function pgSetStatus(){document.getElementById('pgStatus').style.display='flex';}
 function pgHideStatus(){document.getElementById('pgStatus').style.display='none';}
 function pgHideStrip(){document.getElementById('pgGuruStrip').style.display='none';}
-function pgRenderStrip(active){var st=document.getElementById('pgGuruStrip');st.innerHTML='';order.forEach(function(n){
-  var b=document.createElement('button');b.className='pg-gstrip-btn'+(n===active?' pg-active':'');
+function pgRenderStrip(){var st=document.getElementById('pgGuruStrip');st.innerHTML='';order.forEach(function(n){
+  var b=document.createElement('button');b.className='pg-gstrip-btn'+(pgAbsenPick[n]?' pg-active':'');
   b.innerHTML='<span class="pg-gt" style="background:'+pgGStrip(n)+'"></span>'+n;
   b.addEventListener('click',function(){pgPilihGuruManual(n);});st.appendChild(b);});
-  st.style.display='flex';if(active)setTimeout(function(){var a=st.querySelector('.pg-active');if(a)a.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});},50);}
+  st.style.display='flex';}
 function pgShowGuruGrid(){pgClearChips();var c1=pgRContoh(),c2=pgRContoh(c1);
-  pgTypeMsg('Guru siapa yang berhalangan? 🤔 Ketik namanya (mis. <b>"'+c1+'"</b>, <b>"'+c2+'"</b>) — ada saran otomatis, atau geser daftar guru di bawah lalu pilih:',function(){pgRenderStrip();});}
-function pgPilihGuruManual(n){pgGSel=n;pgAddUser(n);pgTyping(function(){pgKonfirmasi();pgShowQuiz();});}
+  pgTypeMsg('Guru siapa saja yang berhalangan? 🤔 Bisa pilih lebih dari satu. Ketik namanya (mis. <b>"'+c1+'"</b>, <b>"'+c2+'"</b>) — ada saran otomatis, atau geser daftar guru di bawah lalu pilih, lalu ketuk <b>Lanjut</b>:',function(){pgRenderStrip();});}
+function pgPilihGuruManual(n){if(pgAbsenPick[n])delete pgAbsenPick[n];else pgAbsenPick[n]=true;
+  pgRenderStrip();var cnt=Object.keys(pgAbsenPick).length;pgSetChips(cnt?['Lanjut ('+cnt+')']:[]);}
 function pgTypeMsg(t,cb){pgTyping(function(){pgAddBot(t);cb();});}
-function pgKonfirmasi(){var t=teachers[pgGSel];pgAddBot('Baik, <b>'+pgGSel+'</b> ('+(t.fullname||'')+') · '+t.stats.subjects.join(', ')+' · '+t.stats.total_lessons+' jam/minggu.');}
-function pgShowQuiz(){var h='<div class="pg-quiz-box">';days.forEach(function(d,i){var n=pgJamMengajar(pgGSel,d).length;
-  h+='<button class="pg-quiz-item" onclick="pgPilihHari('+i+')"><span class="pg-q-letter">'+pgHURRUF[i]+'</span><span class="pg-q-name">'+dayId[d]+'</span><span class="pg-q-info">'+(n?n+' jam mengajar':'libur')+'</span></button>';});
-  h+='</div>';pgTyping(function(){pgAddBot('<b>'+pgGSel+'</b> berhalangan hari apa? (pilih salah satu)</b>'+h);});}
-function pgPilihHari(idx){pgDSel=days[idx];pgAddUser(dayId[pgDSel]);pgJamLst=pgJamMengajar(pgGSel,pgDSel);pgCur=pgJamLst;pgBlok=pgBuildBlok(pgGSel,pgDSel,pgJamLst);pgSEL={};pgTyping(function(){pgRHasil();});}
-function pgRBox(){if(!pgHasilEl||!pgGSel||!pgDSel)return;var g=teachers[pgGSel],lead=pgBlok.some(pgIsLead),h='';
-  var kb=pgKbmHari(pgDSel);h+='<div class="pg-summary"><b>'+pgGSel+'</b> — '+dayId[pgDSel]+' · '+pgJamLst.length+' jam'+(kb.length?' · KBM: <b>'+kb.join(', ')+'</b>':'')+'</div>';
-  var pf=pgRecPenuh(pgGSel,pgDSel,pgJamLst);if(lead){var gg=pgGenderGuru(pgGSel);pf.t1=pf.t1.filter(function(n){return pgGenderGuru(n)===gg;});pf.t2a=pf.t2a.filter(function(n){return pgGenderGuru(n)===gg;});pf.t2b=pf.t2b.filter(function(n){return pgGenderGuru(n)===gg;});pf.t3=pf.t3.filter(function(n){return pgGenderGuru(n)===gg;});}
-  if(pf.t1.length+pf.t2a.length+pf.t2b.length+pf.t3.length){h+='<div class="pg-card pg-primary"><div class="pg-jam-head"><span class="pg-star">★</span> Satu guru utk semua jam — klik utk pilih</div>'+pgRowChips(pf,'ALL')+'</div>';}
+function pgCommitAbsen(){var newList=Object.keys(pgAbsenPick);if(!newList.length)return;
+  pgAbsenList.forEach(function(g){if(pgAbsenPick[g])return;delete pgBlok[g];delete pgJamLst[g];delete pgSEL[g];});
+  pgAbsenList=newList;pgHideStrip();pgClearChips();var namaList=pgAbsenList.join(', ');
+  if(pgDSel){pgAbsenList.forEach(function(g){if(pgBlok[g])return;pgJamLst[g]=pgJamMengajar(g,pgDSel);pgBlok[g]=pgBuildBlok(g,pgDSel,pgJamLst[g]);pgSEL[g]={};});
+    pgTyping(function(){pgAddBot('Baik, guru berhalangan: <b>'+namaList+'</b>.');pgRHasil();});}
+  else{pgTyping(function(){pgAddBot('Baik, <b>'+namaList+'</b> berhalangan. Untuk hari apa &mdash; satu hari yang sama buat semuanya?');pgShowQuiz();});}}
+function pgShowQuiz(){var h='<div class="pg-quiz-box">';days.forEach(function(d,i){var n;
+    if(pgAbsenList.length>1){var ada=pgAbsenList.filter(function(g){return pgJamMengajar(g,d).length>0;}).length;n=ada+'/'+pgAbsenList.length+' guru mengajar';}
+    else{var jl=pgJamMengajar(pgAbsenList[0],d).length;n=jl?jl+' jam mengajar':'libur';}
+  h+='<button class="pg-quiz-item" onclick="pgPilihHari('+i+')"><span class="pg-q-letter">'+pgHURRUF[i]+'</span><span class="pg-q-name">'+dayId[d]+'</span><span class="pg-q-info">'+n+'</span></button>';});
+  h+='</div>';var judul=pgAbsenList.length>1?(pgAbsenList.join(', ')+' berhalangan hari apa'):('<b>'+pgAbsenList[0]+'</b> berhalangan hari apa');
+  pgTyping(function(){pgAddBot(judul+'? (satu hari yang sama utk semua, pilih salah satu)'+h);});}
+function pgPilihHari(idx){pgDSel=days[idx];pgAddUser(dayId[pgDSel]);pgBlok={};pgJamLst={};pgSEL={};
+  pgAbsenList.forEach(function(g){pgJamLst[g]=pgJamMengajar(g,pgDSel);pgBlok[g]=pgBuildBlok(g,pgDSel,pgJamLst[g]);pgSEL[g]={};});
+  pgTyping(function(){pgRHasil();});}
+function pgRTeacher(g){var t=teachers[g],blok=pgBlok[g]||[],lead=blok.some(pgIsLead),h='';
+  var kb=pgKbmHari(pgDSel).filter(function(n){return pgAbsenList.indexOf(n)===-1;});
+  h+='<div class="pg-gsec"><div class="pg-gsec-head"><b>'+g+'</b> — '+dayId[pgDSel]+' · '+(pgJamLst[g]||[]).length+' jam'+(kb.length?' · KBM: <b>'+kb.join(', ')+'</b>':'')+'</div>';
+  var pf=pgRecPenuh(g,pgDSel,pgJamLst[g],g,null);
+  if(lead){var gg=pgGenderGuru(g);pf.t1=pf.t1.filter(function(n){return pgGenderGuru(n)===gg;});pf.t2a=pf.t2a.filter(function(n){return pgGenderGuru(n)===gg;});pf.t2b=pf.t2b.filter(function(n){return pgGenderGuru(n)===gg;});pf.t3=pf.t3.filter(function(n){return pgGenderGuru(n)===gg;});}
+  if(blok.length>1&&(pf.t1.length+pf.t2a.length+pf.t2b.length+pf.t3.length)){h+='<div class="pg-card pg-primary"><div class="pg-jam-head"><span class="pg-star">★</span> Satu guru utk semua jam '+g+' — klik utk pilih</div>'+pgRowChips(g,pf,'ALL')+'</div>';}
   h+='<div class="pg-card"><table class="pg-r-table"><thead><tr><th>Jam</th><th>Kelas · Mapel</th><th>Rekomendasi Guru Pengganti</th></tr></thead><tbody>';
-  pgBlok.forEach(function(b){var rr=pgRecBlok(pgGSel,pgDSel,b.jams,pgIsLead(b)?b.kelas:null);
-    h+='<tr><td class="pg-c-jam">'+b.key+'<div class="pg-c-time">'+pgWaktuBlok(g,pgDSel,b)+'</div></td><td class="pg-c-km"><span class="pg-m">'+b.kelas+'</span> · '+(b.subjek.join(', ')||'\u2014')+'</td><td>'+pgRowChips(rr,b.key)+'</td></tr>';});
-  h+='</tbody></table><div class="pg-legenda">✓ hijau = jam longgar · klik nama utk pilih/ganti'+(lead?' · Leadership: hanya guru sejenis':'')+'</div></div>';
-  pgHasilEl.innerHTML=h;pgScrollB();}
-function pgRStatus(){if(!pgGSel||!pgDSel){pgHideStatus();return;}var tr=pgBlok.filter(function(b){return pgSEL[b.key];}).length,jml=pgBlok.length,pf=tr===jml;
-  var s=document.getElementById('pgStatus');pgSetStatus();s.innerHTML='<span class="pg-s-text">Pilih pengganti: <b>'+tr+'</b>/'+jml+' blok</span><button class="pg-btn-ok" onclick="pgOk()" '+(pf?'':'disabled')+'>OK · Rekap</button>';}
+  blok.forEach(function(b){var rr=pgRecBlok(g,pgDSel,b.jams,pgIsLead(b)?b.kelas:null,g,b.key);
+    h+='<tr><td class="pg-c-jam">'+b.key+'<div class="pg-c-time">'+pgWaktuBlok(t,pgDSel,b)+'</div></td><td class="pg-c-km"><span class="pg-m">'+b.kelas+'</span> · '+(b.subjek.join(', ')||'—')+'</td><td>'+pgRowChips(g,rr,b.key)+'</td></tr>';});
+  h+='</tbody></table><div class="pg-legenda">✓ hijau = jam longgar · klik nama utk pilih/ganti'+(lead?' · Leadership: hanya guru sejenis':'')+'</div></div></div>';return h;}
+function pgRAll(){if(!pgHasilEl)return;pgHasilEl.innerHTML=pgAbsenList.map(pgRTeacher).join('');pgScrollB();pgRStatus();}
+function pgRStatus(){if(!pgAbsenList.length||!pgDSel){pgHideStatus();return;}var tr=0,jml=0;
+  pgAbsenList.forEach(function(g){(pgBlok[g]||[]).forEach(function(b){jml++;if(pgSEL[g]&&pgSEL[g][b.key])tr++;});});
+  var pf=jml>0&&tr===jml;var s=document.getElementById('pgStatus');pgSetStatus();
+  s.innerHTML='<span class="pg-s-text">Pilih pengganti: <b>'+tr+'</b>/'+jml+' blok'+(pgAbsenList.length>1?' · '+pgAbsenList.length+' guru':'')+'</span><button class="pg-btn-ok" onclick="pgOk()" '+(pf?'':'disabled')+'>OK · Rekap</button>';}
 function pgRHasil(){if(pgHasilEl){var o=pgHasilEl.closest('.pg-msg');if(o&&o.parentNode)o.parentNode.removeChild(o);pgHasilEl=null;}
   var box=document.createElement('div');box.className='pg-msg pg-bot';
   box.innerHTML='<div class="pg-bot-name">Asisten Pengganti <span class="pg-tag">klik guru di bawah</span></div><div id="pgHasil"></div><span class="pg-time">'+pgJstr()+'</span>';
-  pgChatEl.appendChild(box);pgHasilEl=document.getElementById('pgHasil');pgRBox();pgRStatus();pgSetChips(['Ganti guru','Ganti hari','Mulai ulang']);pgScrollB();}
-function pgTeks(){var g=teachers[pgGSel],l=['JADWAL GURU PENGGANTI',pgGSel+' (berhalangan) · '+dayId[pgDSel]+', menggantikan jam:',''];
-  pgBlok.forEach(function(b){if(!pgSEL[b.key])return;l.push('• Jam '+b.key+' ('+pgWaktuBlok(g,pgDSel,b)+') '+b.kelas+' · '+(b.subjek.join(', ')||'-')+' → '+pgSEL[b.key]);});return l.join('\n');}
-function pgOk(){if(pgBlok.some(function(b){return !pgSEL[b.key];}))return;pgHideStatus();pgClearChips();pgHideStrip();
-  var g=teachers[pgGSel],h='<div class="pg-card pg-primary"><div class="pg-jam-head"><span class="pg-star">★</span> Rekap Pengganti — '+pgGSel+' · '+dayId[pgDSel]+'</div><table class="pg-r-table"><thead><tr><th>Jam</th><th>Kelas · Mapel</th><th>Guru Pengganti</th></tr></thead><tbody>';
-  pgBlok.forEach(function(b){h+='<tr><td class="pg-c-jam">'+b.key+'<div class="pg-c-time">'+pgWaktuBlok(g,pgDSel,b)+'</div></td><td class="pg-c-km"><span class="pg-m">'+b.kelas+'</span> · '+(b.subjek.join(', ')||'\u2014')+'</td><td class="pg-chosen-sel">✔ '+pgSEL[b.key]+'</td></tr>';});
-  h+='</tbody></table></div><div class="pg-sharebar"><button class="pg-btn pg-btn-primary" onclick="pgSalin()">📋 Salin Teks</button></div>';
+  pgChatEl.appendChild(box);pgHasilEl=document.getElementById('pgHasil');pgRAll();pgSetChips(['Ganti guru','Ganti hari','Mulai ulang']);pgScrollB();}
+function pgAggBySub(){var agg={};pgAbsenList.forEach(function(g){var t=teachers[g];
+    (pgBlok[g]||[]).forEach(function(b){var sub=pgSEL[g]&&pgSEL[g][b.key];if(!sub)return;
+      (agg[sub]=agg[sub]||[]).push({g:g,key:b.key,waktu:pgWaktuBlok(t,pgDSel,b),kelas:b.kelas,subjek:b.subjek});});});return agg;}
+function pgAggCardHtml(){var agg=pgAggBySub(),names=Object.keys(agg).sort();if(!names.length)return '';
+  var h='<div class="pg-card pg-primary"><div class="pg-jam-head"><span class="pg-star">★</span> Rekap per Guru Pengganti</div>';
+  names.forEach(function(sub){h+='<div class="pg-agg-sub"><div class="pg-agg-name">'+sub+'<span class="pg-agg-count"> ('+agg[sub].length+' blok)</span></div>';
+    agg[sub].forEach(function(it){h+='<div class="pg-agg-item">Jam '+it.key+' ('+it.waktu+') <b>'+it.kelas+'</b> · '+(it.subjek.join(', ')||'-')+' — gantiin '+it.g+'</div>';});
+    h+='</div>';});return h+'</div>';}
+function pgTeks(){var l=['JADWAL GURU PENGGANTI',dayId[pgDSel],''];
+  pgAbsenList.forEach(function(g){var t=teachers[g];l.push(g+' (berhalangan), menggantikan jam:');
+    (pgBlok[g]||[]).forEach(function(b){if(!(pgSEL[g]&&pgSEL[g][b.key]))return;l.push('• Jam '+b.key+' ('+pgWaktuBlok(t,pgDSel,b)+') '+b.kelas+' · '+(b.subjek.join(', ')||'-')+' → '+pgSEL[g][b.key]);});
+    l.push('');});
+  var agg=pgAggBySub(),names=Object.keys(agg).sort();
+  if(names.length){l.push('=== REKAP PER GURU PENGGANTI ===');
+    names.forEach(function(sub){l.push('• '+sub+' meng-cover '+agg[sub].length+' blok:');
+      agg[sub].forEach(function(it){l.push('   - Jam '+it.key+' ('+it.waktu+') '+it.kelas+' · '+(it.subjek.join(', ')||'-')+' (gantiin '+it.g+')');});});}
+  return l.join('\n');}
+function pgOk(){var belum=pgAbsenList.some(function(g){return (pgBlok[g]||[]).some(function(b){return !(pgSEL[g]&&pgSEL[g][b.key]);});});if(belum)return;
+  pgHideStatus();pgClearChips();pgHideStrip();var h='';
+  pgAbsenList.forEach(function(g){var t=teachers[g];
+    h+='<div class="pg-card pg-primary"><div class="pg-jam-head"><span class="pg-star">★</span> Rekap Pengganti — '+g+' · '+dayId[pgDSel]+'</div><table class="pg-r-table"><thead><tr><th>Jam</th><th>Kelas · Mapel</th><th>Guru Pengganti</th></tr></thead><tbody>';
+    (pgBlok[g]||[]).forEach(function(b){h+='<tr><td class="pg-c-jam">'+b.key+'<div class="pg-c-time">'+pgWaktuBlok(t,pgDSel,b)+'</div></td><td class="pg-c-km"><span class="pg-m">'+b.kelas+'</span> · '+(b.subjek.join(', ')||'—')+'</td><td class="pg-chosen-sel">✔ '+pgSEL[g][b.key]+'</td></tr>';});
+    h+='</tbody></table></div>';});
+  h+=pgAggCardHtml();
+  h+='<div class="pg-sharebar"><button class="pg-btn pg-btn-primary" onclick="pgSalin()">📋 Salin Teks</button></div>';
   pgAddBot(h);pgSetChips(['Cari lagi','Ganti guru','Mulai ulang']);}
 function pgSalin(){var txt=pgTeks(),ok=false;
   try{var ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;top:0;left:0;width:10px;height:10px;opacity:0;';document.body.appendChild(ta);ta.focus();ta.select();ta.setSelectionRange(0,txt.length);ok=document.execCommand('copy');document.body.removeChild(ta);}catch(e){ok=false;}
@@ -1456,20 +1515,27 @@ function pgAC(q){if(!q){pgACEl.style.display='none';return;}var r=pgResGuru(q).s
 function pgPickAC(n){pgACEl.style.display='none';document.getElementById('pgInput').value=n;pgHandle(n);}
 function pgHandle(t){t=t.trim();if(!t)return;pgAddUser(t);document.getElementById('pgInput').value='';
   if(t==='Mulai ulang'||t==='Cari lagi'){pgReset();pgShowGuruGrid();return;}
-  if(t==='Ganti guru'){pgGSel=null;pgDSel=null;pgHideStatus();pgClearChips();pgShowGuruGrid();return;}
-  if(t==='Ganti hari'&&pgGSel&&pgDSel){pgDSel=null;pgTyping(function(){pgShowQuiz();});return;}
+  if(/^Lanjut/.test(t)&&Object.keys(pgAbsenPick).length){pgCommitAbsen();return;}
+  if(t==='Ganti guru'){pgAbsenPick={};pgAbsenList.forEach(function(g){pgAbsenPick[g]=true;});pgHideStatus();pgClearChips();
+    var cnt=pgAbsenList.length;pgTyping(function(){pgAddBot('Ubah daftar guru berhalangan (yang lama sudah tercentang), lalu ketuk Lanjut lagi:');pgRenderStrip();pgSetChips(cnt?['Lanjut ('+cnt+')']:[]);});return;}
+  if(t==='Ganti hari'&&pgAbsenList.length&&pgDSel){pgDSel=null;pgBlok={};pgJamLst={};pgSEL={};pgTyping(function(){pgShowQuiz();});return;}
   if(t==='Batal'){pgSetChips(['Cari lagi','Mulai ulang']);return;}
-  if(pgGSel&&pgDSel&&pgHasilEl){pgAddBot('Sedang melihat hasil. Ketik <b>Mulai ulang</b> utk cari lagi, atau klik nama guru di tabel utk pilih/ubah.');pgSetChips(['Ganti guru','Ganti hari','Mulai ulang']);return;}
+  if(pgAbsenList.length&&pgDSel&&pgHasilEl){pgAddBot('Sedang melihat hasil. Ketik <b>Mulai ulang</b> utk cari lagi, atau klik nama guru di tabel utk pilih/ubah.');pgSetChips(['Ganti guru','Ganti hari','Mulai ulang']);return;}
   var g=pgAmbil(t),h=pgParseHari(t);
   if(g){if(g.score<75){pgTyping(function(){pgAddBot('Maksud Anda <b>'+g.nick+'</b> ('+(teachers[g.nick].fullname||'')+')? Ketik <b>iya</b> utk lanjut.');});pgCand=null;setTimeout(function(){pgCand=g;pgSetChips(['Iya, benar','Batal']);},0);return;}
-    pgGSel=g.nick;if(h){pgTyping(function(){pgKonfirmasi();pgPilihHari(days.indexOf(h));});}else{pgTyping(function(){pgKonfirmasi();pgShowQuiz();});}return;}
-  if((t==='iya'||t==='ya'||t==='Iya, benar')&&pgCand){var gg=pgCand;pgCand=null;pgGSel=gg.nick;pgTyping(function(){pgKonfirmasi();pgShowQuiz();});return;}
+    pgAbsenPick[g.nick]=true;
+    if(h&&Object.keys(pgAbsenPick).length===1){pgAbsenList=[g.nick];pgAbsenPick={};pgDSel=h;
+      pgJamLst[g.nick]=pgJamMengajar(g.nick,pgDSel);pgBlok[g.nick]=pgBuildBlok(g.nick,pgDSel,pgJamLst[g.nick]);pgSEL[g.nick]={};
+      pgTyping(function(){pgAddBot('Baik, <b>'+g.nick+'</b> berhalangan hari '+dayId[pgDSel]+'.');pgRHasil();});return;}
+    pgRenderStrip();var cnt=Object.keys(pgAbsenPick).length;
+    pgTyping(function(){pgAddBot('Dicatat: <b>'+g.nick+'</b>. Tambah guru lain, atau ketik <b>Lanjut</b> kalau sudah cukup.');pgSetChips(['Lanjut ('+cnt+')']);});return;}
+  if((t==='iya'||t==='ya'||t==='Iya, benar')&&pgCand){var gg=pgCand;pgCand=null;pgAbsenPick[gg.nick]=true;pgRenderStrip();var cnt2=Object.keys(pgAbsenPick).length;
+    pgTyping(function(){pgAddBot('Dicatat: <b>'+gg.nick+'</b>. Tambah guru lain, atau ketik <b>Lanjut</b> kalau sudah cukup.');pgSetChips(['Lanjut ('+cnt2+')']);});return;}
   if((t==='batal'||t==='Batal')&&pgCand){pgCand=null;pgTyping(function(){pgAddBot('Baik, silakan pilih guru.');});pgShowGuruGrid();return;}
-  if(h&&pgGSel&&!pgDSel){pgTyping(function(){pgPilihHari(days.indexOf(h));});return;}
-  if(h&&!pgGSel){pgTyping(function(){pgAddBot('Hari '+dayId[h]+' ya. Sekarang pilih guru yang berhalangan:');});pgShowGuruGrid();return;}
+  if(h&&!pgAbsenList.length&&!Object.keys(pgAbsenPick).length){pgTyping(function(){pgAddBot('Hari '+dayId[h]+' ya. Sekarang pilih guru yang berhalangan:');});pgShowGuruGrid();return;}
   pgTyping(function(){pgAddBot('Maaf belum jelas. Ketik nama guru (mis. <b>"'+pgRContoh()+'"</b>) atau pilih dari tombol saran:');});
-  if(!pgGSel)pgShowGuruGrid();else pgSetChips(['Ganti guru','Mulai ulang']);}
-function pgReset(){pgGSel=null;pgDSel=null;pgSEL={};pgHideStatus();pgClearChips();pgHideStrip();pgHasilEl=null;pgChatEl.innerHTML='';}
+  if(!pgAbsenList.length&&!Object.keys(pgAbsenPick).length)pgShowGuruGrid();else pgSetChips(Object.keys(pgAbsenPick).length?['Lanjut ('+Object.keys(pgAbsenPick).length+')']:['Ganti guru','Mulai ulang']);}
+function pgReset(){pgAbsenPick={};pgAbsenList=[];pgDSel=null;pgBlok={};pgJamLst={};pgSEL={};pgHideStatus();pgClearChips();pgHideStrip();pgHasilEl=null;pgChatEl.innerHTML='';}
 function initPengganti(){if(pgInitDone)return;pgInitDone=true;
   pgChatEl=document.getElementById('pgChat');pgACEl=document.getElementById('pgAC');
   document.getElementById('pgSend').addEventListener('click',function(){pgACEl.style.display='none';pgHandle(document.getElementById('pgInput').value);});
@@ -1479,7 +1545,7 @@ function initPengganti(){if(pgInitDone)return;pgInitDone=true;
   document.addEventListener('click',function(e){if(pgACEl.contains&&!pgACEl.contains(e.target)&&e.target.id!=='pgInput')pgACEl.style.display='none';});
   pgReset();
   var c1=pgRContoh(),c2=pgRContoh(c1);
-  pgTyping(function(){pgAddBot('Halo! <b>Cari Guru Pengganti</b> 👋<br>Guru siapa yang berhalangan? Ketik namanya (mis. <b>"'+c1+'"</b>, <b>"'+c2+'"</b>) — ada saran otomatis, atau geser daftar guru di bawah lalu pilih:');pgRenderStrip();});}
+  pgTyping(function(){pgAddBot('Halo! <b>Cari Guru Pengganti</b> 👋<br>Guru siapa yang berhalangan? Bisa pilih lebih dari satu. Ketik namanya (mis. <b>"'+c1+'"</b>, <b>"'+c2+'"</b>) — ada saran otomatis, atau geser daftar guru di bawah lalu pilih:');pgRenderStrip();});}
 // ===== INIT =====
 renderJadwal();
 renderKelas();
