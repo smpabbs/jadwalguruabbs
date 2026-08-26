@@ -16,10 +16,15 @@ body {
 /* ===== LANDING ===== */
 .landing {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 24px; padding: 40px 24px;
+  gap: 24px; padding: 40px 24px; overflow-y: auto;
 }
 .landing h1 { font-family: 'Georgia', serif; font-weight: 600; font-size: 26px; color: #8f6a35; text-align: center; }
 .landing .sub { font-size: 12px; color: #7d6a58; text-align: center; margin-top: -16px; }
+/* wraps the 5 menu-cards separately from h1/sub so desktop can switch this one
+   element to a CSS grid (2-3 cols) without touching the rest of the landing layout;
+   mobile/tablet (<1024px, incl. the Capacitor APK) keep the original single-column
+   flex stack untouched. */
+.landing .menu-grid { display: flex; flex-direction: column; align-items: center; gap: 24px; width: 100%; margin-top: 16px; }
 .landing .menu-card {
   width: 100%; max-width: 320px; padding: 20px; border-radius: 16px;
   background: #ffffff; border: 1px solid #e3d5b8; cursor: pointer;
@@ -232,7 +237,7 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
 .kelas-summary { flex: 0 0 auto; padding: 10px 18px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 16px; }
 .mapel-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 5px 10px; background: #ffffff; border: 1px solid #e3d5b8; border-radius: 8px; overflow: hidden; }
 .mapel-row .mapel-label { font-size: 11px; font-weight: 600; color: #8f671a; text-transform: uppercase; letter-spacing: .04em; flex: 0 0 auto; }
-.mapel-row .mapel-guru { font-size: 12px; color: #3a2f22; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
+.mapel-row .mapel-guru { font-size: 12px; color: #3a2f22; white-space: normal; text-align: right; flex: 1 1 auto; min-width: 0; }
 
 @media (min-width: 768px) {
   .page-wrap { padding: 0 24px; }
@@ -260,9 +265,18 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
    never renders this wide) are completely unaffected. */
 @media (min-width: 1024px) {
   body { background: #e8dcc0; }
-  .page-wrap { max-width: 1040px; margin: 0 auto; padding: 0 32px; background: #faf6ee; box-shadow: 0 0 0 1px #ece1cc; }
+  .page-wrap { max-width: min(1400px, 94vw); margin: 0 auto; padding: 0 32px; background: #faf6ee; box-shadow: 0 0 0 1px #ece1cc; }
+  /* day columns grow to fill the extra width unlocked by the fluid .page-wrap above -- basis
+     stays 145px so it never shrinks below the tablet breakpoint's size. Jam-number column stays
+     fixed since the 768px block's :first-child rule (flex:0 0 46px) is more specific and wins. */
+  .t-head > div, .t-row > div { flex: 1 1 145px; }
 
   .landing h1 { font-size: 32px; }
+  /* grid instead of a single tall column so all 5 menu cards stay visible without
+     scrolling on typical desktop window heights; auto-fit collapses to fewer columns
+     as the window narrows, and .landing's overflow-y:auto above covers any window
+     still too short even at 1 column. */
+  .landing .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; max-width: 780px; margin-top: 20px; }
   .landing .menu-card { max-width: 380px; padding: 24px; }
   .landing .menu-card .info h3 { font-size: 18px; }
   .landing .menu-card .info p { font-size: 13px; }
@@ -305,7 +319,7 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
   .piket-table th, .piket-table td { font-size: 13px; padding: 12px 14px; }
   .piket-table th { font-size: 11px; }
   .kelas-bar .kelas-name { font-size: 26px; }
-  .kelas-summary { grid-template-columns: repeat(5, 1fr); }
+  .kelas-summary { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
   .mapel-row .mapel-label { font-size: 12px; }
   .mapel-row .mapel-guru { font-size: 13px; }
   .sop-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -427,26 +441,27 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
   <div class="landing" id="landing">
     <h1>Jadwal Mengajar Guru</h1>
     <div class="sub">SMP ABBS · 2026/2027</div>
-    <div class="menu-card" onclick="goTo('jadwal')" style="margin-top:16px;">
-      <div class="icon green">📋</div>
-      <div class="info"><h3>Jadwal Guru</h3><p>Lihat jadwal per-guru, scroll, cari</p></div>
-    </div>
-    <div class="menu-card" onclick="goTo('longgar')">
-      <div class="icon gold">🔍</div>
-      <div class="info"><h3>Cari Guru Longgar</h3><p>Cari guru kosong di hari & jam tertentu</p></div>
-    </div>
-    <div class="menu-card" onclick="goTo('piket')">
-      <div class="icon blue">🧹</div>
-      <div class="info"><h3>Jadwal Piket</h3><p>Rekap piket semua guru per hari</p></div>
-    </div>
-
-    <div class="menu-card" onclick="goTo('pengganti')">
-      <div class="icon teal">🔄</div>
-      <div class="info"><h3>Cari Guru Pengganti</h3><p>Pilih guru & hari → rekomendasi pengganti</p></div>
-    </div>
-    <div class="menu-card" onclick="goTo('kelas')">
-      <div class="icon rose">🏫</div>
-      <div class="info"><h3>Jadwal per Kelas</h3><p>Jadwal & guru pengajar tiap kelas</p></div>
+    <div class="menu-grid">
+      <div class="menu-card" onclick="goTo('jadwal')">
+        <div class="icon green">📋</div>
+        <div class="info"><h3>Jadwal Guru</h3><p>Lihat jadwal per-guru, scroll, cari</p></div>
+      </div>
+      <div class="menu-card" onclick="goTo('longgar')">
+        <div class="icon gold">🔍</div>
+        <div class="info"><h3>Cari Guru Longgar</h3><p>Cari guru kosong di hari & jam tertentu</p></div>
+      </div>
+      <div class="menu-card" onclick="goTo('piket')">
+        <div class="icon blue">🧹</div>
+        <div class="info"><h3>Jadwal Piket</h3><p>Rekap piket semua guru per hari</p></div>
+      </div>
+      <div class="menu-card" onclick="goTo('pengganti')">
+        <div class="icon teal">🔄</div>
+        <div class="info"><h3>Cari Guru Pengganti</h3><p>Pilih guru & hari → rekomendasi pengganti</p></div>
+      </div>
+      <div class="menu-card" onclick="goTo('kelas')">
+        <div class="icon rose">🏫</div>
+        <div class="info"><h3>Jadwal per Kelas</h3><p>Jadwal & guru pengajar tiap kelas</p></div>
+      </div>
     </div>
   </div>
 
@@ -1481,15 +1496,22 @@ function pgAggCardHtml(){var agg=pgAggBySub(),names=Object.keys(agg).sort();if(!
   names.forEach(function(sub){h+='<div class="pg-agg-sub"><div class="pg-agg-name">'+sub+'<span class="pg-agg-count"> ('+agg[sub].length+' blok)</span></div>';
     agg[sub].forEach(function(it){h+='<div class="pg-agg-item">Jam '+it.key+' ('+it.waktu+') <b>'+it.kelas+'</b> · '+(it.subjek.join(', ')||'-')+' — gantiin '+it.g+'</div>';});
     h+='</div>';});return h+'</div>';}
-function pgTeks(){var l=['JADWAL GURU PENGGANTI',dayId[pgDSel],''];
-  pgAbsenList.forEach(function(g){var t=teachers[g];l.push(g+' (berhalangan), menggantikan jam:');
-    (pgBlok[g]||[]).forEach(function(b){if(!(pgSEL[g]&&pgSEL[g][b.key]))return;l.push('• Jam '+b.key+' ('+pgWaktuBlok(t,pgDSel,b)+') '+b.kelas+' · '+(b.subjek.join(', ')||'-')+' → '+pgSEL[g][b.key]);});
+function pgTeks(){
+  var l=["Assalamu'alaykum,",
+    'mohon bantuan temen2 untuk menggantikan beberapa guru yang berhalangan hari '+dayId[pgDSel]+' ini nggih,',
+    'SOP seperti biasa, guru yg berhalangan silakan komunikasi dg guru yg bertugas menggantikan utk aktivitas KBM/Tugas. guru yg bertugas menggantikan stand by di kelas sampai akhir jam pelajaran.',
+    ''];
+  pgAbsenList.forEach(function(g,i){var t=teachers[g];l.push((i+1)+'. '+g);
+    (pgBlok[g]||[]).forEach(function(b){if(!(pgSEL[g]&&pgSEL[g][b.key]))return;
+      l.push('- jam ke '+b.key+' ('+pgWaktuBlok(t,pgDSel,b)+') di kelas '+b.kelas+' · '+(b.subjek.join(', ')||'-')+', digantikan oleh '+pgSEL[g][b.key]);});
     l.push('');});
+  l.push('Semoga dimudahkan.');
   var agg=pgAggBySub(),names=Object.keys(agg).sort();
-  if(names.length){l.push('=== REKAP PER GURU PENGGANTI ===');
+  if(names.length){l.push('');l.push('=== REKAP PER GURU PENGGANTI ===');
     names.forEach(function(sub){l.push('• '+sub+' meng-cover '+agg[sub].length+' blok:');
       agg[sub].forEach(function(it){l.push('   - Jam '+it.key+' ('+it.waktu+') '+it.kelas+' · '+(it.subjek.join(', ')||'-')+' (gantiin '+it.g+')');});});}
-  return l.join('\n');}
+  return l.join('\n');
+}
 function pgOk(){var belum=pgAbsenList.some(function(g){return (pgBlok[g]||[]).some(function(b){return !(pgSEL[g]&&pgSEL[g][b.key]);});});if(belum)return;
   pgHideStatus();pgClearChips();pgHideStrip();var h='';
   pgAbsenList.forEach(function(g){var t=teachers[g];

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup — Menu Beranda Desktop</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+    background: #e8dcc0; color: #3a2f22; padding: 28px 24px 60px;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  .intro {
+    background: #ffffff; border: 1px solid #e3d5b8; border-radius: 14px;
+    padding: 18px 22px; margin-bottom: 22px;
+  }
+  .intro h1 { font-family: Georgia, serif; font-size: 20px; color: #8f6a35; margin: 0 0 8px; }
+  .intro p { font-size: 13px; line-height: 1.6; color: #4a3d2e; margin: 0 0 6px; }
+  .intro .hint { font-size: 12px; color: #7d6a58; font-style: italic; }
+  .intro code { background: #faf6ee; padding: 1px 6px; border-radius: 4px; border: 1px solid #e3d5b8; font-size: 11px; }
+
+  .compare { display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-start; }
+  .col { flex: 1 1 460px; min-width: 340px; }
+  .col-label { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .col-label .badge {
+    font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 100px;
+  }
+  .badge.old { background: #f5dde3; color: #a54a68; }
+  .badge.new { background: #dcead9; color: #2f7a4f; }
+  .col-label .desc { font-size: 12px; color: #7d6a58; }
+
+  .frame-shell {
+    resize: both; overflow: auto; border: 2px solid #3a2f22; border-radius: 10px;
+    width: 380px; height: 460px; min-width: 260px; min-height: 260px; max-width: 100%;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18); background: #faf6ee;
+  }
+  .frame-shell iframe { width: 100%; height: 100%; border: none; display: block; }
+  .resize-note { font-size: 11px; color: #7d6a58; margin-top: 6px; }
+  .resize-note b { color: #8f671a; }
+
+  .footer-note {
+    margin-top: 26px; background: #ffffff; border: 1px solid #e3d5b8; border-radius: 14px;
+    padding: 16px 22px; font-size: 12.5px; line-height: 1.7; color: #4a3d2e;
+  }
+  .footer-note h2 { font-family: Georgia, serif; font-size: 15px; color: #8f6a35; margin: 0 0 8px; }
+  .footer-note ul { margin: 0; padding-left: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="intro">
+    <h1>Mockup: Menu Beranda — versi Desktop</h1>
+    <p>Masalah saat ini: di layar/window desktop yang tidak terlalu tinggi, kartu menu ke-5 (paling bawah) bisa
+      kepotong dan halaman <b>tidak bisa discroll</b> (di CSS asli: <code>body{overflow:hidden}</code> +
+      <code>.landing{justify-content:center}</code> tanpa fallback scroll).</p>
+    <p>Dua kotak di bawah adalah <b>simulasi window nyata</b> (pakai iframe) — bisa langsung didrag dari pojok
+      kanan-bawah tiap kotak untuk mengecil/membesarkan, persis seperti resize window browser.</p>
+    <p class="hint">Coba kecilkan tinggi kotak "Sekarang" sampai pendek → menu ke-5 hilang &amp; tidak bisa
+      dijangkau. Lakukan hal sama ke kotak "Usulan" → semua menu tetap kelihatan (tersusun grid), dan kalau tetap
+      kurang tinggi, otomatis muncul scrollbar.</p>
+  </div>
+
+  <div class="compare">
+    <div class="col">
+      <div class="col-label">
+        <span class="badge old">Sekarang</span>
+        <span class="desc">1 kolom, tidak bisa discroll</span>
+      </div>
+      <div class="frame-shell">
+        <iframe id="frameOld"></iframe>
+      </div>
+      <div class="resize-note">↘ <b>Drag pojok kanan-bawah</b> kotak ini untuk uji ukuran window berbeda.</div>
+    </div>
+
+    <div class="col">
+      <div class="col-label">
+        <span class="badge new">Usulan</span>
+        <span class="desc">grid 2–3 kolom + scroll fallback</span>
+      </div>
+      <div class="frame-shell">
+        <iframe id="frameNew"></iframe>
+      </div>
+      <div class="resize-note">↘ <b>Drag pojok kanan-bawah</b> kotak ini juga, bandingkan dengan yang kiri.</div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <h2>Yang berubah</h2>
+    <ul>
+      <li>Kartu menu Beranda disusun pakai CSS grid (<code>auto-fit, minmax(230px,1fr)</code>) — otomatis jadi
+        2 atau 3 kolom tergantung lebar window, bukan 1 kolom memanjang ke bawah.</li>
+      <li>Halaman Beranda diberi <code>overflow-y:auto</code> sebagai jaring pengaman — kalau window tetap
+        kurang tinggi meski sudah grid, tinggal scroll (tidak ada lagi menu yang benar-benar tak terjangkau).</li>
+      <li>Perubahan ini hanya diterapkan di breakpoint desktop yang sudah ada (<code>min-width:1024px</code>)
+        — tampilan di HP (APK) tidak disentuh sama sekali.</li>
+      <li>Isi &amp; gaya tiap kartu (ikon, warna, judul, deskripsi) persis sama seperti sekarang — cuma
+        penyusunannya yang berubah dari daftar 1 kolom jadi grid.</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+const menuItems = [
+  { icon: '📋', color: 'green', title: 'Jadwal Guru', desc: 'Lihat jadwal per-guru, scroll, cari' },
+  { icon: '🔍', color: 'gold', title: 'Cari Guru Longgar', desc: 'Cari guru kosong di hari & jam tertentu' },
+  { icon: '🧹', color: 'blue', title: 'Jadwal Piket', desc: 'Rekap piket semua guru per hari' },
+  { icon: '🔄', color: 'teal', title: 'Cari Guru Pengganti', desc: 'Pilih guru & hari → rekomendasi pengganti' },
+  { icon: '🏫', color: 'rose', title: 'Jadwal per Kelas', desc: 'Jadwal & guru pengajar tiap kelas' },
+];
+
+const sharedIconColors = `
+  .icon.green { background: #dcead9; }
+  .icon.gold { background: #f3e4c2; }
+  .icon.blue { background: #d9e7f2; }
+  .icon.rose { background: #f5dde3; }
+  .icon.teal { background: #dceee8; }
+`;
+
+function cardsHtml() {
+  return menuItems.map(m => `
+    <div class="menu-card">
+      <div class="icon ${m.color}">${m.icon}</div>
+      <div class="info"><h3>${m.title}</h3><p>${m.desc}</p></div>
+    </div>`).join('');
+}
+
+const oldDoc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; overflow:hidden; }
+  body { font-family:'Inter',-apple-system,'Segoe UI',sans-serif; background:#faf6ee; color:#3a2f22; }
+  .landing { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:32px 20px; }
+  .landing h1 { font-family:Georgia,serif; font-weight:600; font-size:22px; color:#8f6a35; text-align:center; }
+  .landing .sub { font-size:11px; color:#7d6a58; text-align:center; margin-top:-10px; }
+  .menu-card { width:100%; max-width:320px; padding:16px; border-radius:16px; background:#fff; border:1px solid #e3d5b8; cursor:pointer; display:flex; align-items:center; gap:14px; }
+  .icon { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+  ${sharedIconColors}
+  .info h3 { font-size:14px; font-weight:600; }
+  .info p { font-size:11px; color:#7d6a58; margin-top:2px; }
+  </style></head><body>
+  <div class="landing">
+    <h1>Jadwal Mengajar Guru</h1>
+    <div class="sub">SMP ABBS · 2026/2027</div>
+    ${cardsHtml()}
+  </div></body></html>`;
+
+const newDoc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',-apple-system,'Segoe UI',sans-serif; background:#faf6ee; color:#3a2f22; }
+  .landing { min-height:100%; display:flex; flex-direction:column; align-items:center; gap:16px; padding:32px 20px 40px; overflow-y:auto; }
+  .landing h1 { font-family:Georgia,serif; font-weight:600; font-size:22px; color:#8f6a35; text-align:center; }
+  .landing .sub { font-size:11px; color:#7d6a58; text-align:center; margin-top:-10px; }
+  .menu-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:12px; width:100%; max-width:680px; margin-top:6px; }
+  .menu-card { width:100%; padding:14px; border-radius:16px; background:#fff; border:1px solid #e3d5b8; cursor:pointer; display:flex; align-items:center; gap:12px; transition:all .12s ease; }
+  .menu-card:hover { background:#ece1cc; border-color:#8f671a; }
+  .icon { width:40px; height:40px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0; }
+  ${sharedIconColors}
+  .info h3 { font-size:13px; font-weight:600; }
+  .info p { font-size:10.5px; color:#7d6a58; margin-top:2px; line-height:1.3; }
+  </style></head><body>
+  <div class="landing">
+    <h1>Jadwal Mengajar Guru</h1>
+    <div class="sub">SMP ABBS · 2026/2027</div>
+    <div class="menu-grid">${cardsHtml()}</div>
+  </div></body></html>`;
+
+document.getElementById('frameOld').srcdoc = oldDoc;
+document.getElementById('frameNew').srcdoc = newDoc;
+</script>
+</body>
+</html>
