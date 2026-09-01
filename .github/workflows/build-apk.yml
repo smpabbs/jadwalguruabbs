@@ -3,11 +3,14 @@ name: Build APK
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*' ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,6 +58,7 @@ jobs:
         run: |
           VER=$(node -p "require('./package.json').version")
           cp android/app/build/outputs/apk/debug/app-debug.apk "JadwalGuru-v${VER}.apk"
+          echo "VER=${VER}" >> "$GITHUB_OUTPUT"
           echo "APK_FILE=JadwalGuru-v${VER}.apk" >> "$GITHUB_OUTPUT"
           echo "APK_NAME=JadwalGuru-v${VER}-APK" >> "$GITHUB_OUTPUT"
 
@@ -63,3 +67,18 @@ jobs:
         with:
           name: ${{ steps.apkname.outputs.APK_NAME }}
           path: ${{ steps.apkname.outputs.APK_FILE }}
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.apkname.outputs.VER }}
+          # only create a release when triggered by a v* tag; plain main-branch pushes
+          # just upload the artifact for later manual download
+          if: startsWith(github.ref, 'refs/tags/v')
+          name: Jadwal Guru v${{ steps.apkname.outputs.VER }}
+          body: |
+            Build APK otomatis dari commit `${{ github.sha }}`.
+
+            Install: download `JadwalGuru-v${{ steps.apkname.outputs.VER }}.apk` di bawah,
+            aktifkan "Install dari sumber tidak dikenal" di HP, lalu buka file APK.
+          files: ${{ steps.apkname.outputs.APK_FILE }}
