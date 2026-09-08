@@ -26,8 +26,14 @@ TEACHER_ORDER = [
     "Ms Nourma", "Mr Amar", "Mr Ifan", "Mr Jack", "Mr Musfiq", "Ms Leita", "Ms Qisthi", "Ms Isti",
     "Ms Putri", "Ms Syarah", "Mr Hang", "Mr Joe", "Mr Sharih", "Mr Arfian", "Mr Arvin", "Mr Pampam",
     "Ms Khoim", "Ms Yona", "Ms Zahro", "Ms Nia", "Ust Amin", "Ust Yoki", "Us Naya", "Us Usaidah",
-    "Ust Andi", "Ust Fahmi", "Ust Ida", "Ust Rizqia",
+    "Ust Andi", "Ust Fahmi", "Us Ida", "Us Rizqia",
 ]
+
+# 2026-09-08: dua guru Quran ini sebenarnya perempuan (ustadzah) — nama lengkap "Ida aryani S" &
+# "Siti Zamronah Rizqiah" — tapi kode singkat sumbernya diawali gelar maskulin "Ust", sehingga
+# gating gender di app (pgGenderGuru: /^Mr|^Ust/ => putra) salah mengklasifikasikannya. Normalisasi
+# ke "Us" di sini; TEACHER_ORDER di atas sudah memakai bentuk terkoreksi.
+NICK_FIX = {"Ust Ida": "Us Ida", "Ust Rizqia": "Us Rizqia"}
 
 # school-policy day length, confirmed with the user 2026-07-25 (the previously-generated
 # buatdafa/Jadwal_Mingguan_v9.4.xlsx had this WRONG for Friday — it assumed a normal short
@@ -129,6 +135,7 @@ contract_of = {}
 for row in wst.iter_rows(min_row=2, max_col=6, values_only=True):
     name, short, contract = row[1], row[2], row[5]
     if name:
+        short = NICK_FIX.get(short, short)  # normalisasi gelar Ust->Us (2 guru Quran putri)
         nickname[name.strip()] = short
         fullname_of[short] = name.strip()
         if contract is not None and str(contract).strip().isdigit():
@@ -141,7 +148,7 @@ for row in wsl.iter_rows(min_row=2, max_col=8, values_only=True):
     teacher, cls_field, group, subj = row[0], row[1], row[2], row[3]
     if not subj or not cls_field or teacher == "Without teacher" or not teacher:
         continue
-    names = [nickname.get(n.strip(), n.strip()) for n in str(teacher).split(",") if n.strip()]
+    names = [nickname.get(n.strip(), NICK_FIX.get(n.strip(), n.strip())) for n in str(teacher).split(",") if n.strip()]
     if subj in LEADERSHIP_LABEL:
         leadership_participants[subj].update(names)
         continue
