@@ -515,7 +515,7 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
         </div>
         <div class="filter-row">
           <label>Gender</label>
-          <select id="filterGender"><option value="">Semua</option><option value="boys">Putra</option><option value="girls">Putri</option></select>
+          <select id="filterGender"><option value="">Semua</option><option value="putra">Putra</option><option value="putri">Putri</option></select>
         </div>
         <button class="btn-cari" id="btnCari" onclick="cariLonggar()">🔍 Cari Guru Longgar</button>
       </div>
@@ -1285,6 +1285,11 @@ function updateBtnCari() {
   btn.textContent = txt;
 }
 
+// Gender guru utk filter/hasil Cari Guru Longgar: prefix nama Mr/Ust => putra, selainnya
+// (Ms, Us, dst.) => putri — aturan yg sama dgn modul Cari Guru Pengganti (pgGenderGuru),
+// BUKAN gender kelas yg diajar (dulu agregat e.gender sel bikin hampir semua guru "Campur").
+function guruGender(nick){return /^Mr|^Ust/.test(nick)?'putra':'putri';}
+
 function cariLonggar() {
   if(selectedHari.length===0) return;
   var dayIdx = selectedHari[0];
@@ -1297,10 +1302,7 @@ function cariLonggar() {
   order.forEach(function(nick){
     var t = teachers[nick];
     if(mapelFilter && t.stats.subjects.indexOf(mapelFilter)===-1) return;
-    if(genderFilter) {
-      var genders={}; Object.values(t.cells).forEach(function(a){a.forEach(function(e){genders[e.gender]=true;})});
-      var g=Object.keys(genders); if(g.length===1 && g[0]!==genderFilter) return;
-    }
+    if(genderFilter && guruGender(nick)!==genderFilter) return;
 
     var kosong = [];
     jamTerpilih.forEach(function(j){
@@ -1334,8 +1336,7 @@ function cariLonggar() {
     html += '<div class="empty-state"><div class="big">🔍</div><p>Tidak ada guru yang longgar di '+dayName+' jam '+jamTerpilih.join(',')+'</p></div>';
   } else {
     results.forEach(function(r,i){
-      var g = function(t){var gs={};Object.values(t.cells).forEach(function(a){a.forEach(function(e){gs[e.gender]=true;})});var k=Object.keys(gs);return k.length===1?k[0]:'mixed';}(teachers[r.nick]);
-      var genderTag = g==='boys'?'<span class="tag">Putra</span>':g==='girls'?'<span class="tag girls">Putri</span>':'<span class="tag" style="color:#8f671a;border-color:#e3d5b8;">Campur</span>';
+      var genderTag = guruGender(r.nick)==='putra'?'<span class="tag">Putra</span>':'<span class="tag girls">Putri</span>';
       html += '<div class="result-item" onclick="lihatJadwal(\''+r.nick+'\')">';
       html += '<div class="rank">'+(i+1)+'</div>';
       html += '<div class="info"><div class="name">'+r.name+'</div><div class="detail">'+genderTag+' '+r.subj+' · Kosong jam '+r.kosong.join(', ')+' · Ngajar '+r.jamMengajar+' jam hari ini</div></div>';
@@ -1374,7 +1375,7 @@ function pgBuildBlok(g,d,jl){var o=[];jl.forEach(function(j){var sj=pgSubjSlot(g
     if(l&&j===l.jams[l.jams.length-1]+1&&l.kelas===kl&&l.subjek.join('|')===sj.join('|')){l.jams.push(j);l.key=l.jams[0]+'-'+l.jams[l.jams.length-1];}
     else o.push({jams:[j],key:String(j),kelas:kl,subjek:sj});});return o;}
 function pgWaktuBlok(g,d,b){var f=g.cells[d+'|'+b.jams[0]][0];var l=b.jams.length>1?g.cells[d+'|'+b.jams[b.jams.length-1]][0]:f;return f.start+'\u2013'+l.end;}
-function pgGenderGuru(n){return /^Mr|^Ust/.test(n)?'putra':'putri';}
+function pgGenderGuru(n){return guruGender(n);}
 var pgLT={};
 function pgBuildL(){pgLT={};order.forEach(function(n){var t=teachers[n];Object.keys(t.cells).forEach(function(k){t.cells[k].forEach(function(e){if(/^Leadership/.test(e['class'])){(pgLT[e['class']]=pgLT[e['class']]||[]);if(pgLT[e['class']].indexOf(n)===-1)pgLT[e['class']].push(n);}});});});}
 pgBuildL();
