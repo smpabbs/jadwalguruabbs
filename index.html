@@ -40,6 +40,7 @@ body {
 .landing .menu-card .icon.blue { background: #d9e7f2; }
 .landing .menu-card .icon.rose { background: #f5dde3; }
 .landing .menu-card .icon.teal { background: #dceee8; }
+.landing .menu-card .icon.violet { background: #e3dcf2; }
 .landing .menu-card .info h3 { font-size: 16px; font-weight: 600; }
 .landing .menu-card .info p { font-size: 12px; color: #7d6a58; margin-top: 2px; }
 
@@ -432,6 +433,71 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
 #panel-pengganti .pg-agg-count { font-weight:500; font-size:11px; color:#a89a85; margin-left:4px; }
 #panel-pengganti .pg-agg-item { font-size:11.5px; color:#5f4d33; line-height:1.5; padding-left:10px; }
 #panel-pengganti .pg-agg-item b { color:#3a2f22; }
+/* ===== AI JADWAL (fitur ke-6) — scoped #panel-ai ===== */
+#panel-ai .ai-flex { display:flex; flex-direction:column; height:100%; min-height:0; flex:1; }
+#panel-ai .ai-chat { flex:1; overflow-y:auto; padding:12px 10px; display:flex; flex-direction:column; gap:10px; -webkit-overflow-scrolling:touch; }
+#panel-ai .ai-chat::-webkit-scrollbar { width:4px; }
+#panel-ai .ai-chat::-webkit-scrollbar-thumb { background:#d6c39e; border-radius:4px; }
+#panel-ai .ai-chips { flex:0 0 auto; padding:8px 10px; display:flex; gap:7px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; border-top:1px solid #e3d5b8; }
+#panel-ai .ai-chips::-webkit-scrollbar { display:none; }
+#panel-ai .ai-chip { flex:0 0 auto; background:#fff; border:1.5px solid #d6c39e; color:#5f4d33; font-size:12px; font-weight:600; padding:7px 14px; border-radius:18px; cursor:pointer; white-space:nowrap; }
+#panel-ai .ai-chip:active { background:#f3e4c2; border-color:#8f671a; color:#8a5f18; }
+#panel-ai .ai-input-bar { flex:0 0 auto; display:flex; gap:8px; padding:8px 10px 12px; }
+#panel-ai #aiInput { flex:1; border:1.5px solid #d6c39e; border-radius:20px; padding:10px 14px; font-size:13px; background:#fff; color:#3a2f22; outline:none; }
+#panel-ai #aiInput:focus { border-color:#8f671a; }
+#panel-ai #aiSend { width:40px; height:40px; border-radius:50%; border:none; background:#26211c; color:#d4a857; font-size:17px; cursor:pointer; flex-shrink:0; }
+#panel-ai .ai-msg { padding:9px 12px; border-radius:14px; font-size:13px; line-height:1.5; white-space:normal; word-wrap:break-word; max-width:100%; color:#3a2f22; }
+#panel-ai .ai-msg.ai-bot { align-self:flex-start; background:#fff; border:1px solid #e3d5b8; border-top-left-radius:4px; box-shadow:0 1px 2px rgba(58,47,34,.05); }
+#panel-ai .ai-msg.ai-user { max-width:80%; align-self:flex-end; background:#e9dcc0; border:1px solid #d6c39e; border-top-right-radius:4px; }
+#panel-ai .ai-msg .ai-time { display:block; font-size:9px; color:#a89a85; text-align:right; margin-top:3px; }
+#panel-ai .ai-bot-name { font-size:10px; font-weight:700; color:#8f671a; margin-bottom:4px; display:flex; align-items:center; gap:5px; }
+#panel-ai .ai-bot-name .ai-tag { font-weight:600; font-size:9px; background:#f3e4c2; color:#8f671a; padding:1px 6px; border-radius:8px; }
+#panel-ai .ai-typing { display:inline-flex; gap:4px; padding:4px 2px; }
+#panel-ai .ai-typing span { width:7px; height:7px; border-radius:50%; background:#c9b896; animation:pgblink 1.2s infinite; }
+#panel-ai .ai-typing span:nth-child(2){ animation-delay:.2s; }
+#panel-ai .ai-typing span:nth-child(3){ animation-delay:.4s; }
+#panel-ai .ai-note { font-size:10px; color:#a89a85; padding:4px 2px 0; }
+#panel-ai .ai-membar { flex:0 0 auto; display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:6px 10px; border-top:1px solid #eee1c6; font-size:11px; color:#5f4d33; background:#fbf7ee; }
+#panel-ai .ai-mem-toggle { display:inline-flex; align-items:center; gap:5px; font-weight:600; cursor:pointer; }
+#panel-ai #aiMemPw { border:1.5px solid #d6c39e; border-radius:14px; padding:4px 10px; font-size:12px; width:120px; outline:none; }
+#panel-ai #aiMemPw:focus { border-color:#8f671a; }
+#panel-ai #aiMemMsg { flex-basis:100%; font-size:10px; color:#a89a85; }
+#panel-ai .ai-msg b { color:#3a2f22; }
+#panel-ai .ai-msg u { text-decoration:underline; }
+#panel-ai .ai-msg ul, #panel-ai .ai-msg ol { margin:6px 0 6px 18px; padding:0; }
+#panel-ai .ai-msg li { margin:2px 0; }
+#panel-ai .ai-msg > div { min-height:1.1em; }
+#panel-ai .ai-msg table { border-collapse:collapse; width:100%; margin:6px 0; font-size:12px; }
+#panel-ai .ai-msg th, #panel-ai .ai-msg td { border:1px solid #e3d5b8; padding:4px 7px; text-align:left; vertical-align:top; }
+#panel-ai .ai-msg th { background:#f3e4c2; color:#5f4d33; font-weight:700; }
+#panel-ai .ai-msg tr:nth-child(even) td { background:#fdf9f0; }
+#panel-ai .ai-msg th:nth-child(1){ width:74px; }
+#panel-ai .ai-msg th:nth-child(2){ width:30%; }
+#panel-ai .ai-think { opacity:.9; }
+#panel-ai .ai-think-row { display:inline-flex; align-items:center; gap:7px; font-size:12px; color:#7d6a58; }
+#panel-ai .ai-think-dots { display:inline-flex; gap:3px; }
+#panel-ai .ai-think-dots span { width:6px; height:6px; border-radius:50%; background:#b99d6b; animation:aiBlink 1s infinite; }
+#panel-ai .ai-think-dots span:nth-child(2){ animation-delay:.18s; }
+#panel-ai .ai-think-dots span:nth-child(3){ animation-delay:.36s; }
+@keyframes aiBlink { 0%,80%,100%{opacity:.25} 40%{opacity:1} }
+#panel-ai .ai-ghead { font-weight:700; font-size:12.5px; color:#3a2f22; margin:8px 0 4px; }
+#panel-ai .ai-tier { font-size:12px; line-height:1.5; margin:1px 0; }
+#panel-ai .ai-tier .ai-tl { display:inline-block; font-weight:800; font-size:9px; padding:1px 6px; border-radius:6px; margin-right:4px; }
+#panel-ai .ai-tl-t1{ background:#f3e4c2; color:#8a5f18; }
+#panel-ai .ai-tl-t2a{ background:#eaf2f8; color:#39769d; }
+#panel-ai .ai-tl-t2b{ background:#edf3e3; color:#6b8f3c; }
+#panel-ai .ai-tl-t3{ background:#faeef1; color:#a55972; }
+#panel-ai .ai-pg-intro { font-size:12px; color:#5f4d33; margin-bottom:4px; }
+#panel-ai .ai-tm { font-size:9.5px; color:#a89a85; font-weight:500; margin-top:1px; }
+#panel-ai .ai-msg { position:relative; }
+#panel-ai .ai-msg.ai-bot { padding-right:36px; }
+#panel-ai .ai-copy { position:absolute; top:6px; right:6px; width:24px; height:24px; line-height:1; font-size:12px; border:1px solid #e3d5b8; background:#fbf7ee; color:#8a6a3a; border-radius:7px; cursor:pointer; }
+#panel-ai .ai-copy:active { background:#f3e4c2; }
+#panel-ai .ai-meta { flex:0 0 auto; font-size:9.5px; color:#a89a85; text-align:center; padding:5px 8px 2px; }
+#panel-ai .ai-modelrow { flex:0 0 auto; display:flex; align-items:center; gap:6px; font-size:11px; color:#7d6a58; padding:2px 10px 6px; border-bottom:1px solid #eee1c6; background:#fdfaf3; flex-wrap:wrap; }
+#panel-ai #aiModel { border:1px solid #d6c39e; border-radius:10px; padding:2px 6px; font-size:11px; background:#fff; color:#3a2f22; max-width:200px; }
+#panel-ai .ai-err { color:#a54a3f; }
+#panel-ai .ai-h { font-weight:700; font-size:13.5px; color:#3a2f22; margin:8px 0 3px; }
 </style>
 </head>
 <body>
@@ -461,6 +527,10 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
       <div class="menu-card" onclick="goTo('kelas')">
         <div class="icon rose">🏫</div>
         <div class="info"><h3>Jadwal per Kelas</h3><p>Jadwal & guru pengajar tiap kelas</p></div>
+      </div>
+      <div class="menu-card" onclick="goTo('ai')">
+        <div class="icon violet">🧠</div>
+        <div class="info"><h3>AI Jadwal</h3><p>Tanya apa saja soal jadwal (butuh internet)</p></div>
       </div>
     </div>
   </div>
@@ -579,6 +649,35 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
           <input id="pgInput" type="text" placeholder="Ketik nama guru yang berhalangan…" autocomplete="off">
           <button id="pgSend">➤</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB PANEL: AI JADWAL (fitur ke-6) -->
+  <div class="tab-panel" id="panel-ai">
+    <header>
+      <button class="back-btn" onclick="goTo('landing')">←</button>
+      <h1>AI Jadwal</h1>
+      <div class="sub">Tanya apa saja soal jadwal · butuh koneksi internet</div>
+    </header>
+    <div class="ai-flex">
+      <div class="ai-meta">Jadwal rutin SMP ABBS 2026/2027</div>
+      <div class="ai-modelrow"><span>Model (gratis):</span><select id="aiModel"></select><span class="ai-note" id="aiModelNote"></span></div>
+      <div id="aiChat" class="ai-chat"></div>
+      <div class="ai-membar" id="aiMemBar" style="display:none">
+        <label class="ai-mem-toggle"><input type="checkbox" id="aiMemOn"> Ingatan antar-sesi</label>
+        <span id="aiMemPwWrap" style="display:none">
+          <input type="password" id="aiMemPw" placeholder="password" autocomplete="off">
+          <button id="aiMemOk" class="ai-chip">Aktifkan</button>
+        </span>
+        <button id="aiMemDel" class="ai-chip" style="display:none">Hapus riwayat</button>
+        <button id="aiClearChat" class="ai-chip">Hapus chat</button>
+        <span class="ai-note" id="aiMemMsg"></span>
+      </div>
+      <div id="aiChips" class="ai-chips"></div>
+      <div class="ai-input-bar">
+        <input id="aiInput" type="text" placeholder="Misal: Mr Arvin sekarang ngajar di mana?" autocomplete="off">
+        <button id="aiSend">➤</button>
       </div>
     </div>
   </div>
@@ -858,6 +957,7 @@ function goTo(section) {
   }
   if (section === 'longgar') initLonggar();
   if (section === 'pengganti') initPengganti();
+  if (section === 'ai') initAI();
 }
 
 // ===== BACK HANDLER v5.4 =====
@@ -1571,6 +1671,741 @@ function initPengganti(){if(pgInitDone)return;pgInitDone=true;
   pgReset();
   var c1=pgRContoh(),c2=pgRContoh(c1);
   pgTyping(function(){pgAddBot('Halo! <b>Cari Guru Pengganti</b> 👋<br>Guru siapa yang berhalangan? Bisa pilih lebih dari satu. Ketik namanya (mis. <b>"'+c1+'"</b>, <b>"'+c2+'"</b>) — ada saran otomatis, atau geser daftar guru di bawah lalu pilih:');pgRenderStrip();});}
+// ===== AI JADWAL (fitur ke-6): grounded — fakta dari mesin lokal, AI provider merangkai =====
+// Endpoint /api/ai: di web pakai origin yg sama (local dev & Vercel prod); di APK Capacitor
+// (origin kapal lokal) arahkan ke URL produksi Vercel.
+var AI_API = (function(){ if (typeof window === 'undefined' || !window.location || !window.location.origin) return 'https://jadwalguruabbs.vercel.app/api/ai';
+  var cap = window.Capacitor;
+  var native = cap && cap.isNativePlatform && cap.isNativePlatform();
+  if (!native && /^https?:/.test(window.location.protocol)) return window.location.origin + '/api/ai';
+  return 'https://jadwalguruabbs.vercel.app/api/ai'; })();
+var aiInitDone = false, aiBusy = false, aiHist = [];
+var aiKB = 'ATURAN JAM & HARI SEKOLAH:\n' +
+  '- Hari sekolah Senin\u2013Sabtu; Minggu libur.\n' +
+  '- Senin\u2013Kamis: 9 jam pelajaran (40 menit), mulai 07.30, selesai 15.00; istirahat 11.50\u201313.00.\n' +
+  '- Jumat: jam ke-6 tidak ada (istirahat Jumatan lebih awal 11.10\u201313.00); pelajaran lanjut jam 7 mulai 13.00.\n' +
+  '- Sabtu: 6 jam pelajaran (30 menit), mulai 07.15, selesai 10.30; istirahat 10.30\u201313.00.\n' +
+  '- Jam ke-3 Senin\u2013Jumat waktunya BEDA per gender: kelas putra 09.10\u201309.50, kelas putri 08.50\u201309.30.\n' +
+  '  (Sabtu kebalikannya: putra 08.15\u201308.45, putri 08.30\u201309.00.)\n' +
+  '- Jam istirahat: Senin\u2013Kamis 11.50\u201313.00; Jumat 11.10\u201313.00; Sabtu 10.30\u201313.00.\n' +
+  'PEMETAAN KELAS (rombongan):\n' +
+  '- PUTRA: 7A, 7B, 7C ICT, 7C TCP, 8A, 8B, 8C ICT, 8C TCP, 9A, 9B, 9C ICT, 9C TCP.\n' +
+  '- PUTRI: 7D, 7E, 8D, 8E, 8F, 9D, 9E, 9F; VCP = kegiatan Sabtu rombongan putri.\n' +
+  '- Pasangan \u201cX ICT\u201d & \u201cX TCP\u201d = rombongan paralel/gabungan yang sama.\n' +
+  '- Leadership 7/8/9 = kegiatan angkatan (campur) sekali seminggu: Kelas 7 Senin jam 5-6, Kelas 8 Selasa jam 5-6, Kelas 9 Rabu jam 5-6.\n' +
+  '- Mapel tanpa guru tetap terisi di jadwal kelas: HT (Senin & Jumat jam 1), Scout (Sabtu jam 5-6, kelas 7-8), SBK (Jumat jam 8-9), SD (Kamis jam 8-9, kelas 7-8).\n' +
+  'GURU:\n' +
+  '- Total 36 guru. Gender guru (utk rekomendasi segender): prefix Mr/Ust = putra; Ms/Us = putri.';
+var aiSYS = 'Kamu asisten internal aplikasi jadwal mengajar guru SMP ABBS. ' +
+  'Jawab dalam bahasa Indonesia, ringkas, rapi, dan ramah. ' +
+  'Jika ada blok "FAKTA", jawabanmu HARUS berdasarkan fakta itu persis — jangan mengubah ' +
+  'angka/jam/nama, jangan menambah jadwal yang tidak ada di FAKTA. ' +
+  'Jika tidak ada blok FAKTA dan pertanyaannya menanyakan data jadwal (guru/kelas/jam/hari/mapel) ' +
+  'yang tidak kamu ketahui, JANGAN mengarang — katakan: "Saya tidak punya datanya. ' +
+  'Coba tanya dengan menyebut nama guru atau kelas, hari, dan jam, misalnya: ' +
+  '"jadwal Mr Arvin hari Selasa", "kelas 8A hari Rabu", atau "siapa guru longgar Jumat jam 3".' +
+  'Format jawaban WAJIB rapi & sistematis: pakai **tebal** utk penekanan, *miring* utk istilah, ' +
+  '__garis bawah__ utk hal penting, dan bullet/nomor utk daftar (mis. daftar jam/hari). ' +
+  'Kalau datanya cocok berkolom (mis. Jam | Kelas | Guru), sajikan sebagai TABEL markdown: ' +
+  'baris pertama |Jam|Kelas|Guru|, baris kedua |---|---|, lalu baris-baris datanya. ' +
+  'Struktur: jawab inti dulu (1-2 kalimat), lalu rincian terstruktur di bawahnya. ' +
+  'JANGAN pakai tanda pagar/heading markdown (mis. ###) — utk judul bagian cukup pakai **tebal**. ' +
+  'Khusus opsi pengganti: tiap tier (T1/T2a/T2b/T3) di baris sendiri, format pendek "T1: <nama>", tanpa deskripsi arti tier. ' +
+  'Hindari kalimat pembuka/penutup berlebihan — langsung ke isi.\n' +
+  'Jadwal ini rutinitas mingguan; libur kalender sekolah tidak diketahui sistem.';
+function aiTmin(s){ var p = String(s).split('.'); return ((+p[0]) || 0) * 60 + ((+p[1]) || 0); }
+// Jam istirahat resmi: Senin-Kamis 11.50-13.00; Jumat 11.10-13.00 (Jumatan); Sabtu 10.30-13.00
+var aiBREAK = { Monday: ['11.50', '13.00'], Tuesday: ['11.50', '13.00'], Wednesday: ['11.50', '13.00'],
+  Thursday: ['11.50', '13.00'], Friday: ['11.10', '13.00'], Saturday: ['10.30', '13.00'] };
+function aiBreakRange(d){ var b = aiBREAK[d]; if (!b) return null;
+  return { s: aiTmin(b[0]), e: aiTmin(b[1]), t: b[0] + '\u2013' + b[1] }; }
+function aiJstr(){ var n = new Date(); return ('0' + n.getHours()).slice(-2) + ':' + ('0' + n.getMinutes()).slice(-2); }
+function aiDayFrom(dt){ var w = dt.getDay(); return (w >= 1 && w <= 6) ? days[w - 1] : null; }
+function aiNextSchoolFrom(dt){ var k = aiDayFrom(dt); if (!k) return 'Monday'; var i = days.indexOf(k); return days[(i + 1) % days.length]; }
+function aiNowWords(t){ return /sekarang|skrg|sdg|sedang|lagi\b/.test(t); }
+function aiHariKey(q, now){ now = now || new Date(); var t = String(q).toLowerCase();
+  var ex = pgParseHari(t); if (ex) return ex;
+  if (t.indexOf('besok') !== -1 || t.indexOf('esok') !== -1) return aiNextSchoolFrom(now);
+  if (t.indexOf('hari ini') !== -1) return aiDayFrom(now);
+  return null; }
+function aiGurus(q){ var ql = pgNorm(q), words = {}, usedW = {}, out = [], seen = {};
+  ql.split(/\s+/).forEach(function(w){ if (w && w.length > 2) words[w] = 1; });
+  if (!pgKeys) pgBKeys();
+  // stopword utk pencocokan nama-lengkap saja (nama bisa bentrok dgn kata umum, mis. "Hari Rohmah")
+  var aiStop = { hari: 1, jam: 1, kelas: 1, mapel: 1, guru: 1, absen: 1, jadwal: 1,
+    longgar: 1, sekarang: 1, besok: 1, siapa: 1, mana: 1, apa: 1, bareng: 1, sama: 1,
+    kosong: 1, antara: 1, cari: 1, piket: 1, libur: 1, senin: 1, selasa: 1, rabu: 1,
+    kamis: 1, jumat: 1, sabtu: 1, minggu: 1, dan: 1, mau: 1, bisa: 1, waktu: 1 };
+  var nickHits = [], fullHits = [];
+  pgKeys.forEach(function(e){
+    var nickWords = e.keys[0].split(/\s+/), hitNick = false, hitFull = false;
+    nickWords.forEach(function(w){ if (w.length > 2 && words[w]){ hitNick = true; usedW[w] = 1; } });
+    if (!hitNick){
+      for (var i = 1; i < e.keys.length; i++){ var k = e.keys[i];
+        if (k.length > 3 && words[k] && !aiStop[k]){ hitFull = true; usedW[k] = 1; break; } }
+    }
+    if (hitNick) nickHits.push(e); else if (hitFull) fullHits.push(e);
+  });
+  function add(e){ if (!seen[e.nick]){ seen[e.nick] = 1; out.push(e.nick); } }
+  nickHits.forEach(add);
+  if (!out.length) fullHits.forEach(add);
+  // toleransi typo: hanya utk kata yg "terlihat nama" — diawali huruf kapital di teks asli,
+  // atau mengikuti gelar (Mr/Ms/Ust/Us/dll) — supaya kata umum ("yang", "hari") tidak ikut difuzzy
+  var cand = {};
+  var oriWords = String(q).match(/[A-Z][a-zA-Z]+/g) || [];
+  oriWords.forEach(function(w){ cand[w.toLowerCase()] = 1; });
+  var honRe = /(?:mr|mrs|ms|ustadzah|ustazah|ustadza|ustadz|ustad|ust|us|pak|bu|bapak|ibu|kak|dr|hj)\s+([a-z]+)/g, hm;
+  var lowO = String(q).toLowerCase();
+  while ((hm = honRe.exec(lowO))){ if (hm[1]) cand[hm[1]] = 1; }
+  ql.split(/\s+/).forEach(function(w){
+    if (w.length < 4 || usedW[w] || aiStop[w] || !cand[w]) return;
+    var rs = pgResGuru(w);
+    if (rs.length && rs[0].score >= 55 && !seen[rs[0].nick]){ add(rs[0]); usedW[w] = 1; }
+  });
+  return out; }
+function aiJams(q){ var m = String(q).toLowerCase().match(/jam\s*(?:ke\s*)?-?\s*([1-9])(?:\s*(?:-|sampai|sd|ke)\s*-?\s*([1-9]))?/);
+  if (!m) return null; var a = +m[1], b = m[2] ? +m[2] : a; if (b < a){ var z = a; a = b; b = z; }
+  var out = []; for (var i = a; i <= b && out.length < 9; i++) out.push(i); return out; }
+var aiSUBJ_ALIAS = { matematika: 'Math', math: 'Math', mtk: 'Math', ipa: 'Sc', sains: 'Sc', science: 'Sc',
+  ict: 'ICT', tik: 'ICT', informatika: 'ICT', komputer: 'ICT', indonesia: 'BI', bahasa: 'BI', bindo: 'BI',
+  inggris: 'Eng', english: 'Eng', binggris: 'Eng', ips: 'Soc', sosial: 'Soc', pkn: 'Cv', civic: 'Cv',
+  kewarganegaraan: 'Cv', ife: 'IFE', agama: 'IFE', quran: 'Quran', alquran: 'Quran', alqur: 'Quran',
+  olahraga: 'Sprt', olah: 'Sprt', pjok: 'Sprt', sport: 'Sprt' };
+var aiSubjAll = [];
+(function(){ var s = {}; order.forEach(function(n){ teachers[n].stats.subjects.forEach(function(x){ s[x] = 1; }); }); aiSubjAll = Object.keys(s); })();
+function aiMapel(q){ var ql = String(q).toLowerCase(), words = ql.split(/[^a-z0-9]+/);
+  for (var i = 0; i < words.length; i++){ var w = words[i]; if (!w) continue;
+    if (aiSUBJ_ALIAS[w]) return aiSUBJ_ALIAS[w]; }
+  for (var j = 0; j < aiSubjAll.length; j++){ var code = aiSubjAll[j];
+    for (var i2 = 0; i2 < words.length; i2++){ if (words[i2] === code.toLowerCase()) return code; } }
+  return null; }
+function aiGenderWord(q){ var t = String(q).toLowerCase();
+  if (/(putra|pria|laki|masculin)/.test(t)) return 'putra';
+  if (/(putri|wanita|perempuan|cewek)/.test(t)) return 'putri';
+  return null; }
+function aiKelas(q){ var ql = String(q).toLowerCase().replace(/[^a-z0-9]+/g, '');
+  for (var i = 0; i < KELAS_LIST.length; i++){ var c = KELAS_LIST[i].toLowerCase().replace(/[^a-z0-9]+/g, '');
+    if (c.length >= 2 && ql.indexOf(c) !== -1) return KELAS_LIST[i]; }
+  return null; }
+function aiUniqCells(entries){ var s = {}, r = [];
+  entries.forEach(function(e){ var k = e['class'] + '|' + e.subject; if (!s[k]){ s[k] = 1; r.push(e); } });
+  return r; }
+function aiPiketHari(g, d){ var h = dayId[d], out = [];
+  (PIKET[g] || []).forEach(function(x){ if (x.hari === h) out.push(x.lokasi); });
+  return out; }
+function aiSlotDesc(c){ var parts = [];
+  c.forEach(function(e){ parts.push(e['class'] + (e.subject ? ' \u00b7 ' + e.subject : ' (Leadership)')); });
+  return parts.join(' & '); }
+function aiJamText(j, c){ var e = c[0]; return 'jam ke-' + j + ' (' + e.start + '\u2013' + e.end + ')'; }
+function aiSnap(){ return { L: pgAbsenList.slice(), JL: JSON.parse(JSON.stringify(pgJamLst || {})),
+  BL: JSON.parse(JSON.stringify(pgBlok || {})), SEL: JSON.parse(JSON.stringify(pgSEL || {})), DS: pgDSel }; }
+function aiRestore(s){ pgAbsenList = s.L; pgJamLst = s.JL; pgBlok = s.BL; pgSEL = s.SEL; pgDSel = s.DS; }
+function aiFactsNow(g, now){ var d = aiDayFrom(now);
+  if (!d) return 'Sekarang hari Minggu \u2014 tidak ada KBM (jadwal rutin Senin\u2013Sabtu).';
+  var mn = now.getHours() * 60 + now.getMinutes();
+  var nl = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+  var t = teachers[g], lines = ['Hari ini: ' + dayId[d] + '. Sekarang pukul ' + nl + ' (waktu perangkat).'];
+  var br = aiBreakRange(d);
+  if (br) lines.push('Jam istirahat ' + dayId[d] + ': ' + br.t + '.');
+  var teaching = [], jTeaching = null;
+  validByDay[d].forEach(function(j){ var c = t.cells[d + '|' + j]; if (!c || !c.length) return;
+    c = aiUniqCells(c);
+    c.forEach(function(e){ var st = aiTmin(e.start), en = aiTmin(e.end);
+      if (mn >= st && mn <= en){ teaching.push(e); jTeaching = j; } }); });
+  if (teaching.length){
+    lines.push('Guru ' + g + ' sedang mengajar: ' + aiSlotDesc(teaching) + ' \u2014 ' + aiJamText(jTeaching, teaching) + '.');
+  } else if (br && mn >= br.s && mn < br.e){
+    lines.push('Saat ini jam ISTIRAHAT (' + br.t + '), jadi ' + g + ' tidak sedang mengajar.');
+  } else {
+    lines.push('Saat ini ' + g + ' TIDAK sedang mengajar (jam kosong / di luar jam mengajarnya).');
+  }
+  var pk = aiPiketHari(g, d);
+  if (pk.length) lines.push('Catatan piket hari ini: ' + pk.join(', ') + '.');
+  lines.push('Catatan: ini jadwal rutin; hari libur kalender tidak diketahui sistem.');
+  return lines.join('\n'); }
+function aiFactsGuruHari(g, d, mp){ var jl = pgJamMengajar(g, d);
+  var lines = [];
+  if (!jl.length){ lines.push('Guru ' + g + ' LIBUR / tidak mengajar hari ' + dayId[d] + '.'); }
+  else {
+    lines.push('Jadwal ' + g + ' hari ' + dayId[d] + ' (' + jl.length + ' jam mengajar):');
+    var bl = pgBuildBlok(g, d, jl);
+    bl.forEach(function(b){ if (mp && b.subjek.indexOf(mp) === -1 && b.subjek.length) return;
+      var t = teachers[g];
+      lines.push('- jam ' + b.key + ' (' + pgWaktuBlok(t, d, b) + '): ' + (b.kelas || '?') +
+        (b.subjek.length ? ' \u00b7 ' + b.subjek.join(', ') : ' \u00b7 Leadership')); });
+  }
+  var pk = aiPiketHari(g, d);
+  if (pk.length) lines.push('Catatan piket hari ' + dayId[d] + ': ' + pk.join(', ') + '.');
+  lines.push('Catatan: ini jadwal rutin; hari libur kalender tidak diketahui sistem.');
+  return lines.join('\n'); }
+function aiRanges(js){ var r = [], s = null, prev = null;
+  js.forEach(function(j){ if (s === null){ s = j; } else if (j !== prev + 1){ r.push(s === prev ? String(s) : s + '-' + prev); s = j; }
+    prev = j; });
+  if (s !== null) r.push(s === prev ? String(s) : s + '-' + prev);
+  return r.join(', '); }
+function aiFactsBareng(gurus){ var out = ['Jam/hari yg SAMA-SAMA KOSONG (semua guru ini TIDAK mengajar): ' + gurus.join(', ')], any = false;
+  days.forEach(function(d){ var free = validByDay[d].filter(function(j){
+    return gurus.every(function(g){ var c = teachers[g].cells[d + '|' + j]; return !c || !c.length; }); });
+    if (!free.length) return;
+    any = true; out.push('- ' + dayId[d] + ': jam ' + aiRanges(free)); });
+  if (!any) out.push('Tidak ada jam yang sama-sama kosong di jadwal rutin mingguan.');
+  out.push('Catatan: jadwal rutin; libur kalender tidak diketahui sistem.');
+  return out.join('\n'); }
+function aiFactsGuruMinggu(g){ var lines = ['Jadwal mingguan ' + g + ':'];
+  days.forEach(function(d){ var jl = pgJamMengajar(g, d); if (!jl.length) return;
+    var bl = pgBuildBlok(g, d, jl);
+    var bits = bl.map(function(b){ var t = teachers[g];
+      return 'jam ' + b.key + ' ' + b.kelas + (b.subjek.length ? ' \u00b7 ' + b.subjek.join(',') : ' \u00b7 Leadership') +
+        ' (' + pgWaktuBlok(t, d, b) + ')'; });
+    lines.push('- ' + dayId[d] + ' (' + jl.length + ' jam): ' + bits.join('; ')); });
+  if (lines.length === 1) lines.push('Guru ini tidak mengajar hari apa pun di jadwal rutin.');
+  lines.push('Catatan: jadwal rutin; libur kalender tidak diketahui sistem.');
+  return lines.join('\n'); }
+function aiFactsPiketGuru(g){ var e = PIKET[g] || [];
+  if (!e.length) return 'Guru ' + g + ' tidak punya jadwal piket di data.';
+  return 'Jadwal piket ' + g + ':\n' + e.map(function(x){ return '- ' + x.hari + ': ' + x.lokasi; }).join('\n'); }
+function aiFactsPiketHari(d){ var h = dayId[d], group = {};
+  Object.keys(PIKET).forEach(function(n){ (PIKET[n] || []).forEach(function(x){
+    if (x.hari === h){ (group[x.lokasi] = group[x.lokasi] || []).push(n); } }); });
+  var out = ['Petugas piket hari ' + h + ':'];
+  Object.keys(group).forEach(function(l){ out.push('- ' + l + ': ' + group[l].join(', ')); });
+  if (out.length === 1) out.push('(tidak ada data piket hari itu)');
+  return out.join('\n'); }
+function aiFactsKelas(kl, d, jamF){ var kd = KELAS_DATA[kl], lines = ['Jadwal kelas ' + kl + ' hari ' + dayId[d] + ':'];
+  var lessons = jamF && jamF.length ? jamF : validByDay[d];
+  lessons.forEach(function(j){ var c = kd.cells[d + '|' + j];
+    if (!c || !c.length){ lines.push('- jam ke-' + j + ': kosong'); return; }
+    var s = {}, parts = [];
+    c.forEach(function(e){ var k = (e.teacher || '?') + '|' + e.subject; if (s[k]) return; s[k] = 1;
+      parts.push((e.subject || 'Leadership') + (e.teacher ? ' (' + e.teacher + ')' : ' (tanpa guru)')); });
+    lines.push('- jam ke-' + j + ' (' + c[0].start + '\u2013' + c[0].end + '): ' + parts.join('; ')); });
+  lines.push('Catatan: ini jadwal rutin; hari libur kalender tidak diketahui sistem.');
+  return lines.join('\n'); }
+function aiFactsLonggar(d, jams, mp, gd){ var rows = [];
+  order.forEach(function(g){ if (mp && teachers[g].stats.subjects.indexOf(mp) === -1) return;
+    if (gd && guruGender(g) !== gd) return;
+    var ks = jams.filter(function(j){ var c = teachers[g].cells[d + '|' + j]; return !c || !c.length; });
+    if (ks.length) rows.push({ g: g, n: ks.length }); });
+  rows.sort(function(a, b){ return b.n - a.n; });
+  var lines = ['Guru longgar hari ' + dayId[d] + ' di jam ' + jams.join(',') +
+    ' (guru gender ' + (gd || 'bebas') + (mp ? ', mapel ' + mp : '') + '): total ' + rows.length + ' guru.'];
+  rows.slice(0, 12).forEach(function(r){ lines.push('- ' + r.g + ' (' +
+    (guruGender(r.g) === 'putra' ? 'Putra' : 'Putri') + ') \u2014 longgar ' + r.n + '/' + jams.length + ' jam'); });
+  if (rows.length > 12) lines.push('- dan ' + (rows.length - 12) + ' guru lainnya.');
+  lines.push('Catatan: ini jadwal rutin; hari libur kalender tidak diketahui sistem.');
+  return lines.join('\n'); }
+function aiTierRow(lbl, kls, arr){ var nm = arr.slice(0, 6).join(', ') + (arr.length > 6 ? ' (+' + (arr.length - 6) + ')' : '');
+  return '<div class="ai-tier"><span class="ai-tl ai-tl-' + kls + '">' + lbl + '</span>' + nm + '</div>'; }
+function aiPenggantiHtml(gurus, d){ var snap = aiSnap();
+  pgAbsenList = gurus.slice(); pgDSel = d;
+  gurus.forEach(function(g){ pgJamLst[g] = pgJamMengajar(g, d);
+    pgBlok[g] = pgBuildBlok(g, d, pgJamLst[g]); pgSEL[g] = {}; });
+  var h = '<div class="ai-pg-intro">Rekomendasi guru pengganti \u2014 <b>' + dayId[d] + '</b> \u00b7 berhalangan: <b>' + gurus.join(', ') + '</b></div>';
+  gurus.forEach(function(g){ var bl = pgBlok[g] || [];
+    h += '<div class="ai-ghead">Berhalangan: ' + g + ' (' + bl.length + ' blok)</div>';
+    h += '<table><thead><tr><th>Jam</th><th>Kelas \u00b7 Mapel</th><th>Rekomendasi</th></tr></thead><tbody>';
+    bl.forEach(function(b){ var t = teachers[g];
+      var rr = pgRecBlok(g, d, b.jams, pgIsLead(b) ? b.kelas : null, g, b.key);
+      var tiers = '';
+      if (rr.lead){ if (rr.t1 && rr.t1.length) tiers += aiTierRow('T1', 't1', rr.t1);
+        if (rr.t2a && rr.t2a.length) tiers += aiTierRow('T2', 't2a', rr.t2a); }
+      else { if (rr.t1 && rr.t1.length) tiers += aiTierRow('T1', 't1', rr.t1);
+        if (rr.t2a && rr.t2a.length) tiers += aiTierRow('T2a', 't2a', rr.t2a);
+        if (rr.t2b && rr.t2b.length) tiers += aiTierRow('T2b', 't2b', rr.t2b);
+        if (rr.t3 && rr.t3.length) tiers += aiTierRow('T3', 't3', rr.t3); }
+      if (!tiers) tiers = '\u2014';
+      h += '<tr><td><b>' + b.key + '</b><div class="ai-tm">' + pgWaktuBlok(t, d, b) + '</div></td><td>' +
+        (b.kelas || '?') + (b.subjek.length ? ' \u00b7 ' + b.subjek.join(', ') : ' \u00b7 Leadership') + '</td><td>' + tiers + '</td></tr>'; });
+    h += '</tbody></table>'; });
+  aiRestore(snap);
+  return h; }
+function aiTierText(r){ var out = [];
+  function mk(k, lbl){ var a = r[k] || []; if (!a.length) return;
+    var nm = a.slice(0, 6).join(', ') + (a.length > 6 ? ' (+' + (a.length - 6) + ')' : '');
+    out.push(lbl + ' ' + nm); }
+  if (r.lead){ mk('t1', 'T1:'); mk('t2a', 'T2:'); }
+  else { mk('t1', 'T1:'); mk('t2a', 'T2a:'); mk('t2b', 'T2b:'); mk('t3', 'T3:'); }
+  if (!out.length) out.push('(tidak ada kandidat)');
+  return out.join('\n'); }
+function aiFactsPengganti(gurus, d){ var snap = aiSnap();
+  pgAbsenList = gurus.slice(); pgDSel = d;
+  gurus.forEach(function(g){ pgJamLst[g] = pgJamMengajar(g, d);
+    pgBlok[g] = pgBuildBlok(g, d, pgJamLst[g]); pgSEL[g] = {}; });
+  var out = ['Rekomendasi guru pengganti hari ' + dayId[d] + ':'];
+  gurus.forEach(function(g){ var bl = pgBlok[g] || [];
+    out.push('Berhalangan: ' + g + ' \u2014 ' + bl.length + ' blok:');
+    bl.forEach(function(b){ var t = teachers[g];
+      var rr = pgRecBlok(g, d, b.jams, pgIsLead(b) ? b.kelas : null, g, b.key);
+      out.push('jam ' + b.key + ' (' + pgWaktuBlok(t, d, b) + '): kelas ' + b.kelas +
+        (b.subjek.length ? ' \u00b7 ' + b.subjek.join(', ') : ' \u00b7 Leadership'));
+      out.push(aiTierText(rr)); }); });
+  aiRestore(snap);
+  out.push('Catatan: ini jadwal rutin; hari libur kalender tidak diketahui sistem.');
+  return out.join('\n'); }
+function aiResolve(q, now){ now = now || new Date();
+  var t = String(q).toLowerCase();
+  var hari = aiHariKey(q, now), nowF = aiNowWords(t);
+  var gurus = aiGurus(q), jams = aiJams(q), kl = aiKelas(q);
+  var mp = aiMapel(q), gd = aiGenderWord(q);
+  if (gurus.length === 1 && (nowF || t.indexOf('di mana') !== -1 || t.indexOf('dimana') !== -1) &&
+      !hari && t.indexOf('jadwal') === -1 && t.indexOf('kelas') === -1){
+    return { facts: aiFactsNow(gurus[0], now) }; }
+  if (/(absen|berhalangan|tidak masuk|sakit|gantiin|pengganti|menggantikan|mengganti)/.test(t) && gurus.length){
+    var dS = hari || aiDayFrom(now);
+    if (!dS) return { local: 'Hari ini hari libur (Minggu). Sebutkan harinya \u2014 misal "absen Selasa".' };
+    return { mode: 'pengganti', gurus: gurus.slice(), day: dS, facts: aiFactsPengganti(gurus, dS) }; }
+  if (gurus.length >= 2 && /sama|bareng|berdua|bersama|ketemu/.test(t) && /kosong|longgar|senggang|libur|waktu|bisa|ketemu/.test(t)){
+    return { facts: aiFactsBareng(gurus) }; }
+  if (/longgar|tersedia|lowong|senggang/.test(t)){
+    var dL = hari || aiDayFrom(now);
+    if (!jams) return { local: 'Jam berapa? Contoh: "Siapa guru longgar Jumat jam 3?" atau "guru longgar Senin jam 1-2".' };
+    if (!dL) return { local: 'Hari libur (Minggu) tidak ada jam mengajar. Sebutkan hari & jam, misal "longgar Selasa jam 3".' };
+    return { facts: aiFactsLonggar(dL, jams, mp, gd) }; }
+  if (kl){
+    var dK = hari || aiDayFrom(now);
+    if (!dK) return { local: 'Hari ini hari libur (Minggu). Sebutkan harinya \u2014 misal "kelas 8A hari Rabu".' };
+    return { facts: aiFactsKelas(kl, dK, jams) }; }
+  if (/piket/.test(t)){
+    if (gurus.length) return { facts: aiFactsPiketGuru(gurus[0]) };
+    var dP = hari || aiDayFrom(now);
+    if (dP) return { facts: aiFactsPiketHari(dP) };
+    return { local: 'Piket siapa/hari apa? Contoh: "jadwal piket Ms Dila" atau "siapa piket hari Selasa?".' }; }
+  if (gurus.length && /hari apa saja|hari apa aja|kapan saja|seminggu|jadwal lengkap/.test(t)){
+    return { facts: aiFactsGuruMinggu(gurus[0]) }; }
+  if (gurus.length === 1){
+    var dG = hari || aiDayFrom(now);
+    if (!dG) return { local: 'Hari ini hari libur (Minggu). Sebutkan harinya \u2014 misal "jadwal ' + gurus[0] + ' hari Selasa".' };
+    return { facts: aiFactsGuruHari(gurus[0], dG, mp) }; }
+  return null; }
+function aiScroll(){ var el = document.getElementById('aiChat'); if (el) el.scrollTop = el.scrollHeight; }
+function aiEsc(s){ return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function aiInline(s){
+  s = aiEsc(s);
+  s = s.replace(/__([^_]+)__/g, '<u>$1</u>');
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  s = s.replace(/\*([^*]+)\*/g, '<i>$1</i>');
+  return s; }
+function aiSplitRow(rw){
+  var s = rw.trim();
+  if (s.charAt(0) === '|') s = s.slice(1);
+  if (s.slice(-1) === '|') s = s.slice(0, -1);
+  var c = s.split('|'), out = [];
+  c.forEach(function(x){ out.push(x.trim()); });
+  return out; }
+function aiRenderTable(rows){
+  var cells = rows.map(aiSplitRow);
+  cells = cells.filter(function(r){ return !r.every(function(x){ return /^:?-+:?$/.test(x); }); });
+  if (!cells.length) return '';
+  var header = cells[0], body = cells.slice(1);
+  var th = '';
+  header.forEach(function(x){ th += '<th>' + aiInline(x) + '</th>'; });
+  var trs = '';
+  body.forEach(function(r){
+    trs += '<tr><td>' + r.map(function(x){ return aiInline(x); }).join('</td><td>') + '</td></tr>'; });
+  return '<table><thead><tr>' + th + '</tr></thead><tbody>' + trs + '</tbody></table>'; }
+function aiRender(txt){
+  var lines = String(txt || '').split('\n'), h = '', i = 0;
+  while (i < lines.length){
+    var l = lines[i];
+    var hm = /^#{1,6}\s+(.*)$/.exec(l);
+    if (hm){
+      h += '<div class="ai-h">' + aiInline(hm[1]) + '</div>'; i++;
+    } else if (/^\s*\|/.test(l)){
+      var rows = [];
+      while (i < lines.length && /^\s*\|/.test(lines[i])){ rows.push(lines[i]); i++; }
+      h += aiRenderTable(rows);
+    } else if (/^\s*[-*•]\s+/.test(l)){
+      var it = [];
+      while (i < lines.length && /^\s*[-*•]\s+/.test(lines[i])){
+        it.push('<li>' + aiInline(lines[i].replace(/^\s*[-*•]\s+/, '')) + '</li>'); i++; }
+      h += '<ul>' + it.join('') + '</ul>';
+    } else if (/^\s*\d+[.)]\s+/.test(l)){
+      var io = [];
+      while (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])){
+        io.push('<li>' + aiInline(lines[i].replace(/^\s*\d+[.)]\s+/, '')) + '</li>'); i++; }
+      h += '<ol>' + io.join('') + '</ol>';
+    } else {
+      if (l.trim()) h += '<div>' + aiInline(l) + '</div>';
+      i++;
+    }
+  }
+  return h; }
+function aiCopyWire(btn, plain){
+  function done(ok){ if (ok){ btn.textContent = '\u2713'; setTimeout(function(){ btn.textContent = '\ud83d\udccc'; }, 1200); }
+    else { btn.textContent = '\u26a0\ufe0f'; setTimeout(function(){ btn.textContent = '\ud83d\udccc'; }, 1500); } }
+  function fallback(){
+    var ta = document.createElement('textarea');
+    ta.value = plain; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta); done(ok);
+  }
+  btn.addEventListener('click', function(){
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(plain).then(function(){ done(true); }, function(){ fallback(); });
+    } else fallback();
+  });
+}
+function aiAddBot(txt){ var d = document.createElement('div'); d.className = 'ai-msg ai-bot';
+  var h = document.createElement('div'); h.className = 'ai-bot-name'; h.textContent = 'AI Jadwal';
+  var tag = document.createElement('span'); tag.className = 'ai-tag'; tag.textContent = 'asisten'; h.appendChild(tag);
+  d.appendChild(h);
+  var b = document.createElement('div'); b.innerHTML = aiRender(txt); d.appendChild(b);
+  var cp = document.createElement('button'); cp.className = 'ai-copy'; cp.textContent = '\ud83d\udccc'; cp.title = 'Salin jawaban';
+  aiCopyWire(cp, String(txt || ''));
+  d.appendChild(cp);
+  var tm = document.createElement('span'); tm.className = 'ai-time'; tm.textContent = aiJstr(); d.appendChild(tm);
+  document.getElementById('aiChat').appendChild(d); aiScroll(); }
+function aiAddBotHtml(html, plain){ var d = document.createElement('div'); d.className = 'ai-msg ai-bot';
+  var h = document.createElement('div'); h.className = 'ai-bot-name'; h.textContent = 'AI Jadwal';
+  var tag = document.createElement('span'); tag.className = 'ai-tag'; tag.textContent = 'otomatis'; h.appendChild(tag);
+  d.appendChild(h);
+  var b = document.createElement('div'); b.innerHTML = html; d.appendChild(b);
+  var cp = document.createElement('button'); cp.className = 'ai-copy'; cp.textContent = '\ud83d\udccc'; cp.title = 'Salin jawaban';
+  aiCopyWire(cp, String(plain || ''));
+  d.appendChild(cp);
+  var tm = document.createElement('span'); tm.className = 'ai-time'; tm.textContent = aiJstr(); d.appendChild(tm);
+  document.getElementById('aiChat').appendChild(d); aiScroll(); }
+function aiAddUser(txt){ var d = document.createElement('div'); d.className = 'ai-msg ai-user';
+  d.textContent = txt;
+  var tm = document.createElement('span'); tm.className = 'ai-time'; tm.textContent = aiJstr(); d.appendChild(tm);
+  document.getElementById('aiChat').appendChild(d); aiScroll(); }
+function aiThinkElNew(){ var d = document.createElement('div'); d.className = 'ai-msg ai-bot ai-think';
+  var h = document.createElement('div'); h.className = 'ai-bot-name'; h.textContent = 'AI Jadwal'; d.appendChild(h);
+  var row = document.createElement('div'); row.className = 'ai-think-row';
+  row.appendChild(document.createTextNode('AI sedang berpikir'));
+  var dots = document.createElement('span'); dots.className = 'ai-think-dots';
+  for (var i = 0; i < 3; i++) dots.appendChild(document.createElement('span'));
+  row.appendChild(dots); d.appendChild(row);
+  return d; }
+var aiThinkEl = null;
+function aiThink(on){
+  if (on){
+    if (aiThinkEl) return;
+    aiThinkEl = aiThinkElNew();
+    document.getElementById('aiChat').appendChild(aiThinkEl); aiScroll();
+  } else if (aiThinkEl){
+    if (aiThinkEl.parentNode) aiThinkEl.parentNode.removeChild(aiThinkEl);
+    aiThinkEl = null;
+  }
+}
+function aiPost(msgs){
+  return fetch(AI_API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: msgs, model: aiSelModel() }) })
+    .then(function(res){ return res.json(); })
+    .then(function(j){ if (j && j.ok) return j.text;
+      throw new Error(j && j.error ? j.error : 'Gagal mendapat jawaban AI.'); }); }
+var aiSYS_A = 'Kamu asisten AI jadwal guru SMP ABBS. Jawab bahasa Indonesia, ringkas & rapi. ' +
+  'PENTING: kalau pertanyaan butuh DATA jadwal (guru/kelas/hari/jam/mapel/piket/longgar/pengganti), ' +
+  'kamu HARUS memakai tool. Caranya: balas HANYA satu baris dengan format: TOOL <nama> <json> ' +
+  '(contoh: TOOL guru_sekarang {"nama":"Mr Arvin"}) lalu berhenti. ' +
+  'Tool yg tersedia: daftar_guru {} | daftar_kelas {} | hari_sekarang {} | ' +
+  'guru_sekarang {"nama"} | jadwal_guru {"nama","hari"?} (hari opsional Senin..Sabtu, default hari ini) | ' +
+  'jadwal_minggu {"nama"} | jadwal_kelas {"kelas","hari"?} | guru_longgar {"hari","jam","mapel"?,"gender"?} ' +
+  '(jam mis. "3" atau "3-4") | jam_kosong_bersama {"nama":["Mr A","Mr B"]} | ' +
+  'rekomendasi_pengganti {"nama":["Mr A"],"hari"} | piket {"nama"} | piket_hari {"hari"}. ' +
+  'Setelah kamu kirim baris TOOL, sistem membalas "HASIL TOOL ...". Kalau masih butuh data, kirim baris TOOL ' +
+  'lagi (maks 4x). Kalau sudah cukup, tulis jawaban final dan HANYA pakai angka/jam/kelas/nama yg ada di HASIL TOOL ' +
+  '— JANGAN mengarang atau menebak data. Pertanyaan umum/sapaan (tanpa data) jawab langsung tanpa tool. ' +
+  'Jam istirahat sekolah: Senin\u2013Kamis 11.50\u201313.00, Jumat 11.10\u201313.00 (istirahat Jumatan), ' +
+  'Sabtu 10.30\u201313.00. ' +
+  'FORMAT JAWABAN WAJIB rapi & sistematis: **tebal** utk penekanan, *miring* utk istilah, __garis bawah__ ' +
+  'utk hal penting, bullet "-" / nomor utk daftar (mis. daftar hari/jam). Kalau data cocok berkolom ' +
+  '(mis. Jam | Kelas | Guru), sajikan sbg TABEL markdown dgn baris pemisah |---|. ' +
+  'Khusus opsi guru pengganti (T1/T2a/T2b/T3): tulis tiap tier di BARIS SENDIRI dengan format pendek ' +
+  '"T1: <nama>", "T2a: <nama>" dst, tanpa penjelasan arti tiap tier. Hindari kalimat pembuka/penutup ' +
+  'berlebihan. JANGAN pakai tanda pagar/heading markdown (mis. ###) — judul bagian cukup pakai **tebal**. ' +
+  'Jawab inti dulu, rincian di bawah.';
+function aiTDay(v){
+  if (v == null || v === '') { var d0 = aiDayFrom(new Date()); return d0; }
+  var s = String(v);
+  var k = pgParseHari(s); if (k) return k;
+  var inv = {}; days.forEach(function(d){ inv[dayId[d].toLowerCase()] = d; });
+  return inv[s.trim().toLowerCase()] || null; }
+function aiTJam(v){
+  if (Array.isArray(v)){ var a = []; v.forEach(function(x){ x = parseInt(x, 10); if (x >= 1 && x <= 9 && a.indexOf(x) === -1) a.push(x); });
+    return a.length ? a.sort() : null; }
+  var m = String(v == null ? '' : v).match(/[1-9]/g); if (!m) return null;
+  var r = []; m.forEach(function(x){ var n = +x; if (r.indexOf(n) === -1) r.push(n); }); return r.sort(); }
+function aiToolLines(txt){
+  var out = [];
+  if (!txt) return out;
+  var re = /^\s*TOOL\s+([A-Za-z_][A-Za-z0-9_]*)(\s+\{.*\})?\s*$/gm, m;
+  while ((m = re.exec(txt))){
+    var args = {};
+    if (m[2]){ try { args = JSON.parse(m[2].trim()); } catch (e){ out.push({ err: true, name: m[1], args: null }); continue; } }
+    out.push({ name: m[1], args: args });
+  }
+  return out;
+}
+function aiToolLine(txt){
+  if (!txt) return null;
+  var m = /^\s*TOOL\s+([A-Za-z_][A-Za-z0-9_]*)(\s+\{.*\})?\s*$/m.exec(txt);
+  if (!m) return null;
+  var args = {};
+  if (m[2]){ try { args = JSON.parse(m[2].trim()); } catch (e){ return { err: true, name: m[1], args: null }; } }
+  return { name: m[1], args: args }; }
+function aiToolGuru(v){ if (v == null) return null; var r = aiGurus(String(v)); return r.length ? r[0] : null; }
+function aiToolExec(name, args){
+  args = args || {};
+  function need(cond, msg){ return cond ? null : msg; }
+  var bad = need(name === 'daftar_guru' || name === 'daftar_kelas' || name === 'hari_sekarang' ||
+    name === 'guru_sekarang' || name === 'jadwal_guru' || name === 'jadwal_minggu' || name === 'jadwal_kelas' ||
+    name === 'guru_longgar' || name === 'jam_kosong_bersama' || name === 'rekomendasi_pengganti' ||
+    name === 'piket' || name === 'piket_hari', 'Tool tidak dikenal: ' + name);
+  if (bad) return bad;
+  if (name === 'daftar_guru') return 'Daftar guru (' + order.length + '): ' + order.join(', ');
+  if (name === 'daftar_kelas') return 'Daftar kelas (' + KELAS_LIST.length + '): ' + KELAS_LIST.join(', ');
+  if (name === 'hari_sekarang'){ var dS = aiDayFrom(new Date());
+    return dS ? ('Hari ini ' + dayId[dS] + ' pukul ' + aiJstr() + ' (waktu perangkat).') : 'Hari ini libur (Minggu), tidak ada KBM.'; }
+  var g = aiToolGuru(args.nama);
+  if ((name === 'guru_sekarang' || name === 'jadwal_guru' || name === 'jadwal_minggu' || name === 'piket') && !g)
+    return 'Nama guru tidak dikenali: "' + args.nama + '". Pakai daftar_guru dulu.';
+  if (name === 'guru_sekarang') return aiFactsNow(g, new Date());
+  if (name === 'jadwal_guru'){ var dG = aiTDay(args.hari); if (!dG) return 'Hari tidak dikenal. Gunakan Senin..Sabtu.'; return aiFactsGuruHari(g, dG, null); }
+  if (name === 'jadwal_minggu') return aiFactsGuruMinggu(g);
+  if (name === 'piket') return aiFactsPiketGuru(g);
+  if (name === 'jadwal_kelas'){ var kk = aiKelas(String(args.kelas || '')) || String(args.kelas || '');
+    if (KELAS_LIST.indexOf(kk) === -1) return 'Kelas tidak dikenal: "' + args.kelas + '". Pakai daftar_kelas dulu.';
+    var dK = aiTDay(args.hari); if (!dK) return 'Hari tidak dikenal.'; return aiFactsKelas(kk, dK, null); }
+  if (name === 'guru_longgar'){ var dL = aiTDay(args.hari), js = aiTJam(args.jam);
+    if (!dL || !js) return 'Wajib isi hari (Senin..Sabtu) & jam (mis. 3 atau 3-4).';
+    var mp = args.mapel ? String(args.mapel) : null;
+    var gd2 = (args.gender === 'putra' || args.gender === 'putri') ? args.gender : null;
+    return aiFactsLonggar(dL, js, mp, gd2); }
+  if (name === 'jam_kosong_bersama' || name === 'rekomendasi_pengganti'){
+    var ns = Array.isArray(args.nama) ? args.nama : [args.nama];
+    var hits = []; ns.forEach(function(x){ var t = aiToolGuru(x); if (t && hits.indexOf(t) === -1) hits.push(t); });
+    if (name === 'jam_kosong_bersama'){ if (hits.length < 2) return 'Minimal 2 nama guru dikenal. Pakai daftar_guru dulu.';
+      return aiFactsBareng(hits); }
+    var dR = aiTDay(args.hari);
+    if (!hits.length) return 'Nama guru tidak dikenali. Pakai daftar_guru dulu.';
+    if (!dR) return 'Wajib isi hari (Senin..Sabtu).';
+    return aiFactsPengganti(hits, dR); }
+  if (name === 'piket_hari'){ var dP = aiTDay(args.hari); if (!dP) return 'Hari tidak dikenal. Gunakan Senin..Sabtu.'; return aiFactsPiketHari(dP); }
+  return 'Tool tidak dikenal: ' + name; }
+function aiAgent(q){
+  var msgs = [{ role: 'system', content: aiSYS_A + '\n\n== PENGETAHUAN ATURAN & DATA SEKOLAH ==\n' + aiKB }];
+  aiHist.slice(-6).forEach(function(h){ msgs.push({ role: h.role, content: h.content }); });
+  msgs.push({ role: 'user', content: q });
+  var toolRounds = 0;
+  function step(){
+    return aiPost(msgs).then(function(txt){
+      var tls = aiToolLines(txt);
+      if (tls.length && toolRounds < 6){
+        toolRounds++;
+        var results = [];
+        tls.forEach(function(tl){
+          var out = (tl.err) ? 'Format tool salah. Gunakan: TOOL <nama> <json>'
+            : (function(){ try { return aiToolExec(tl.name, tl.args); } catch (e){ return 'Error tool: ' + e.message; } })();
+          results.push('HASIL TOOL ' + tl.name + ':\n' + out);
+        });
+        msgs.push({ role: 'assistant', content: txt });
+        results.forEach(function(r){ msgs.push({ role: 'user', content: r }); });
+        return step();
+      }
+      aiHist.push({ role: 'user', content: q });
+      aiHist.push({ role: 'assistant', content: txt });
+      aiHist = aiHist.slice(-10);
+      aiMemSave();
+      aiThink(false);
+      aiAddBot(txt); aiBusy = false;
+      aiSuggestFrom(q);
+      var inp = document.getElementById('aiInput'); if (inp) inp.focus();
+    }).catch(function(e){ aiThink(false); aiBotError(e); aiBusy = false; });
+  }
+  return step();
+}
+function aiRun(q){ var r = null;
+  try { r = aiResolve(q); } catch (e){ r = { local: 'Terjadi kendala internal saat membaca jadwal: ' + e.message }; }
+  if (r && r.mode === 'pengganti'){
+    aiThink(false);
+    var plain = r.facts;
+    aiHist.push({ role: 'user', content: q });
+    aiHist.push({ role: 'assistant', content: plain });
+    aiHist = aiHist.slice(-10);
+    aiAddBotHtml(aiPenggantiHtml(r.gurus, r.day), r.facts);
+    aiMemSave();
+    aiSuggestFrom(q);
+    aiBusy = false;
+    var inp = document.getElementById('aiInput'); if (inp) inp.focus();
+    return;
+  }
+  if (r && r.local){ aiThink(false); aiAddBot(r.local); aiBusy = false; return; }
+  if (r && r.facts){
+    var msgs = [{ role: 'system', content: aiSYS + '\n\n== PENGETAHUAN ATURAN & DATA SEKOLAH ==\n' + aiKB },
+      { role: 'system', content: 'FAKTA dari sistem (dasar jawaban, jangan diubah):\n' + r.facts }];
+    aiHist.slice(-8).forEach(function(h){ msgs.push(h); });
+    msgs.push({ role: 'user', content: q });
+    aiPost(msgs).then(function(t){
+      aiThink(false);
+      aiHist.push({ role: 'user', content: q }); aiHist.push({ role: 'assistant', content: t });
+      aiHist = aiHist.slice(-10); aiMemSave(); aiAddBot(t);
+      aiSuggestFrom(q);
+    }).catch(function(e){ aiThink(false); aiBotError(e); })
+      .then(function(){ aiBusy = false; var inp = document.getElementById('aiInput'); if (inp) inp.focus(); });
+    return;
+  }
+  aiAgent(q); }
+var aiLastQ = null;
+var aiModels = [
+  { g: 'Google Gemini', items: [
+    { v: 'gemini-3.5-flash', l: 'Gemini 3.5 Flash (default)' },
+    { v: 'gemini-2.5-flash', l: 'Gemini 2.5 Flash' },
+    { v: 'gemini-3.1-flash-lite', l: 'Gemini 3.1 Flash Lite' },
+    { v: 'gemini-3-flash-preview', l: 'Gemini 3 Flash preview' } ] },
+  { g: 'OpenRouter (free)', items: [
+    { v: 'inclusionai/ling-3.0-flash-fin:free', l: 'Ling 3.0 Flash' },
+    { v: 'nvidia/nemotron-3-super-120b-a12b:free', l: 'Nemotron 3 Super' },
+    { v: 'google/gemma-4-31b-it:free', l: 'Gemma 4 31B' },
+    { v: 'liquid/lfm-2.5-2.6b:free', l: 'LFM 2.5' } ] }
+];
+function aiSelModel(){
+  var el = document.getElementById('aiModel');
+  if (el && el.value) return el.value;
+  return 'gemini-3.5-flash';
+}
+function aiModelFill(){
+  var el = document.getElementById('aiModel');
+  if (!el) return;
+  el.innerHTML = '';
+  aiModels.forEach(function(gr){
+    var og = document.createElement('optgroup'); og.label = gr.g;
+    gr.items.forEach(function(m){
+      var o = document.createElement('option'); o.value = m.v; o.textContent = m.l; og.appendChild(o); });
+    el.appendChild(og);
+  });
+  var saved = null;
+  try { saved = localStorage.getItem('aiModelSel'); } catch (e) {}
+  el.value = (saved && el.querySelector('option[value="' + saved + '"]')) ? saved : 'gemini-3.5-flash';
+  el.addEventListener('change', function(){
+    try { localStorage.setItem('aiModelSel', el.value); } catch (e) {}
+    var note = document.getElementById('aiModelNote');
+    if (note) note.textContent = el.value.indexOf('gemini') === 0 ? '' : 'via OpenRouter \u2014 kadang penuh (429)';
+  });
+}
+
+var aiPreset = ['Mr Arvin sekarang ngajar di mana?', 'Jadwal Ms Dila hari Selasa',
+  'Siapa guru longgar Jumat jam 3?', 'Kelas 8A hari Rabu ada apa saja?',
+  'Mr Hang & Mr Sharih absen Selasa \u2014 siapa penggantinya?'];
+function aiSetChips(list){
+  var chips = document.getElementById('aiChips'); if (!chips) return;
+  chips.innerHTML = '';
+  list.forEach(function(c){ var x = document.createElement('button');
+    x.className = 'ai-chip'; x.textContent = c;
+    x.addEventListener('click', function(){ aiSendText(c); });
+    chips.appendChild(x); });
+}
+function aiSendText(q){
+  q = String(q || '').replace(/^\s+|\s+$/g, '');
+  if (!q || aiBusy) return;
+  aiLastQ = q; aiBusy = true; aiAddUser(q);
+  aiThink(true);
+  aiRun(q);
+}
+function aiSend(){ var inp = document.getElementById('aiInput');
+  var q = inp.value;
+  inp.value = '';
+  aiSendText(q); }
+function aiRetry(){ if (aiLastQ) aiSendText(aiLastQ); }
+function aiClearChat(){ var c = document.getElementById('aiChat'); if (c) c.innerHTML = '';
+  aiThink(false); aiSetChips(aiPreset);
+  if (!aiMemToken) aiHist = []; }
+function aiSuggestions(q){ var r = null;
+  try { r = aiResolve(q); } catch (e){}
+  var gs = (r && r.gurus && r.gurus.length) ? r.gurus : aiGurus(q);
+  if (r && r.mode === 'pengganti' && gs.length){
+    var dL = dayId[r.day];
+    return ['Siapa piket hari ' + dL + '?', 'Jadwal ' + gs[0] + ' besok', 'Guru longgar ' + dL + ' jam 3-4'];
+  }
+  if (gs.length){
+    var g = gs[0];
+    return ['Jadwal mingguan ' + g, 'Jadwal piket ' + g, 'Jam kosong bersama ' + g + ' & guru lain'];
+  }
+  return ['Mr Arvin sekarang ngajar di mana?', 'Siapa guru longgar Jumat jam 3?', 'Kelas 8A hari Rabu ada apa saja?'];
+}
+function aiSuggestFrom(q){ aiSetChips(aiSuggestions(q)); }
+function aiErrText(e){ return (e && e.message) ? e.message :
+  'Gagal terhubung ke server AI. Periksa koneksi internet, lalu coba lagi.'; }
+function aiBotError(e){
+  var msg = aiErrText(e);
+  aiAddBotHtml('<div class="ai-err">\u26a0\ufe0f ' + aiEsc(msg) + '</div>' +
+    '<button class="ai-chip" onclick="aiRetry()">\u21bb Ulangi</button>', '\u26a0\ufe0f ' + msg);
+}
+function aiWelcome(){ aiAddBot('Halo! \ud83d\udc4b Saya asisten jadwal SMP ABBS \u2014 tanya bebas, misalnya:\n' +
+  '\u2022 "Mr Arvin sekarang ngajar di mana?"\n' +
+  '\u2022 "Jadwal Ms Dila hari Selasa?"\n' +
+  '\u2022 "Siapa guru longgar Jumat jam 3 mapel Math?"\n' +
+  '\u2022 "Kelas 8A hari Rabu ada apa saja?"\n' +
+  '\u2022 "Mr Hang & Mr Sharih absen Selasa \u2014 siapa penggantinya?"'); }
+// ===== Ingatan antar-sesi (opsional: password + simpanan server /api/mem) =====
+var aiMemToken = null;
+function aiMemUrl(){ return AI_API.replace(/\/api\/ai$/, '') + '/api/mem'; }
+function aiMemApi(action, extra){
+  var body = { action: action }, k;
+  for (k in (extra || {})) body[k] = extra[k];
+  return fetch(aiMemUrl(), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    .then(function(res){ return res.json(); })
+    .then(function(j){ if (!j.ok) throw new Error(j.error || 'Gagal.'); return j; });
+}
+function aiMemStoreLocal(t){ try { if (t) localStorage.setItem('aiMemToken', t); else localStorage.removeItem('aiMemToken'); } catch (e) {} }
+function aiMemLoadLocal(){ try { aiMemToken = localStorage.getItem('aiMemToken') || null; } catch (e) { aiMemToken = null; } }
+function aiMemNote(t){ var el = document.getElementById('aiMemMsg'); if (el) el.textContent = t; }
+function aiMemUI(pwAsk){
+  var on = document.getElementById('aiMemOn'), pwWrap = document.getElementById('aiMemPwWrap'),
+    del = document.getElementById('aiMemDel'), pw = document.getElementById('aiMemPw');
+  if (!on) return;
+  on.checked = !!aiMemToken;
+  pwWrap.style.display = (pwAsk && !aiMemToken) ? '' : 'none';
+  del.style.display = aiMemToken ? '' : 'none';
+  if (pw) pw.value = '';
+}
+function aiMemEnable(){
+  var pwEl = document.getElementById('aiMemPw');
+  aiMemApi('enable', { password: pwEl ? pwEl.value : '' })
+    .then(function(j){ aiMemToken = j.token; aiMemStoreLocal(j.token); aiMemNote('Ingatan antar-sesi aktif \u2014 percakapan diingat server.'); aiMemUI(); aiMemLoadHistory(true); })
+    .catch(function(e){ aiMemNote('\u26a0\ufe0f ' + e.message); aiMemUI(); });
+}
+function aiMemDisable(){
+  var tok = aiMemToken;
+  aiMemToken = null; aiMemStoreLocal(null);
+  if (tok) aiMemApi('disable', { token: tok }).catch(function(){});
+  aiMemNote('Ingatan dimatikan & riwayat di server dihapus.'); aiMemUI();
+}
+function aiMemLoadHistory(announce){
+  if (!aiMemToken) return;
+  aiMemApi('load', { token: aiMemToken })
+    .then(function(j){ if (j.history && j.history.length){
+        aiHist = j.history.slice(-10);
+        if (announce) aiAddBot('\ud83d\udcbe Ingatan dipulihkan (' + j.history.length + ' pesan dari sesi sebelumnya).'); } })
+    .catch(function(){ aiMemNote('Gagal memuat ingatan dari server.'); });
+}
+function aiMemSave(){
+  if (!aiMemToken || !aiHist.length) return;
+  aiMemApi('save', { token: aiMemToken, history: aiHist.slice(-20) }).catch(function(){});
+}
+function aiMemInit(){
+  var bar = document.getElementById('aiMemBar');
+  if (!bar) return;
+  bar.style.display = 'flex';
+  aiMemLoadLocal(); aiMemUI();
+  var on = document.getElementById('aiMemOn'), ok = document.getElementById('aiMemOk'), del = document.getElementById('aiMemDel');
+  on.addEventListener('change', function(){ if (on.checked){ if (!aiMemToken) aiMemUI(true); else aiMemNote('Ingatan sudah aktif dari perangkat ini.'); } else { aiMemDisable(); } });
+  ok.addEventListener('click', aiMemEnable);
+  del.addEventListener('click', aiMemDisable);
+  if (aiMemToken) aiMemLoadHistory(false);
+}
+function initAI(){ if (aiInitDone) return; aiInitDone = true;
+  var send = document.getElementById('aiSend');
+  send.addEventListener('click', aiSend);
+  var inp = document.getElementById('aiInput');
+  inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') aiSend(); });
+  var clr = document.getElementById('aiClearChat');
+  if (clr) clr.addEventListener('click', aiClearChat);
+  aiModelFill();
+  aiSetChips(aiPreset);
+  aiWelcome();
+  aiMemInit(); }
 // ===== INIT =====
 renderJadwal();
 renderKelas();

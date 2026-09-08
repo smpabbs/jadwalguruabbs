@@ -6,8 +6,12 @@ dist/
 *.keystore
 .DS_Store
 .vercel/
+.env
+.mem-dev.json
 
 scripts/export.xlsx
 scripts/scratch_all_teachers.json
 scripts/server.log
 scripts/__pycache__/
+.vercel
+.commandcode/
