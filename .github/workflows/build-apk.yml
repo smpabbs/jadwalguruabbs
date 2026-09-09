@@ -57,6 +57,9 @@ jobs:
           python3 scripts/set_stable_signing.py android/app/build.gradle
 
       - name: Build APK
+        env:
+          KEYSTORE_FILE: ${{ runner.temp }}/jadwalguru-signing.p12
+          KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
         run: cd android && ./gradlew assembleDebug --no-daemon
 
       - name: Rename APK (versi dari package.json)
