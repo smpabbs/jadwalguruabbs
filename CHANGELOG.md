@@ -1,6 +1,20 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.7.0 — AI Jadwal live di web + update APK tanpa uninstall
+- **AI Jadwal kini berfungsi penuh di web produksi**: server `/api/ai` memakai `GOOGLE_API_KEY` /
+  `OPENROUTER_API_KEY` yang didaftarkan sebagai env Vercel (key tidak pernah disimpan di repo —
+  hanya placeholder di `.env.example`). Sebelumnya key hanya ada di `.env` lokal, jadi AI cuma jalan
+  di `vercel dev`; di `jadwalguruabbs.vercel.app` endpoint menjawab "Server AI belum dikonfigurasi".
+- **Signature APK stabil (permanen)**: build tidak lagi memakai debug keystore acak per build
+  (cache workflow lama selalu miss). Sekarang workflow memakai keystore permanen dari GitHub
+  secret (`ANDROID_KEYSTORE_B64`/`ANDROID_KEYSTORE_PASS`, alias `jadwalguru`, PKCS12), disuntik ke
+  `android/app/build.gradle` oleh `scripts/set_stable_signing.py`; `versionCode` naik otomatis
+  dari run number. Efek: **update APK berikutnya langsung menimpa tanpa uninstall** (catatan:
+  migrasi pertama dari APK lama tetap uninstall sekali karena signature-nya berbeda).
+- Catatan: fitur "ingatan antar-sesi" AI masih butuh Vercel KV (`UPSTASH_REDIS_REST_URL/TOKEN`)
+  untuk menyala di produksi; di lokal jalan via file.
+
 ## v5.6.0 — Cari Guru Pengganti: banyak guru sekaligus, 2 bug data nyata diperbaiki
 - **Pilih beberapa guru absen sekaligus** (bukan cuma satu): strip guru di langkah 1 sekarang toggle
   multi-pilih + tombol "Lanjut (N)". Satu hari yang sama dipilih untuk seluruh guru dalam batch (skenario

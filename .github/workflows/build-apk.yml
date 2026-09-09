@@ -30,12 +30,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Cache debug keystore
-        uses: actions/cache@v4
-        with:
-          path: ~/.android/debug.keystore
-          key: android-debug-keystore
-
       - name: Sync Capacitor Android
         run: npx cap add android
 
@@ -49,6 +43,18 @@ jobs:
             cat android/app/src/main/AndroidManifest.xml
             exit 1
           fi
+
+      - name: Configure stable signing (keystore permanen dari secret)
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+        run: |
+          set -e
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/jadwalguru-signing.p12"
+          export KEYSTORE_FILE="$RUNNER_TEMP/jadwalguru-signing.p12"
+          export VERSION_CODE=${{ github.run_number }}
+          export VERSION_NAME=$(node -p "require('./package.json').version")
+          python3 scripts/set_stable_signing.py android/app/build.gradle
 
       - name: Build APK
         run: cd android && ./gradlew assembleDebug --no-daemon
