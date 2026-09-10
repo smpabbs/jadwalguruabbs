@@ -1,11 +1,14 @@
 // Vercel serverless — ingatan antar-sesi utk fitur AI Jadwal.
-// Penyimpanan: Vercel KV (Upstash REST) via env UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN.
+// Penyimpanan: Vercel KV (Upstash REST) via env KV_REST_API_URL / KV_REST_API_TOKEN
+// (fallback nama lama UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN).
 // Fallback dev: MEM_LOCAL_FILE (file JSON lokal, jangan dipakai di produksi).
 // Proteksi: enable butuh password (env MEMORY_PASSWORD); setelah itu server kasih token acak
 // yg dipakai utk save/load. Tanpa dependency: pakai fetch global (Node 18+).
 var crypto = require('crypto');
 
 function env(k){ return process.env[k] || ''; }
+function kvUrl(){ return env('KV_REST_API_URL') || env('UPSTASH_REDIS_REST_URL'); }
+function kvToken(){ return env('KV_REST_API_TOKEN') || env('UPSTASH_REDIS_REST_TOKEN'); }
 
 function sendJson(res, code, obj){
   res.statusCode = code;
@@ -14,7 +17,7 @@ function sendJson(res, code, obj){
 }
 
 function storeOk(){
-  return !!(env('UPSTASH_REDIS_REST_URL') && env('UPSTASH_REDIS_REST_TOKEN')) || !!env('MEM_LOCAL_FILE');
+  return !!(kvUrl() && kvToken()) || !!env('MEM_LOCAL_FILE');
 }
 
 // --- store abstraction ---
@@ -25,8 +28,8 @@ function storeGet(key){ return new Promise(function (resolve){
     try { var raw = fs.readFileSync(env('MEM_LOCAL_FILE'), 'utf8'); memCache = JSON.parse(raw || '{}'); } catch (e){ memCache = {}; }
     return resolve(memCache[key] != null ? memCache[key] : null);
   }
-  fetch(env('UPSTASH_REDIS_REST_URL').replace(/\/$/, '') + '/get/' + encodeURIComponent(key), {
-    headers: { Authorization: 'Bearer ' + env('UPSTASH_REDIS_REST_TOKEN') }
+  fetch(kvUrl().replace(/\/$/, '') + '/get/' + encodeURIComponent(key), {
+    headers: { Authorization: 'Bearer ' + kvToken() }
   }).then(function (r){ return r.json(); })
     .then(function (j){ resolve(j && j.result != null ? j.result : null); })
     .catch(function (){ resolve(null); });
@@ -39,9 +42,9 @@ function storeSet(key, value){ return new Promise(function (resolve){
     try { fs.writeFileSync(env('MEM_LOCAL_FILE'), JSON.stringify(memCache)); } catch (e) {}
     return resolve(true);
   }
-  fetch(env('UPSTASH_REDIS_REST_URL').replace(/\/$/, '') + '/set/' + encodeURIComponent(key), {
+  fetch(kvUrl().replace(/\/$/, '') + '/set/' + encodeURIComponent(key), {
     method: 'POST',
-    headers: { Authorization: 'Bearer ' + env('UPSTASH_REDIS_REST_TOKEN'), 'Content-Type': 'text/plain' },
+    headers: { Authorization: 'Bearer ' + kvToken(), 'Content-Type': 'text/plain' },
     body: String(value)
   }).then(function(){ resolve(true); }).catch(function(){ resolve(false); });
 }); }
@@ -53,9 +56,9 @@ function storeDel(key){ return new Promise(function (resolve){
     try { fs.writeFileSync(env('MEM_LOCAL_FILE'), JSON.stringify(memCache)); } catch (e) {}
     return resolve(true);
   }
-  fetch(env('UPSTASH_REDIS_REST_URL').replace(/\/$/, '') + '/del/' + encodeURIComponent(key), {
+  fetch(kvUrl().replace(/\/$/, '') + '/del/' + encodeURIComponent(key), {
     method: 'POST',
-    headers: { Authorization: 'Bearer ' + env('UPSTASH_REDIS_REST_TOKEN') }
+    headers: { Authorization: 'Bearer ' + kvToken() }
   }).then(function(){ resolve(true); }).catch(function(){ resolve(false); });
 }); }
 
