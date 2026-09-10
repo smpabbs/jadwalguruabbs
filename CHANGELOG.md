@@ -1,6 +1,15 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.8.0 — Ingatan antar-sesi AI aktif di produksi (Vercel KV)
+- **Fitur "ingatan antar-sesi" AI kini berfungsi penuh di produksi**: database Vercel KV (Upstash
+  Redis) sudah dibuat & disambungkan ke project, env-nya otomatis ter-inject (`KV_REST_API_URL` /
+  `KV_REST_API_TOKEN`). `api/mem.js` diperbaiki supaya membaca nama env tersebut (dgn fallback nama
+  lama `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN`). Aktivasi fitur ini pakai password
+  `MEMORY_PASSWORD` yang diset di env Vercel.
+- Menutup catatan v5.7.0 yang menyebut ingatan "masih butuh Vercel KV" — sekarang sudah menyala.
+- APK: `JadwalGuru-v5.8.0.apk`.
+
 ## v5.7.0 — AI Jadwal live di web + update APK tanpa uninstall
 - **AI Jadwal kini berfungsi penuh di web produksi**: server `/api/ai` memakai `GOOGLE_API_KEY` /
   `OPENROUTER_API_KEY` yang didaftarkan sebagai env Vercel (key tidak pernah disimpan di repo —
