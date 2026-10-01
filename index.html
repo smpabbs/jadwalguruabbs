@@ -410,6 +410,7 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
 #panel-pengganti .pg-cand:active { background:#e9dcc0; }
 #panel-pengganti .pg-cand.pg-selected { background:#1a1511; border-color:#1a1511; color:#d4a857; font-weight:700; }
 #panel-pengganti .pg-cand .pg-free { font-size:9.5px; color:#6b8f3c; font-weight:700; white-space:nowrap; }
+#panel-pengganti .pg-cand .pg-busy { font-size:9.5px; color:#b3543f; font-weight:700; white-space:nowrap; }
 #panel-pengganti .pg-chosen-sel { font-size:12.5px; font-weight:700; color:#39769d; white-space:nowrap; }
 #panel-pengganti .pg-legenda { font-size:9.5px; color:#a89a85; text-align:center; padding:8px 6px 2px; }
 #panel-pengganti .pg-sharebar { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
@@ -482,6 +483,7 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
 @keyframes aiBlink { 0%,80%,100%{opacity:.25} 40%{opacity:1} }
 #panel-ai .ai-ghead { font-weight:700; font-size:12.5px; color:#3a2f22; margin:8px 0 4px; }
 #panel-ai .ai-tier { font-size:12px; line-height:1.5; margin:1px 0; }
+#panel-ai .ai-pg-leg { font-size:10.5px; line-height:1.45; margin:4px 0 0; opacity:.75; }
 #panel-ai .ai-tier .ai-tl { display:inline-block; font-weight:800; font-size:9px; padding:1px 6px; border-radius:6px; margin-right:4px; }
 #panel-ai .ai-tl-t1{ background:#f3e4c2; color:#8a5f18; }
 #panel-ai .ai-tl-t2a{ background:#eaf2f8; color:#39769d; }
@@ -1501,12 +1503,19 @@ function pgRecPenuh(g,d,jl,exG,exKey){var t1=[],t2a=[],t2b=[],t3=[],sj=pgAllSubj
       if(sj.some(function(s){return st.indexOf(s)!==-1;})){t2a.push(n);return;}
       if(st.some(function(s){return pgRUMP[s]&&rs[pgRUMP[s]];})){t2b.push(n);return;}t3.push(n);});return {t1:t1,t2a:t2a,t2b:t2b,t3:t3};}
 function pgRecBlok(g,d,js,lead,exG,exKey){if(lead){var t1=[],t2=[],g2=pgGenderGuru(g),ls=pgLT[lead]||[];
-      order.forEach(function(n){if(pgAbsenList.indexOf(n)!==-1)return;if(!pgLonggarPenuhR(n,d,js,exG,exKey))return;if(pgGenderGuru(n)!==g2)return;if(ls.indexOf(n)!==-1)t2.push(n);else t1.push(n);});
+      order.forEach(function(n){if(pgAbsenList.indexOf(n)!==-1||pgGenderGuru(n)!==g2||ls.indexOf(n)!==-1)return;
+        if(pgLonggarPenuhR(n,d,js,exG,exKey))t1.push(n);});
+      // T2 = tim Leadership angkatan itu, SELALU ditampilkan walau semua sedang rapat/mengajar
+      // (verifikasi 2026-10-01: 45/45 kasus anggota tim sibuk di jam rapatnya sendiri — dulu T2
+      // tersaring habis jadi tier mati & list bisa kosong total). Urut: yg longgar duluan.
+      ls.forEach(function(n){if(n===g||pgAbsenList.indexOf(n)!==-1||pgGenderGuru(n)!==g2)return;t2.push(n);});
+      t2.sort(function(a,b){var fa=pgLonggarPenuhR(a,d,js,g,null),fb=pgLonggarPenuhR(b,d,js,g,null);return fa===fb?0:(fa?-1:1);});
       return {t1:t1,t2a:t2,t2b:[],t3:[],lead:true,kelasLead:lead};}return pgRecPenuh(g,d,js,exG,exKey);}
 // Semua tier non-kosong ditampilkan (t1→t2a→t2b→t3): daftar calon pengganti lengkap per tier.
 function pgChip(g,n,jk){var blkg=pgBlok[g]||[],selG=pgSEL[g]||{};
     var isSel=jk==='ALL'?(blkg.length>0&&blkg.every(function(b){return selG[b.key]===n;})):selG[jk]===n;
-    var f=(pgJamLst[g]||[]).filter(function(j){return pgLonggar(n,pgDSel,j);});var sx=f.length?'<span class="pg-free">✓ '+f.join(',')+'</span>':'';
+    var jams=jk==='ALL'?(pgJamLst[g]||[]):((blkg.filter(function(b){return b.key===jk;})[0]||{jams:[]}).jams);
+    var f=jams.filter(function(j){return pgLonggar(n,pgDSel,j);});var sx=f.length?'<span class="pg-free">✓ '+f.join(',')+'</span>':'<span class="pg-busy">· sibuk</span>';
     return '<span class="pg-cand'+(isSel?' pg-selected':'')+'" onclick="pgPilih(\''+g+'\','+(jk==='ALL'?"'ALL'":"'"+jk+"'")+",'"+n+"')"+'">'+n+sx+'</span>';}
 function pgRowChips(g,r,jk){var ks=['t1','t2a','t2b','t3'].filter(function(k){return r[k]&&r[k].length;});if(!ks.length)return '<span class="pg-r-empty">—</span>';var h='';
     ks.forEach(function(k){var lbl=pgTL[k][1];if(r.lead){lbl=k==='t1'?'T1 · '+(pgGenderGuru(g)==='putra'?'♂ Putra':'♀ Putri'):(k==='t2a'?('T2 · Leadership '+r.kelasLead.replace('Leadership ','')):lbl);}
@@ -1581,7 +1590,10 @@ function pgRTeacher(g){var t=teachers[g],blok=pgBlok[g]||[],lead=blok.some(pgIsL
   h+='<div class="pg-card"><table class="pg-r-table"><thead><tr><th>Jam</th><th>Kelas · Mapel</th><th>Rekomendasi Guru Pengganti</th></tr></thead><tbody>';
   blok.forEach(function(b){var rr=pgRecBlok(g,pgDSel,b.jams,pgIsLead(b)?b.kelas:null,g,b.key);
     h+='<tr><td class="pg-c-jam">'+b.key+'<div class="pg-c-time">'+pgWaktuBlok(t,pgDSel,b)+'</div></td><td class="pg-c-km"><span class="pg-m">'+b.kelas+'</span> · '+(b.subjek.join(', ')||'—')+'</td><td>'+pgRowChips(g,rr,b.key)+'</td></tr>';});
-  h+='</tbody></table><div class="pg-legenda">T1 piket KBM · T2a mapel sama · T2b rumpun sama · T3 longgar lain — ✓ hijau = jam longgar · klik nama utk pilih/ganti'+(lead?' · Leadership: hanya guru sejenis':'')+'</div></div></div>';return h;}
+  var leg=lead
+    ?'T1 = guru sejenis yg longgar · T2 = tim Leadership angkatan (selalu tampil; ✓ = longgar, <span style="color:#b3543f;font-weight:700;">· sibuk</span> = masih ada jadwal — koordinasi dulu) · T2a mapel/T2b rumpun/T3 utk blok KBM biasa — klik nama utk pilih/ganti'
+    :'T1 piket KBM · T2a mapel sama · T2b rumpun sama · T3 longgar lain — ✓ = jam longgar · klik nama utk pilih/ganti';
+  h+='</tbody></table><div class="pg-legenda">'+leg+'</div></div></div>';return h;}
 function pgRAll(){if(!pgHasilEl)return;pgHasilEl.innerHTML=pgAbsenList.map(pgRTeacher).join('');pgRStatus();}
 function pgRStatus(){if(!pgAbsenList.length||!pgDSel){pgHideStatus();return;}var tr=0,jml=0;
   pgAbsenList.forEach(function(g){(pgBlok[g]||[]).forEach(function(b){jml++;if(pgSEL[g]&&pgSEL[g][b.key])tr++;});});
@@ -1711,6 +1723,7 @@ var aiSYS = 'Kamu asisten internal aplikasi jadwal mengajar guru SMP ABBS. ' +
   'Struktur: jawab inti dulu (1-2 kalimat), lalu rincian terstruktur di bawahnya. ' +
   'JANGAN pakai tanda pagar/heading markdown (mis. ###) — utk judul bagian cukup pakai **tebal**. ' +
   'Khusus opsi pengganti: tiap tier (T1/T2a/T2b/T3) di baris sendiri, format pendek "T1: <nama>", tanpa deskripsi arti tier. ' +
+  'Kalau ada anggota T2 Leadership bertanda (sibuk), tulis tandanya (mis. "T2: Mr A (sibuk), Mr B") dan ingatkan 1x bahwa yg sibuk perlu koordinasi dulu. ' +
   'Hindari kalimat pembuka/penutup berlebihan — langsung ke isi.\n' +
   'Jadwal ini rutinitas mingguan; libur kalender sekolah tidak diketahui sistem.';
 function aiTmin(s){ var p = String(s).split('.'); return ((+p[0]) || 0) * 60 + ((+p[1]) || 0); }
@@ -1901,6 +1914,9 @@ function aiPenggantiHtml(gurus, d){ var snap = aiSnap();
   gurus.forEach(function(g){ pgJamLst[g] = pgJamMengajar(g, d);
     pgBlok[g] = pgBuildBlok(g, d, pgJamLst[g]); pgSEL[g] = {}; });
   var h = '<div class="ai-pg-intro">Rekomendasi guru pengganti \u2014 <b>' + dayId[d] + '</b> \u00b7 berhalangan: <b>' + gurus.join(', ') + '</b></div>';
+  if (gurus.some(function(g){ return (pgBlok[g] || []).some(pgIsLead); }))
+    h += '<div class="ai-pg-leg">Keterangan: T1 = guru sejenis yg longgar \u00b7 T2 = tim Leadership angkatan \u2014 selalu tampil; ' +
+      '(sibuk) = masih ada jadwal, koordinasi dulu \u00b7 utk blok KBM biasa: T2a mapel, T2b rumpun, T3 lain</div>';
   gurus.forEach(function(g){ var bl = pgBlok[g] || [];
     h += '<div class="ai-ghead">Berhalangan: ' + g + ' (' + bl.length + ' blok)</div>';
     h += '<table><thead><tr><th>Jam</th><th>Kelas \u00b7 Mapel</th><th>Rekomendasi</th></tr></thead><tbody>';
@@ -1919,9 +1935,12 @@ function aiPenggantiHtml(gurus, d){ var snap = aiSnap();
     h += '</tbody></table>'; });
   aiRestore(snap);
   return h; }
-function aiTierText(r){ var out = [];
+function aiTierText(r,d,js){ var out = [];
   function mk(k, lbl){ var a = r[k] || []; if (!a.length) return;
-    var nm = a.slice(0, 6).join(', ') + (a.length > 6 ? ' (+' + (a.length - 6) + ')' : '');
+    var nm = a.map(function(n){ if (r.lead && d && js &&
+        !js.every(function(j){ var c = teachers[n].cells[d + '|' + j]; return !c || !c.length; })) return n + ' (sibuk)';
+      return n; });
+    nm = nm.slice(0, 6).join(', ') + (a.length > 6 ? ' (+' + (a.length - 6) + ')' : '');
     out.push(lbl + ' ' + nm); }
   if (r.lead){ mk('t1', 'T1:'); mk('t2a', 'T2:'); }
   else { mk('t1', 'T1:'); mk('t2a', 'T2a:'); mk('t2b', 'T2b:'); mk('t3', 'T3:'); }
@@ -1938,8 +1957,12 @@ function aiFactsPengganti(gurus, d){ var snap = aiSnap();
       var rr = pgRecBlok(g, d, b.jams, pgIsLead(b) ? b.kelas : null, g, b.key);
       out.push('jam ' + b.key + ' (' + pgWaktuBlok(t, d, b) + '): kelas ' + b.kelas +
         (b.subjek.length ? ' \u00b7 ' + b.subjek.join(', ') : ' \u00b7 Leadership'));
-      out.push(aiTierText(rr)); }); });
+      out.push(aiTierText(rr, d, b.jams)); }); });
   aiRestore(snap);
+  if (gurus.some(function(g){ return (pgBlok[g] || []).some(pgIsLead); }))
+    out.push('Keterangan tier: T1 = guru sejenis (putra/putri sama dgn guru yg absen) yg longgar; ' +
+      'T2 = tim Leadership angkatan itu, SELALU dicantumkan walau bertanda (sibuk) — piket yg koordinasi ' +
+      'melepasnya dr rapat/mengajar; utk blok KBM biasa: T1 = piket KBM, T2a = mapel sama, T2b = rumpun, T3 = lainnya.');
   out.push('Catatan: ini jadwal rutin; hari libur kalender tidak diketahui sistem.');
   return out.join('\n'); }
 function aiResolve(q, now){ now = now || new Date();
@@ -2113,7 +2136,9 @@ var aiSYS_A = 'Kamu asisten AI jadwal guru SMP ABBS. Jawab bahasa Indonesia, rin
   'utk hal penting, bullet "-" / nomor utk daftar (mis. daftar hari/jam). Kalau data cocok berkolom ' +
   '(mis. Jam | Kelas | Guru), sajikan sbg TABEL markdown dgn baris pemisah |---|. ' +
   'Khusus opsi guru pengganti (T1/T2a/T2b/T3): tulis tiap tier di BARIS SENDIRI dengan format pendek ' +
-  '"T1: <nama>", "T2a: <nama>" dst, tanpa penjelasan arti tiap tier. Hindari kalimat pembuka/penutup ' +
+  '"T1: <nama>", "T2a: <nama>" dst, tanpa penjelasan arti tiap tier. Kalau ada anggota T2 Leadership ' +
+  'bertanda (sibuk), tulis tandanya (mis. "T2: Mr A (sibuk), Mr B") dan ingatkan 1x bahwa yg sibuk perlu ' +
+  'koordinasi dulu. Hindari kalimat pembuka/penutup ' +
   'berlebihan. JANGAN pakai tanda pagar/heading markdown (mis. ###) — judul bagian cukup pakai **tebal**. ' +
   'Jawab inti dulu, rincian di bawah.';
 function aiTDay(v){

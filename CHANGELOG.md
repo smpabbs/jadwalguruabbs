@@ -1,6 +1,30 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.8.1 — Fix aturan rekomendasi Leadership: T2 (tim angkatan) kini selalu tampil
+- **Bug ditemukan lewat pertanyaan user**: tier T2 (guru Leadership jenjang sama) praktis TIDAK PERNAH
+  aktif — aturan lamanya mensyaratkan calon longgar, padahal 100% anggota tim sedang hadir rapat di jam
+  itu sendiri (diverifikasi: 45/45 kasus anggota tim sibuk). Efeknya bertingkat: T2 mati terus, dan
+  begitu kandidat T1 yang sedikit itu (2–5 orang) ikut absen di batch yang sama, list pengganti blok
+  Leadership jadi KOSONG TOTAL tanpa penjelasan (contoh nyata: Senin, 6 guru putra absen bersamaan →
+  3 guru Leadership 7 tanpa satu pun rekomendasi).
+- **Aturan baru (opsi A, pilihan user)**: T2 = tim Leadership angkatan itu **SELALU ditampilkan** walau
+  semua sedang rapat/mengajar — mereka memang orang paling pas mengambil alih. Yang longgar diurut di
+  atas; yang sibuk diberi badge merah "**· sibuk**" (piket yang koordinasi melepasnya). List blok
+  Leadership kini mustahil kosong. Syarat gender & pengecualian sesama guru absen tetap berlaku.
+- **Keterangan tier (permintaan user)**: legenda tiap kartu guru kini spesifik — kartu Leadership
+  menjelaskan T1/T2 dan arti ✓ vs · sibuk; kartu biasa tetap T1 KBM/T2a mapel/T2b rumpun/T3.
+- **Kualitas ✓ jadi akurat per blok**: dulu ✓ menghitung dari SEMUA jam mengajar guru absen di hari itu
+  (bisa menyesatkan di baris blok tertentu), sekarang dihitung dari jam blok yang bersangkutan.
+- **Ikut disesuaikan — jalur AI chat**: kartu rekomendasi HTML + FAKTA untuk LLM + 2 prompt sistem
+  sekarang mengenal tanda "(sibuk)" pada anggota T2 dan mengingatkan koordinasi dulu; keterangan tier
+  Leadership ditampilkan saat ada blok Leadership.
+- Verifikasi: harness Node baru `scripts/test_pg_lead.mjs` (fungsi asli + data asli) — **424 pass,
+  0 fail**: 45 kasus absen tunggal (T2 selalu terisi, gender & self-exclusion benar, sort longgar-dulu),
+  batch 6 guru (dulu kosong, kini ada T2), chip sibuk/longgar, reservasi lintas-guru, regresi blok KBM
+  biasa & self-exclusion batch, aiTierText (sibuk), chip kartu emas.
+- APK: `JadwalGuru-v5.8.1.apk`.
+
 ## v5.8.0 — Ingatan antar-sesi AI aktif di produksi (Vercel KV)
 - **Fitur "ingatan antar-sesi" AI kini berfungsi penuh di produksi**: database Vercel KV (Upstash
   Redis) sudah dibuat & disambungkan ke project, env-nya otomatis ter-inject (`KV_REST_API_URL` /
