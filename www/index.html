@@ -1759,7 +1759,14 @@ var aiKB = 'ATURAN JAM & HARI SEKOLAH:\n' +
   '- Leadership 7/8/9 = kegiatan angkatan (campur) sekali seminggu: Kelas 7 Senin jam 5-6, Kelas 8 Selasa jam 5-6, Kelas 9 Rabu jam 5-6.\n' +
   '- Mapel tanpa guru tetap terisi di jadwal kelas: HT (Senin & Jumat jam 1), Scout (Sabtu jam 5-6, kelas 7-8), SBK (Jumat jam 8-9), SD (Kamis jam 8-9, kelas 7-8).\n' +
   'GURU:\n' +
-  '- Total 36 guru. Gender guru (utk rekomendasi segender): prefix Mr/Ust = putra; Ms/Us = putri.';
+  '- Total 36 guru. Gender guru (utk rekomendasi segender): prefix Mr/Ust = putra; Ms/Us = putri.\n' +
+  'ATURAN REKOMENDASI GURU PENGGANTI (fitur "Cari Guru Pengganti"):\n' +
+  '- Blok = gabungan jam beruntun dgn kelas & mapel sama; unit penggantian per blok.\n' +
+  '- Blok KBM biasa: T1 = petugas piket KBM yg longgar, T2a = mapel sama, T2b = rumpun mapel, T3 = longgar lain. Tanda ✓ = longgar di jam blok itu.\n' +
+  '- Blok Leadership: T1 = guru SEGENDER dgn yg absen yg longgar; T2 = tim Leadership angkatan itu, SELALU dicantumkan walau bertanda (sibuk) — yg sibuk perlu dikoordinasi dulu utk dilepas dr rapat/mengajar.\n' +
+  '- Guru yg berhalangan SEHARI PENUH tidak pernah masuk daftar kandidat.\n' +
+  '- Guru yg berhalangan SEBAGIAN jam saja (masih ada bloknya yg tidak digantikan) tetap BOLEH jadi kandidat utk guru berhalangan lain di jam kosongnya, asal longgar semua jam blok itu & belum dipakai menggantikan di jam yang sama.\n' +
+  '- Modul mendukung ABSEN PARSIAL: user mencentang blok jam yg diganti (default semua = sehari penuh, tombol "Sehari penuh ✓"); blok yg tidak dicentang tidak butuh pengganti dan tidak masuk rekap.';
 var aiSYS = 'Kamu asisten internal aplikasi jadwal mengajar guru SMP ABBS. ' +
   'Jawab dalam bahasa Indonesia, ringkas, rapi, dan ramah. ' +
   'Jika ada blok "FAKTA", jawabanmu HARUS berdasarkan fakta itu persis — jangan mengubah ' +
@@ -1776,6 +1783,7 @@ var aiSYS = 'Kamu asisten internal aplikasi jadwal mengajar guru SMP ABBS. ' +
   'JANGAN pakai tanda pagar/heading markdown (mis. ###) — utk judul bagian cukup pakai **tebal**. ' +
   'Khusus opsi pengganti: tiap tier (T1/T2a/T2b/T3) di baris sendiri, format pendek "T1: <nama>", tanpa deskripsi arti tier. ' +
   'Kalau ada anggota T2 Leadership bertanda (sibuk), tulis tandanya (mis. "T2: Mr A (sibuk), Mr B") dan ingatkan 1x bahwa yg sibuk perlu koordinasi dulu. ' +
+  'Aturan kandidat: guru berhalangan SEHARI PENUH tidak pernah jadi kandidat; yg berhalangan SEBAGIAN jam tetap bisa jadi kandidat utk guru lain di jam kosongnya; modul "Cari Guru Pengganti" punya langkah pilih jam utk absen parsial (blok tidak dicentang = tidak perlu pengganti). ' +
   'Hindari kalimat pembuka/penutup berlebihan — langsung ke isi.\n' +
   'Jadwal ini rutinitas mingguan; libur kalender sekolah tidak diketahui sistem.';
 function aiTmin(s){ var p = String(s).split('.'); return ((+p[0]) || 0) * 60 + ((+p[1]) || 0); }
@@ -1969,7 +1977,8 @@ function aiPenggantiHtml(gurus, d){ var snap = aiSnap();
   var h = '<div class="ai-pg-intro">Rekomendasi guru pengganti \u2014 <b>' + dayId[d] + '</b> \u00b7 berhalangan: <b>' + gurus.join(', ') + '</b></div>';
   if (gurus.some(function(g){ return (pgBlok[g] || []).some(pgIsLead); }))
     h += '<div class="ai-pg-leg">Keterangan: T1 = guru sejenis yg longgar \u00b7 T2 = tim Leadership angkatan \u2014 selalu tampil; ' +
-      '(sibuk) = masih ada jadwal, koordinasi dulu \u00b7 utk blok KBM biasa: T2a mapel, T2b rumpun, T3 lain</div>';
+      '(sibuk) = masih ada jadwal, koordinasi dulu \u00b7 utk blok KBM biasa: T2a mapel, T2b rumpun, T3 lain \u00b7 ' +
+      'guru absen sebagian boleh jadi kandidat di jam kosongnya</div>';
   gurus.forEach(function(g){ var bl = pgBlok[g] || [];
     h += '<div class="ai-ghead">Berhalangan: ' + g + ' (' + bl.length + ' blok)</div>';
     h += '<table><thead><tr><th>Jam</th><th>Kelas \u00b7 Mapel</th><th>Rekomendasi</th></tr></thead><tbody>';
@@ -2012,6 +2021,9 @@ function aiFactsPengganti(gurus, d){ var snap = aiSnap();
         (b.subjek.length ? ' \u00b7 ' + b.subjek.join(', ') : ' \u00b7 Leadership'));
       out.push(aiTierText(rr, d, b.jams)); }); });
   aiRestore(snap);
+  out.push('Aturan kandidat: guru berhalangan SEHARI PENUH tidak pernah masuk daftar kandidat; ' +
+    'guru berhalangan SEBAGIAN jam (masih ada bloknya yg tidak digantikan) boleh jadi kandidat utk guru lain ' +
+    'di jam kosongnya, asal longgar semua jam blok itu & belum dipakai menggantikan di jam sama.');
   if (gurus.some(function(g){ return (pgBlok[g] || []).some(pgIsLead); }))
     out.push('Keterangan tier: T1 = guru sejenis (putra/putri sama dgn guru yg absen) yg longgar; ' +
       'T2 = tim Leadership angkatan itu, SELALU dicantumkan walau bertanda (sibuk) — piket yg koordinasi ' +
@@ -2191,7 +2203,8 @@ var aiSYS_A = 'Kamu asisten AI jadwal guru SMP ABBS. Jawab bahasa Indonesia, rin
   'Khusus opsi guru pengganti (T1/T2a/T2b/T3): tulis tiap tier di BARIS SENDIRI dengan format pendek ' +
   '"T1: <nama>", "T2a: <nama>" dst, tanpa penjelasan arti tiap tier. Kalau ada anggota T2 Leadership ' +
   'bertanda (sibuk), tulis tandanya (mis. "T2: Mr A (sibuk), Mr B") dan ingatkan 1x bahwa yg sibuk perlu ' +
-  'koordinasi dulu. Hindari kalimat pembuka/penutup ' +
+  'koordinasi dulu. Aturan: guru berhalangan SEHARI PENUH tidak pernah jadi kandidat; yg berhalangan ' +
+  'SEBAGIAN jam tetap bisa jadi kandidat utk guru lain di jam kosongnya. Hindari kalimat pembuka/penutup ' +
   'berlebihan. JANGAN pakai tanda pagar/heading markdown (mis. ###) — judul bagian cukup pakai **tebal**. ' +
   'Jawab inti dulu, rincian di bawah.';
 function aiTDay(v){

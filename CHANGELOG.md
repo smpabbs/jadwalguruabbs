@@ -1,6 +1,25 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.9.2 — AI Jadwal memahami aturan pengganti terbaru (T2 sibuk + absen parsial)
+- **Fitur "Tanya AI" diselaraskan dengan aturan yang disepakati beberapa hari terakhir** — 5 titik
+  tempat penanaman, supaya LLM selalu berpegang pada aturan resmi saat menjawab/merekomendasikan:
+  1. `aiKB` (pengetahuan bersama kedua jalur AI): seksi baru "ATURAN REKOMENDASI GURU PENGGANTI" —
+     definisi blok, tier T1/T2a/T2b/T3 utk blok KBM biasa, aturan blok Leadership (T2 tim angkatan
+     selalu tampil, "(sibuk)" = koordinasi dulu, wajib segender), guru absen SEHARI PENUH tidak
+     pernah jadi kandidat, guru absen SEBAGIAN jam boleh jadi kandidat utk guru lain di jam
+     kosongnya (syarat longgar semua jam & belum terpakai di jam sama), dan langkah "pilih jam"
+     (absen parsial) di modul Cari Guru Pengganti.
+  2. Prompt jalur langsung (`aiSYS`) + 3. prompt jalur tool (`aiSYS_A`): aturan ringkas absen
+     penuh vs parsial ditambahkan di dekat instruksi "(sibuk)".
+  4. FAKTA `rekomendasi_pengganti` (`aiFactsPengganti`, dipakai jalur langsung & tool): baris
+     "Aturan kandidat" selalu disertakan, jadi jawaban AI ter-grounding per permintaan.
+  5. Legenda kartu rekomendasi AI (`aiPenggantiHtml`): + "guru absen sebagian boleh jadi kandidat
+     di jam kosongnya".
+- Verifikasi: `test_pg_lead.mjs` 439 pass, `test_pg_ui.mjs` 11 pass, sintaks script inline OK,
+  `www/index.html` identik.
+- APK: `JadwalGuru-v5.9.2.apk`.
+
 ## v5.9.1 — Fix: picker "pilih jam" kosong setelah Ganti hari / Ganti jam
 - **Bug (dilaporkan user, langsung setelah v5.9.0 dipakai)**: ketika alur sudah berjalan lalu user
   memilih chip **"Ganti hari"** (atau "Ganti jam"), langkah "pilih jam" tidak muncul lagi dan alur
