@@ -1,6 +1,30 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.9.0 — Ganti sebagian jam saja (absen parsial) + guru hadir-sebagian jadi kandidat
+- **Langkah baru "pilih jam"**: setelah memilih hari, asisten menampilkan daftar blok jam per guru
+  (mis. "Jam 1–2 · 7A · Matematika · 07.00–08.20") — semua tercentang default (= perilaku lama, sehari
+  penuh). Hilangkan centang blok yang tidak perlu diganti, lalu Lanjut. Tombol **"Sehari penuh ✓"**
+  untuk konfirmasi cepat. Hanya blok terpilih yang masuk tabel rekomendasi, dihitung di status
+  "x/y blok", muncul di rekap & teks WA. Tombol chip **"Ganti jam"** ditambahkan untuk membuka ulang
+  pemilihan.
+- **Guru absen yang HADIR SEBAGIAN kini bisa jadi kandidat pengganti** (permintaan user): contoh —
+  Mr Febri hanya perlu digantikan jam 1–2 → di jam kosongnya (tidak mengajar) dia ikut muncul di list
+  kandidat untuk guru berhalangan lain. Aturannya: guru absen boleh jadi kandidat hanya jika absennya
+  parsial (masih ada bloknya yang tidak dipilih → dia hadir di sekolah) DAN longgar semua jam blok
+  yang ditawarkan, plus tidak sedang terpakai di jam sama (reservasi tetap berlaku). Guru yang absen
+  SEHARI PENUH tetap dikeluarkan dari semua list (memang tidak di sekolah) — perilaku lama terjaga.
+- **Tim Leadership absen parsial**: anggota tim yang hadir sebagian tetap tampil di T2 (aturan
+  v5.8.1), kecuali absennya mencakup semua jam blok rapat itu (sedang pergi). Anggota yang absen
+  sehari penuh tetap dikecualikan.
+- Kartu guru menampilkan "1/5 jam" saat absen parsial; legenda kartu biasa menambah keterangan bahwa
+  guru berhalangan yang hadir sebagian ikut jadi kandidat di jam longgarnya.
+- Verifikasi: harness `scripts/test_pg_lead.mjs` — **439 pass, 0 fail** (424 lama + 15 baru): fixture
+  absen-parsial (masuk kandidat saat parsial, keluar saat penuh & saat jamnya mengajar), reservasi
+  lintas-guru untuk sub parsial, T2 Leadership 3 kondisi absen anggota tim (penuh/parsial-non-rapat/
+  parsial-di-jam-rapat). Sintaks seluruh script inline diperiksa.
+- APK: `JadwalGuru-v5.9.0.apk`.
+
 ## v5.8.1 — Fix aturan rekomendasi Leadership: T2 (tim angkatan) kini selalu tampil
 - **Bug ditemukan lewat pertanyaan user**: tier T2 (guru Leadership jenjang sama) praktis TIDAK PERNAH
   aktif — aturan lamanya mensyaratkan calon longgar, padahal 100% anggota tim sedang hadir rapat di jam

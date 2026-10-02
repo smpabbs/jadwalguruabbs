@@ -26,14 +26,15 @@ const aiTT = src.slice(src.indexOf('function aiTierText'), src.indexOf('function
 
 const prelude = dataStmt + '\n' + piketStmt + '\n' + guruGenderStmt + `
 var order=DATA.order, teachers=DATA.teachers, days=DATA.days, dayId=DATA.day_id, validByDay=DATA.valid_lessons_by_day;
-var pgAbsenPick={}, pgAbsenList=[], pgDSel=null, pgJamLst={}, pgBlok={}, pgSEL={};
+var pgAbsenPick={}, pgAbsenList=[], pgDSel=null, pgJamLst={}, pgBlok={}, pgSEL={}, pgParsial={}, pgOff={};
 ` + '\n' + pgBlock + '\n' + aiTT;
 // jalankan di scope global lalu ambil lewat globalThis
 (0, eval)(prelude + `
 globalThis.__T = { order, teachers, guruGender, pgGenderGuru, pgRecBlok, pgRecPenuh, pgChip, pgRowChips,
-  pgBuildBlok, pgJamMengajar, pgIsLead, pgLonggar, aiTierText, pgLT, pgAbsenList, pgDSel, pgJamLst, pgBlok, pgSEL,
+  pgBuildBlok, pgJamMengajar, pgIsLead, pgLonggar, aiTierText, pgLT, pgAbsenList, pgDSel, pgJamLst, pgBlok, pgSEL, pgParsial,
+  pgBisaGanti, pgAbsenJams, pgLonggarPenuhR,
   set(absen,d){ pgAbsenList=absen.slice(); pgDSel=d;
-    [pgJamLst,pgBlok,pgSEL].forEach(function(o){ Object.keys(o).forEach(function(k){ delete o[k]; }); }); },
+    [pgJamLst,pgBlok,pgSEL,pgParsial,pgOff].forEach(function(o){ Object.keys(o).forEach(function(k){ delete o[k]; }); }); },
   blokOf(g,d){ pgJamLst[g]=pgJamMengajar(g,d); pgBlok[g]=pgBuildBlok(g,d,pgJamLst[g]); pgSEL[g]={}; return pgBlok[g]; } };
 `);
 const T = globalThis.__T;
@@ -139,6 +140,102 @@ T.set(['Mr Hang'], 'Saturday');
 T.blokOf('Mr Hang', 'Saturday');
 const pf = pgRecPenuh('Mr Hang', 'Saturday', T.pgJamLst['Mr Hang'], 'Mr Hang', null);
 if (pf.t1.length) { const c = pgChip('Mr Hang', pf.t1[0], 'ALL'); ok(c.includes("'ALL'"), 'chip ALL memakai kunci ALL'); }
+
+// === UJI 8: absen parsial (v5.9.0) — guru berhalangan yg HADIR SEBAGIAN ikut jadi kandidat ===
+console.log('UJI 8: absen parsial -> guru absen jadi kandidat utk guru lain di jam longgarnya');
+const semua = rr => [].concat(rr.t1, rr.t2a, rr.t2b, rr.t3);
+let fiks = null;
+outer8:
+for (const d of DATA.days) {
+  for (const X of T.order) {
+    const jmX = T.pgJamMengajar(X, d);
+    if (!jmX.length || T.pgBuildBlok(X, d, jmX).length < 2) continue;
+    for (const Y of T.order) {
+      if (Y === X || !T.pgJamMengajar(Y, d).length) continue;
+      const bY = T.pgBuildBlok(Y, d, T.pgJamMengajar(Y, d)).find(b => !pgIsLead(b) && b.jams.every(j => !teachers[X].cells[d + '|' + j]));
+      const bY2 = T.pgBuildBlok(Y, d, T.pgJamMengajar(Y, d)).find(b => !pgIsLead(b) && b.jams.some(j => !!teachers[X].cells[d + '|' + j]));
+      if (bY && bY2) { fiks = { d, X, Y, bY, bY2, bX: T.pgBuildBlok(X, d, jmX)[0] }; break outer8; }
+    }
+  }
+}
+ok(!!fiks, 'ketemu fixture absen-parsial (X longgar & mengajar di blok2 berbeda milik Y)');
+if (fiks) {
+  const { d, X, Y, bY, bY2, bX } = fiks;
+  // (a) X absen SEHARI PENUH -> tetap bukan kandidat (perilaku lama terjaga)
+  T.set([Y, X], d);
+  T.blokOf(Y, d); T.blokOf(X, d);
+  let rr = pgRecBlok(Y, d, bY.jams, null, Y, bY.key);
+  ok(!semua(rr).includes(X), X + ' absen sehari penuh TIDAK jadi kandidat ' + Y);
+  // (b) X hadir SEBAGIAN (simulasi pgJamLanjut: cuma blok pertama X yg diganti) -> masuk kandidat
+  T.pgJamLst[X] = bX.jams.slice(); T.pgBlok[X] = T.pgBuildBlok(X, d, bX.jams); T.pgSEL[X] = {};
+  T.pgParsial[X] = true;
+  rr = pgRecBlok(Y, d, bY.jams, null, Y, bY.key);
+  ok(semua(rr).includes(X), X + ' hadir sebagian -> jadi kandidat di blok ' + bY.key + ' (longgar semua jamnya)');
+  // (c) ... tapi tidak di jam yang X MENGAJAR
+  rr = pgRecBlok(Y, d, bY2.jams, null, Y, bY2.key);
+  ok(!semua(rr).includes(X), X + ' TIDAK jadi kandidat di blok ' + bY2.key + ' (jam itu dia mengajar)');
+}
+
+// === UJI 9: kandidat parsial tetap tunduk reservasi lintas-guru ===
+console.log('UJI 9: reservasi — sub yang sudah dipakai guru lain tidak muncul lagi di jam sama');
+let f9 = null;
+outer9:
+for (const d of DATA.days) {
+  for (const X of T.order) {
+    if (!T.pgJamMengajar(X, d).length) continue;
+    for (const Y of T.order) {
+      if (Y === X || !T.pgJamMengajar(Y, d).length) continue;
+      const bY = T.pgBuildBlok(Y, d, T.pgJamMengajar(Y, d)).find(b => !pgIsLead(b) && b.jams.every(j => !teachers[X].cells[d + '|' + j]));
+      if (!bY) continue;
+      for (const Z of T.order) {
+        if (Z === X || Z === Y || !T.pgJamMengajar(Z, d).length) continue;
+        const bZ = T.pgBuildBlok(Z, d, T.pgJamMengajar(Z, d)).find(b => !pgIsLead(b) &&
+          b.jams.some(j => bY.jams.includes(j)) && b.jams.every(j => !teachers[X].cells[d + '|' + j]));
+        if (bZ) { f9 = { d, X, Y, Z, bY, bZ }; break outer9; }
+      }
+    }
+  }
+}
+ok(!!f9, 'ketemu fixture reservasi (bY & bZ beririsan jam, X longgar di keduanya)');
+if (f9) {
+  const { d, X, Y, Z, bY, bZ } = f9;
+  T.set([Y, Z], d);
+  T.blokOf(Y, d); T.blokOf(Z, d);
+  T.pgSEL[Y][bY.key] = X; // Y memakai X di blok bY
+  const rr = pgRecBlok(Z, d, bZ.jams, null, Z, bZ.key);
+  ok(!semua(rr).includes(X), X + ' sudah cover ' + Y + ' di jam ' + bY.key + ' -> tidak muncul utk blok ' + bZ.key + ' milik ' + Z);
+}
+
+// === UJI 10: anggota tim Leadership yg absen parsial di T2 ===
+console.log('UJI 10: anggota tim Leadership absen parsial — tampil di T2 kecuali absennya menutup blok rapat');
+for (const [kelas, day] of Object.entries(SESI)) {
+  const tim = pgLT[kelas];
+  if (tim.length < 2) continue;
+  const g = tim[0], m = tim[1];
+  T.set([g, m], day);
+  const blG = T.blokOf(g, day).find(pgIsLead);
+  const bloksM = T.pgBuildBlok(m, day, T.pgJamMengajar(m, day));
+  const blMlead = bloksM.find(pgIsLead);
+  const blMlain = bloksM.find(b => !pgIsLead(b));
+  // (a) absen SEHARI PENUH -> tidak tampil di T2 (memang tidak di sekolah)
+  T.blokOf(m, day); T.pgParsial[m] = false;
+  let rr = pgRecBlok(g, day, blG.jams, kelas, g, blG.key);
+  ok(!rr.t2a.includes(m), kelas + ': ' + m + ' absen sehari penuh tidak di T2');
+  // (b) absen parsial di blok NON-rapat -> tetap tampil di T2 (dia hadir di jam rapat)
+  if (blMlain) {
+    T.pgJamLst[m] = blMlain.jams.slice(); T.pgBlok[m] = T.pgBuildBlok(m, day, blMlain.jams); T.pgSEL[m] = {};
+    T.pgParsial[m] = true;
+    rr = pgRecBlok(g, day, blG.jams, kelas, g, blG.key);
+    ok(rr.t2a.includes(m), kelas + ': ' + m + ' absen parsial (blok ' + blMlain.key + ') tetap di T2');
+  }
+  // (c) absen tepat di blok rapat leadership-nya -> tidak tampil (sedang pergi)
+  if (blMlead) {
+    T.pgJamLst[m] = blMlead.jams.slice(); T.pgBlok[m] = T.pgBuildBlok(m, day, blMlead.jams); T.pgSEL[m] = {};
+    T.pgParsial[m] = true;
+    rr = pgRecBlok(g, day, blG.jams, kelas, g, blG.key);
+    ok(!rr.t2a.includes(m), kelas + ': ' + m + ' absen di jam rapat leadership (' + blMlead.key + ') tidak di T2');
+  }
+}
 
 console.log('\nHASIL: ' + pass + ' pass, ' + fail + ' fail');
 process.exit(fail ? 1 : 0);

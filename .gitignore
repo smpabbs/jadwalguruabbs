@@ -16,3 +16,4 @@ scripts/__pycache__/
 .vercel
 .commandcode/
 .env*
+mockup/
