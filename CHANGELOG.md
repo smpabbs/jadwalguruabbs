@@ -1,6 +1,28 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.9.3 — Fix: guru yang libur total membuat tombol Lanjut buntu + aturan mainnya diperjelas
+- **Bug (dilaporkan user)**: memilih guru yang di hari itu **tidak mengajar sama sekali** membuat
+  langkah "pilih jam" buntu — tombol Lanjut tidak pernah bisa diklik (tidak ada blok yang bisa
+  dicentang, sementara Lanjut mensyaratkan ≥1 blok terpilih).
+- **Perbaikan dua lapis**:
+  1. **Polaritas ternary tombol Lanjut terbalik (bug penyuntingan)**: saat refactor v5.9.0,
+     `(sel&&lengkap?'':' disabled')` diganti `(kurang?'':' disabled')` tanpa membalik cabang —
+     padahal `kurang` berpolaritas sebaliknya dari `sel&&lengkap`. Efeknya Lanjut justru MATI saat
+     semua tercentang dan AKTIF saat ada yang kosong — kebalikan semestinya. Kini
+     `(kurang?' disabled':'')`. Terdeteksi oleh harness UI (assertion "Lanjut aktif"), diselidiki
+     sampai string h mentah, bukan tebakan.
+  2. **Guru libur kini ditangani eksplisit**: di picker muncul catatan "<guru> libur / tidak
+     mengajar <hari> — dilewati otomatis"; guru libur tidak ikut mensyaratkan Lanjut; saat Lanjut
+     ia dikeluarkan dari daftar berhalangan (tidak muncul di rekap/teks WA) + pesan penjelas;
+     jika SEMUA guru libur, tombol jalan keluar (Ganti guru / Ganti hari / Mulai ulang) tampil
+     langsung di pesan picker.
+- **Jalur AI ikut rapi**: rekomendasi AI utk guru yang tidak mengajar kini menyatakan "LIBUR /
+  tidak perlu pengganti" (sebelumnya "0 blok" kosong) — di FAKTA maupun kartu HTML.
+- Verifikasi: `test_pg_ui.mjs` +2 skenario (mengajar+libur campur; semua libur) → **21 pass,
+  0 fail**; `test_pg_lead.mjs` tetap 439 pass; sintaks OK; `www/index.html` identik.
+- APK: `JadwalGuru-v5.9.3.apk`. Rilis GitHub via tag `v5.9.3` (alur terkoreksi sejak v5.9.2).
+
 ## v5.9.2 — AI Jadwal memahami aturan pengganti terbaru (T2 sibuk + absen parsial)
 - **Fitur "Tanya AI" diselaraskan dengan aturan yang disepakati beberapa hari terakhir** — 5 titik
   tempat penanaman, supaya LLM selalu berpegang pada aturan resmi saat menjawab/merekomendasikan:

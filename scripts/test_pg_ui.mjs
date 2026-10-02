@@ -46,6 +46,7 @@ var pgInitDone=false, pgACEl=null, pgChatEl=null, pgHURRUF=['A','B','C','D','E',
 globalThis.__UI = { pgHandle, pgPilihHari, pgJamToggle, pgJamLanjut, pgJamPenuh, pgReset, pgCommitAbsen, initPengganti,
   pgJamMengajar, pgBuildBlok, order,
   pickRef(){ return pgPickEl; },
+  absen(){ return pgAbsenList.slice(); },
   setAbsen(list){ pgAbsenPick={}; list.forEach(function(n){ pgAbsenPick[n]=true; }); pgCommitAbsen(); } };
 `);
 const UI = globalThis.__UI;
@@ -91,6 +92,37 @@ ok(pickers().length === 1, 'Ganti hari: tetap TEPAT satu picker di DOM (bug: bis
 ok(UI.pickRef() !== null && UI.pickRef().querySelectorAll('.pg-pk-item').length >= 1, 'Ganti hari: picker baru TERISI');
 UI.pgJamLanjut(); await w(1100);
 ok(document.getElementById('pgHasil') !== null, 'alur selesai: hasil tampil setelah Ganti hari');
+
+// === Skenario 2: guru mengajar + guru LIBUR total (bug: Lanjut buntu karena 0 blok) ===
+console.log('SKENARIO 2: satu guru mengajar + satu guru libur total');
+let gT = null, gLibur = null, dX = null;
+outer2:
+for (const d of days) {
+  const lt = UI.order.filter(g => UI.pgBuildBlok(g, d, UI.pgJamMengajar(g, d)).length >= 1);
+  const lb = UI.order.filter(g => UI.pgJamMengajar(g, d).length === 0);
+  if (lt.length && lb.length) { gT = lt[0]; gLibur = lb[0]; dX = d; break outer2; }
+}
+ok(!!gT && !!gLibur, 'fixture: ' + gT + ' mengajar & ' + gLibur + ' libur di ' + dX);
+UI.pgReset(); await w(1100);
+UI.setAbsen([gT, gLibur]); await w(1100);
+UI.pgPilihHari(days.indexOf(dX)); await w(2300);
+ok(pickers().length === 1, 'picker tampil');
+ok(!!UI.pickRef().querySelector('.pg-pk-libur'), 'ada catatan "libur — dilewati" utk guru tanpa jam');
+ok(UI.pickRef().querySelector('.pg-btn-go') !== null && !UI.pickRef().querySelector('.pg-btn-go').disabled, 'Lanjut AKTIF meski ada guru libur (bug lama: mati total)');
+UI.pgJamLanjut(); await w(1100);
+ok(UI.absen().indexOf(gLibur) === -1, 'guru libur dikeluarkan dari daftar berhalangan');
+ok(UI.absen().indexOf(gT) !== -1, 'guru mengajar tetap di daftar');
+ok(document.getElementById('pgHasil') !== null, 'hasil tampil utk guru yg mengajar saja');
+
+// === Skenario 3: SEMUA guru yg dipilih libur ===
+console.log('SKENARIO 3: semua guru libur — harus ada jalan keluar');
+UI.pgReset(); await w(1100);
+UI.setAbsen([gLibur]); await w(1100);
+UI.pgPilihHari(days.indexOf(dX)); await w(2300);
+ok(pickers().length === 1, 'picker tampil');
+ok(UI.pickRef().querySelector('.pg-btn-go') === null, 'tanpa tombol Lanjut (tidak ada yg bisa diganti)');
+const esc = UI.pickRef().querySelectorAll('.pg-btn-ghost');
+ok(esc.length >= 3, 'ada tombol jalan keluar: Ganti guru / Ganti hari / Mulai ulang (' + esc.length + ')');
 
 console.log('\nHASIL: ' + pass + ' pass, ' + fail + ' fail');
 process.exit(fail ? 1 : 0);

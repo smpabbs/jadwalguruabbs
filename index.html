@@ -438,6 +438,8 @@ header .back-btn { background: none; border: none; color: #8f671a; font-size: 20
 #panel-pengganti .pg-pk-bar .pg-btn-ghost { flex:0 0 auto; background:#fff; border:1.5px solid #d6c39e; color:#5f4d33; font-size:12px; font-weight:600; padding:8px 14px; border-radius:18px; cursor:pointer; }
 #panel-pengganti .pg-pk-bar .pg-btn-go { flex:1; background:#26211c; color:#d4a857; border:none; font-size:12.5px; font-weight:800; padding:10px; border-radius:18px; cursor:pointer; }
 #panel-pengganti .pg-pk-bar .pg-btn-go:disabled { opacity:.4; cursor:default; }
+#panel-pengganti .pg-pk-libur { font-size:11px; color:#8a6d3b; background:#faf3e0; border:1px dashed #d6c39e; border-radius:10px; padding:8px 10px; margin-top:6px; line-height:1.45; }
+#panel-pengganti .pg-pk-libur b { color:#5f4d33; }
 #panel-pengganti .pg-gsec { margin-bottom:14px; }
 #panel-pengganti .pg-gsec:last-child { margin-bottom:0; }
 #panel-pengganti .pg-gsec-head { font-size:11.5px; font-weight:700; color:#5f4d33; padding:2px 2px 6px; border-bottom:1px dashed #d6c39e; margin-bottom:8px; }
@@ -1618,20 +1620,30 @@ function pgShowPilihJam(){pgOff={};pgTyping(function(){var nm=pgAbsenList.length
   pgPickEl=null;
   pgAddBot(nm+' berhalangan hari '+dayId[pgDSel]+'. Jam berapa yang perlu digantikan? <i>Semua tercentang = sehari penuh — hilangkan centang jam yang tidak perlu.</i>');
   var d=pgAddBot('<div class="pg-pick-wrap" id="pgPick"></div>');pgPickEl=d.querySelector('.pg-pick-wrap');pgRPick();});}
-function pgRPick(){if(!pgPickEl)return;var sel=0,lengkap=true,h='';
-  pgAbsenList.forEach(function(g){var blok=pgBlok[g]||[],ns=pgSelCount(g);sel+=ns;if(!ns)lengkap=false;
+function pgRPick(){if(!pgPickEl)return;var sel=0,ada=0,kurang=false,h='';
+  pgAbsenList.forEach(function(g){var blok=pgBlok[g]||[],ns=pgSelCount(g);
+    if(!blok.length){h+='<div class="pg-pk-libur"><b>'+g+'</b> libur / tidak mengajar '+dayId[pgDSel]+' — tidak ada jam utk digantikan (dilewati otomatis).</div>';return;}
+    ada++;sel+=ns;if(!ns)kurang=true;
     if(pgAbsenList.length>1)h+='<div class="pg-pk-head"><b>'+g+'</b> — '+ns+'/'+blok.length+' blok</div>';
     blok.forEach(function(b){var on=!(pgOff[g]&&pgOff[g][b.key]);
       h+='<div class="pg-pk-item'+(on?' pg-on':'')+'" onclick="pgJamToggle(\''+g+'\',\''+b.key+'\')"><span class="pg-pk-tick"></span><span class="pg-pk-lab"><b>Jam '+b.key.replace(/-/g,'–')+'</b> · '+b.kelas+' · '+(b.subjek.join(', ')||'Leadership')+'<small>'+pgWaktuBlok(teachers[g],pgDSel,b)+'</small></span></div>';});});
-  h+='<div class="pg-pk-bar"><button class="pg-btn-ghost" onclick="pgJamPenuh()">Sehari penuh ✓</button><button class="pg-btn-go"'+(sel&&lengkap?'':' disabled')+' onclick="pgJamLanjut()">Lanjut ('+sel+' blok)</button></div>';
+  if(!ada)h+='<div class="pg-pk-bar"><button class="pg-btn-ghost" onclick="pgHandle(\'Ganti guru\')">Ganti guru</button><button class="pg-btn-ghost" onclick="pgHandle(\'Ganti hari\')">Ganti hari</button><button class="pg-btn-ghost" onclick="pgHandle(\'Mulai ulang\')">Mulai ulang</button></div>';
+  else h+='<div class="pg-pk-bar"><button class="pg-btn-ghost" onclick="pgJamPenuh()">Sehari penuh ✓</button><button class="pg-btn-go"'+(kurang?' disabled':'')+' onclick="pgJamLanjut()">Lanjut ('+sel+' blok)</button></div>';
   pgPickEl.innerHTML=h;pgScrollB();}
-function pgJamLanjut(){var siap=true;
-  pgAbsenList.forEach(function(g){var kept=(pgBlok[g]||[]).filter(function(b){return !(pgOff[g]&&pgOff[g][b.key]);});
+function pgJamLanjut(){var siap=true,libur=[];
+  pgAbsenList.forEach(function(g){var blok=pgBlok[g]||[];
+    if(!blok.length){libur.push(g);return;}
+    var kept=blok.filter(function(b){return !(pgOff[g]&&pgOff[g][b.key]);});
     if(!kept.length){siap=false;return;}
     var js=[];kept.forEach(function(b){b.jams.forEach(function(j){if(js.indexOf(j)===-1)js.push(j);});});js.sort(function(a,b){return a-b;});
     pgJamLst[g]=js;pgBlok[g]=pgBuildBlok(g,pgDSel,js);pgSEL[g]={};
     pgParsial[g]=js.length<pgJamMengajar(g,pgDSel).length;});
-  if(!siap)return;pgPickEl=null;pgTyping(function(){pgRHasil();});}
+  if(!siap)return;
+  if(libur.length){pgAbsenList=pgAbsenList.filter(function(g){return libur.indexOf(g)===-1;});
+    libur.forEach(function(g){delete pgJamLst[g];delete pgBlok[g];delete pgSEL[g];delete pgParsial[g];delete pgOff[g];});}
+  pgPickEl=null;pgTyping(function(){
+    if(libur.length)pgAddBot('<b>'+libur.join('</b>, <b>')+'</b> tidak mengajar '+dayId[pgDSel]+' — dilewati, tidak perlu pengganti.');
+    pgRHasil();});}
 function pgRTeacher(g){var t=teachers[g],blok=pgBlok[g]||[],lead=blok.some(pgIsLead),h='';
   var kb=pgKbmHari(pgDSel).filter(function(n){return pgAbsenList.indexOf(n)===-1;});
   h+='<div class="pg-gsec"><div class="pg-gsec-head"><b>'+g+'</b> — '+dayId[pgDSel]+' · '+(pgJamLst[g]||[]).length+(pgParsial[g]?'/'+pgJamMengajar(g,pgDSel).length:'')+' jam'+(kb.length?' · KBM: <b>'+kb.join(', ')+'</b>':'')+'</div>';
@@ -1980,6 +1992,7 @@ function aiPenggantiHtml(gurus, d){ var snap = aiSnap();
       '(sibuk) = masih ada jadwal, koordinasi dulu \u00b7 utk blok KBM biasa: T2a mapel, T2b rumpun, T3 lain \u00b7 ' +
       'guru absen sebagian boleh jadi kandidat di jam kosongnya</div>';
   gurus.forEach(function(g){ var bl = pgBlok[g] || [];
+    if(!bl.length){ h += '<div class="ai-ghead">' + g + ' — libur / tidak mengajar hari itu, tidak perlu pengganti</div>'; return; }
     h += '<div class="ai-ghead">Berhalangan: ' + g + ' (' + bl.length + ' blok)</div>';
     h += '<table><thead><tr><th>Jam</th><th>Kelas \u00b7 Mapel</th><th>Rekomendasi</th></tr></thead><tbody>';
     bl.forEach(function(b){ var t = teachers[g];
@@ -2014,6 +2027,7 @@ function aiFactsPengganti(gurus, d){ var snap = aiSnap();
     pgBlok[g] = pgBuildBlok(g, d, pgJamLst[g]); pgSEL[g] = {}; });
   var out = ['Rekomendasi guru pengganti hari ' + dayId[d] + ':'];
   gurus.forEach(function(g){ var bl = pgBlok[g] || [];
+    if(!bl.length){ out.push('Berhalangan: ' + g + ' \u2014 LIBUR / tidak mengajar ' + dayId[d] + ', tidak perlu pengganti.'); return; }
     out.push('Berhalangan: ' + g + ' \u2014 ' + bl.length + ' blok:');
     bl.forEach(function(b){ var t = teachers[g];
       var rr = pgRecBlok(g, d, b.jams, pgIsLead(b) ? b.kelas : null, g, b.key);
