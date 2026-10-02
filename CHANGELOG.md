@@ -1,6 +1,13 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.9.5 — Koreksi ejaan nama guru: Ms Arvara → Ms Arvira
+- Koreksi typo dari rilis v5.9.4: nama guru pengganti Mr Afriyan yang benar adalah **Ms Arvira**
+  (bukan Arvara). 4 kemunculan diganti (order, kunci teachers, nickname, fullname); jadwal & data
+  lain tidak berubah. Gender tetap putri (prefix "Ms").
+- Verifikasi: `test_pg_lead.mjs` 439 pass, `test_pg_ui.mjs` 21 pass, `www/index.html` identik.
+- APK: `JadwalGuru-v5.9.5.apk`. Rilis via tag `v5.9.5`.
+
 ## v5.9.4 — Pergantian guru: Mr Afriyan → Ms Arvara (putri)
 - **Data guru diganti** (pergantian personel): **Mr Afriyan** (Afriyan Moneter Pratama, guru
   Olahraga/Sprt) → **Ms Arvara** (perempuan). Jadwal identik berpindah: 22 jam/5 hari, kelas 7A–9F
