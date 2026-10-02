@@ -1,6 +1,19 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.9.4 — Pergantian guru: Mr Afriyan → Ms Arvara (putri)
+- **Data guru diganti** (pergantian personel): **Mr Afriyan** (Afriyan Moneter Pratama, guru
+  Olahraga/Sprt) → **Ms Arvara** (perempuan). Jadwal identik berpindah: 22 jam/5 hari, kelas 7A–9F
+  (putra & putri), mapel Sprt — tidak ada perubahan jam/kelas.
+- Yang diubah: entri `order`, kunci `teachers`, `nickname`, `fullname`. Gender otomatis terbaca
+  **putri** via prefix "Ms" (`guruGender`) — berpengaruh benar pada filter segender Cari Guru
+  Longgar & tier T1/T2 blok Leadership. Afriyan bukan anggota tim Leadership & tidak punya piket,
+  jadi tidak ada dampak lain. Jumlah guru tetap 36.
+- Verifikasi: `test_pg_lead.mjs` 439 pass (berjalan di DATA asli — aturan gender teruji ulang dgn
+  nama baru), `test_pg_ui.mjs` 21 pass, sintaks OK, `www/index.html` identik.
+- Catatan: bila nama lengkap resminya lebih dari "Ms Arvara", cukup kabari — satu baris perubahan.
+- APK: `JadwalGuru-v5.9.4.apk`. Rilis via tag `v5.9.4`.
+
 ## v5.9.3 — Fix: guru yang libur total membuat tombol Lanjut buntu + aturan mainnya diperjelas
 - **Bug (dilaporkan user)**: memilih guru yang di hari itu **tidak mengajar sama sekali** membuat
   langkah "pilih jam" buntu — tombol Lanjut tidak pernah bisa diklik (tidak ada blok yang bisa
