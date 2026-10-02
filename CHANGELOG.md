@@ -1,6 +1,25 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.9.1 — Fix: picker "pilih jam" kosong setelah Ganti hari / Ganti jam
+- **Bug (dilaporkan user, langsung setelah v5.9.0 dipakai)**: ketika alur sudah berjalan lalu user
+  memilih chip **"Ganti hari"** (atau "Ganti jam"), langkah "pilih jam" tidak muncul lagi dan alur
+  tidak bisa lanjut ke pemilihan pengganti.
+- **Penyebab**: pesan picker lama (berisi `<div id="pgPick">`) tetap tertinggal di riwayat chat.
+  Saat picker baru dibuat, `document.getElementById('pgPick')` mengambil div LAMA yang terkubur di
+  atas → isi picker ter-render ke pesan lama, sementara pesan baru yang terlihat kosong (id ganda
+  di DOM). Modul hasil rekomendasi sudah lama pakai pola anti-id-ganda (`pgRHasil` menghapus pesan
+  lama), picker belum.
+- **Perbaikan**: `pgShowPilihJam` kini membuang SEMUA pesan picker lama lewat query DOM
+  (`.pg-pick-wrap`) sebelum membuat yang baru — berlaku untuk semua jalur (Ganti hari, Ganti jam,
+  Ganti guru) tanpa bergantung pada referensi tersimpan.
+- **Verifikasi**: harness UI baru `scripts/test_pg_ui.mjs` (jsdom, alur nyata: pilih guru → pilih
+  hari → uncentang blok → lanjut → Ganti jam → Ganti hari) — **11 pass, 0 fail**; di kode lama uji
+  yang sama GAGAL dan demo langsung menunjukkan `[id=pgPick]` menjadi 2 buah setelah "Ganti jam".
+  Regresi logika `test_pg_lead.mjs` tetap **439 pass, 0 fail**. jsdom dipasang sebagai
+  devDependency. Sintaks script inline OK, `www/index.html` identik.
+- APK: `JadwalGuru-v5.9.1.apk`.
+
 ## v5.9.0 — Ganti sebagian jam saja (absen parsial) + guru hadir-sebagian jadi kandidat
 - **Langkah baru "pilih jam"**: setelah memilih hari, asisten menampilkan daftar blok jam per guru
   (mis. "Jam 1–2 · 7A · Matematika · 07.00–08.20") — semua tercentang default (= perilaku lama, sehari

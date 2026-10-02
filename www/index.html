@@ -1610,8 +1610,14 @@ function pgSelCount(g){return (pgBlok[g]||[]).filter(function(b){return !(pgOff[
 function pgJamToggle(g,key){if(!pgOff[g])pgOff[g]={};if(pgOff[g][key])delete pgOff[g][key];else pgOff[g][key]=true;pgRPick();}
 function pgJamPenuh(){pgOff={};pgRPick();}
 function pgShowPilihJam(){pgOff={};pgTyping(function(){var nm=pgAbsenList.length>1?'<b>'+pgAbsenList.join('</b>, <b>')+'</b>':'<b>'+pgAbsenList[0]+'</b>';
+  // buang SEMUA pesan picker lama di riwayat chat (bug 5.9.0: ID 'pgPick' ganda membuat
+  // getElementById mengambil div lama -> picker baru kosong & tak bisa dilanjutkan).
+  // Query DOM langsung (bukan referensi tersimpan) supaya jalur 'Ganti jam' ikut bersih.
+  Array.prototype.slice.call(pgChatEl.querySelectorAll('.pg-pick-wrap')).forEach(function(el){
+    var m=el.closest('.pg-msg');if(m&&m.parentNode)m.parentNode.removeChild(m);});
+  pgPickEl=null;
   pgAddBot(nm+' berhalangan hari '+dayId[pgDSel]+'. Jam berapa yang perlu digantikan? <i>Semua tercentang = sehari penuh — hilangkan centang jam yang tidak perlu.</i>');
-  var d=pgAddBot('<div id="pgPick"></div>');pgPickEl=document.getElementById('pgPick');pgRPick();});}
+  var d=pgAddBot('<div class="pg-pick-wrap" id="pgPick"></div>');pgPickEl=d.querySelector('.pg-pick-wrap');pgRPick();});}
 function pgRPick(){if(!pgPickEl)return;var sel=0,lengkap=true,h='';
   pgAbsenList.forEach(function(g){var blok=pgBlok[g]||[],ns=pgSelCount(g);sel+=ns;if(!ns)lengkap=false;
     if(pgAbsenList.length>1)h+='<div class="pg-pk-head"><b>'+g+'</b> — '+ns+'/'+blok.length+' blok</div>';
