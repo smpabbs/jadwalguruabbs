@@ -1784,7 +1784,8 @@ var aiKB = 'ATURAN JAM & HARI SEKOLAH:\n' +
   '- Blok Leadership: T1 = guru SEGENDER dgn yg absen yg longgar; T2 = tim Leadership angkatan itu, SELALU dicantumkan walau bertanda (sibuk) — yg sibuk perlu dikoordinasi dulu utk dilepas dr rapat/mengajar.\n' +
   '- Guru yg berhalangan SEHARI PENUH tidak pernah masuk daftar kandidat.\n' +
   '- Guru yg berhalangan SEBAGIAN jam saja (masih ada bloknya yg tidak digantikan) tetap BOLEH jadi kandidat utk guru berhalangan lain di jam kosongnya, asal longgar semua jam blok itu & belum dipakai menggantikan di jam yang sama.\n' +
-  '- Modul mendukung ABSEN PARSIAL: user mencentang blok jam yg diganti (default semua = sehari penuh, tombol "Sehari penuh ✓"); blok yg tidak dicentang tidak butuh pengganti dan tidak masuk rekap.';
+  '- Modul mendukung ABSEN PARSIAL: user mencentang blok jam yg diganti (default semua = sehari penuh, tombol "Sehari penuh ✓"); blok yg tidak dicentang tidak butuh pengganti dan tidak masuk rekap.\n' +
+  '- Redaksi pesan WA final (disusun lewat panel setelah user klik nama, BUKAN oleh AI): blok Leadership — kalau yg dipilih user anggota T2 (tim Leadership angkatan itu) -> "digabung dengan kelompok <nama>" (kelompok bimbingan yg absen gabung ke rekan setim yg sudah ada, bukan penggantian satu-lawan-satu); kalau yg dipilih dari luar tim (T1) -> "digantikan oleh <nama>". Blok KBM biasa selalu "digantikan oleh <nama>", nama mapel ditulis lengkap (mis. Science, Mathematics, bukan kode Sc/Math). Pesan WA tidak lagi punya rekap agregat per guru pengganti.';
 var aiSYS = 'Kamu asisten internal aplikasi jadwal mengajar guru SMP ABBS. ' +
   'Jawab dalam bahasa Indonesia, ringkas, rapi, dan ramah. ' +
   'Jika ada blok "FAKTA", jawabanmu HARUS berdasarkan fakta itu persis — jangan mengubah ' +
