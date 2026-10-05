@@ -2211,7 +2211,7 @@ var aiSYS_A = 'Kamu asisten AI jadwal guru SMP ABBS. Jawab bahasa Indonesia, rin
   'Tool yg tersedia: daftar_guru {} | daftar_kelas {} | hari_sekarang {} | ' +
   'guru_sekarang {"nama"} | jadwal_guru {"nama","hari"?} (hari opsional Senin..Sabtu, default hari ini) | ' +
   'jadwal_minggu {"nama"} | jadwal_kelas {"kelas","hari"?} | guru_longgar {"hari","jam","mapel"?,"gender"?} ' +
-  '(jam mis. "3" atau "3-4") | jam_kosong_bersama {"nama":["Mr A","Mr B"]} | ' +
+  '(jam mis. "3" atau "3-4") | jam_kosong_bersama {"nama":["Mr A","Mr B"]} (ATAU {"mapel":"ICT"} utk cari jam kosong bareng SEMUA guru mapel itu) | ' +
   'rekomendasi_pengganti {"nama":["Mr A"],"hari"} | piket {"nama"} | piket_hari {"hari"}. ' +
   'Setelah kamu kirim baris TOOL, sistem membalas "HASIL TOOL ...". Kalau masih butuh data, kirim baris TOOL ' +
   'lagi (maks 4x). Kalau sudah cukup, tulis jawaban final dan HANYA pakai angka/jam/kelas/nama yg ada di HASIL TOOL ' +
@@ -2286,9 +2286,16 @@ function aiToolExec(name, args){
     var gd2 = (args.gender === 'putra' || args.gender === 'putri') ? args.gender : null;
     return aiFactsLonggar(dL, js, mp, gd2); }
   if (name === 'jam_kosong_bersama' || name === 'rekomendasi_pengganti'){
-    var ns = Array.isArray(args.nama) ? args.nama : [args.nama];
-    var hits = []; ns.forEach(function(x){ var t = aiToolGuru(x); if (t && hits.indexOf(t) === -1) hits.push(t); });
-    if (name === 'jam_kosong_bersama'){ if (hits.length < 2) return 'Minimal 2 nama guru dikenal. Pakai daftar_guru dulu.';
+    var hits = [];
+    if (name === 'jam_kosong_bersama' && args.mapel && !args.nama){
+      var mpCode = aiMapel(String(args.mapel));
+      if (!mpCode) return 'Mapel tidak dikenal: "' + args.mapel + '". Coba mis. Math, Sc, ICT, BI, Eng, Soc, Cv, IFE, Quran, Sprt.';
+      hits = order.filter(function(n){ return teachers[n].stats.subjects.indexOf(mpCode) !== -1; });
+    } else {
+      var ns = Array.isArray(args.nama) ? args.nama : [args.nama];
+      ns.forEach(function(x){ var t = aiToolGuru(x); if (t && hits.indexOf(t) === -1) hits.push(t); });
+    }
+    if (name === 'jam_kosong_bersama'){ if (hits.length < 2) return 'Minimal 2 guru dikenal (nama atau mapel). Pakai daftar_guru dulu.';
       return aiFactsBareng(hits); }
     var dR = aiTDay(args.hari);
     if (!hits.length) return 'Nama guru tidak dikenali. Pakai daftar_guru dulu.';

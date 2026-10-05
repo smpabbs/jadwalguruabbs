@@ -1,6 +1,18 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.9.9 — Tanya AI bisa cari jam kosong bareng per MAPEL (bukan cuma per nama)
+- **Laporan user**: tanya "cari jadwal kosong yang sama untuk guru ICT" dijawab tidak tahu siapa
+  saja guru ICT. Bukan masalah memori/riwayat percakapan — tool `jam_kosong_bersama` sebelumnya
+  memang hanya menerima daftar NAMA guru eksplisit, tidak ada cara bagi AI meresolusi "guru ICT"
+  (nama mapel) jadi daftar nama.
+- **Fix**: tool `jam_kosong_bersama` kini juga menerima `{"mapel":"ICT"}` sebagai alternatif dari
+  `{"nama":[...]}` — otomatis mengambil semua guru yang mengajar mapel itu (`teachers[n].stats.subjects`)
+  lalu cari jam kosong bersama mereka. Diverifikasi via `aiToolExec('jam_kosong_bersama',{mapel:'ICT'})`
+  (dan versi huruf kecil "ict") mengembalikan 7 guru ICT + jam kosong bersama yang benar; mapel tak
+  dikenal dibalas pesan jelas. Panjang system prompt (`aiSYS_A`+`aiKB`) tetap di 5022 karakter, jauh
+  di bawah cap 6000 dari fix v5.9.8. `test_pg_lead.mjs` 439 pass, `test_pg_ui.mjs` 21 pass.
+
 ## v5.9.8 — Fix: Tanya AI selalu balas "Format pesan tidak valid"
 - **Bug (dilaporkan user)**: fitur Tanya AI gagal terus dgn error "Format pesan tidak valid."
 - **Akar masalah**: `api/ai.js` membatasi tiap pesan maks **4000 karakter**, sedangkan system
