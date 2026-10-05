@@ -1,6 +1,20 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.9.7 — Fix: chat Cari Guru Pengganti kadang auto-scroll ke titik lain saat pilih pengganti
+- **Bug (dilaporkan user)**: klik nama pengganti di kartu rekomendasi kadang membuat chat tiba-tiba
+  lompat scroll ke posisi lain yang tidak diminta.
+- **Akar masalah**: `pgPilih()` membangun ulang SELURUH kartu rekomendasi (`innerHTML`) tiap klik,
+  lalu mengembalikan `scrollTop` secara manual — ini sudah dipasang sejak commit `8854af8` tapi
+  tidak selalu menang melawan fitur bawaan browser **scroll anchoring**, yang mencoba mengoreksi
+  posisi scroll sendiri saat ukuran konten di atas viewport berubah (muncul kalau tinggi kartu
+  berubah antar klik, mis. badge "sibuk" vs "✓"). Browser bisa menimpa posisi yang sudah di-set JS
+  tepat setelah skrip selesai.
+- **Fix**: `overflow-anchor: none` pada kontainer chat (`.pg-chat`) — browser berhenti mengoreksi
+  scroll sendiri, satu-satunya pengatur posisi scroll adalah kode kita. Perbaikan CSS murni, tidak
+  ada perubahan logika. Verifikasi: `test_pg_lead.mjs` 439 pass, `test_pg_ui.mjs` 21 pass (jsdom
+  tidak menghitung layout/scroll sungguhan — perlu dites langsung di perangkat).
+
 ## v5.9.6 — Rapikan teks rekap "Cari Guru Pengganti" yang di-copy
 - **Pemisah baris**: koma ambigu sebelum "digantikan oleh" (bertabrakan dengan koma daftar kelas,
   mis. "7C ICT, 7C TCP") diganti jadi tanda hubung `—` untuk blok KBM biasa; setiap baris kini
