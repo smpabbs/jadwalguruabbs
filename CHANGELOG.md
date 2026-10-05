@@ -1,6 +1,26 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.9.6 — Rapikan teks rekap "Cari Guru Pengganti" yang di-copy
+- **Pemisah baris**: koma ambigu sebelum "digantikan oleh" (bertabrakan dengan koma daftar kelas,
+  mis. "7C ICT, 7C TCP") diganti jadi tanda hubung `—` untuk blok KBM biasa; setiap baris kini
+  diakhiri titik. Kalimat SOP yang terpotong jadi 2 kalimat (titik lalu huruf kecil) digabung jadi
+  satu kalimat dengan ", dan" agar tidak ada lagi titik diikuti huruf kecil.
+- **Nama mapel ditulis lengkap**, bukan kode mentah: Math→Mathematics, Sc→Science, BI→Bahasa
+  Indonesia, Eng→English, Soc→Social, Cv→Civics, Quran→Al-Quran, Sprt→Sport; ICT & IFE dibiarkan
+  apa adanya (sudah umum dipakai di sekolah). Format baris KBM jadi "di kelas <kelas> mapel <nama>
+  digantikan oleh <nama>." (tanpa simbol `·`).
+- **Blok Leadership diberi redaksi & aturan sendiri**: ditulis "Leadership kelas <N>" (bukan "kelas
+  Leadership N"), tanpa tanda hubung. Kalau pengganti yang dipilih adalah sesama anggota tim
+  Leadership angkatan itu (`pgLT`) → **"digabung dengan kelompok <nama>"** (kelompok bimbingannya
+  gabung ke rekan setim yang sudah ada); kalau pengganti dari luar tim → tetap **"digantikan oleh
+  <nama>"**. Filler `· -` (mapel kosong) utk Leadership dihapus.
+- **Bagian "REKAP PER GURU PENGGANTI" dihapus** dari teks copy — dianggap tidak perlu oleh user;
+  rekap kartu di layar (`pgAggCardHtml`, bukan teks copy) tidak diubah.
+- Tidak ada perubahan logika rekomendasi (tier T1/T2/T2a/T2b, aturan absen parsial, dll) — murni
+  redaksi teks. Verifikasi: `test_pg_lead.mjs` 439 pass, `test_pg_ui.mjs` 21 pass, `www/index.html`
+  identik.
+
 ## v5.9.5 — Koreksi ejaan nama guru: Ms Arvara → Ms Arvira
 - Koreksi typo dari rilis v5.9.4: nama guru pengganti Mr Afriyan yang benar adalah **Ms Arvira**
   (bukan Arvara). 4 kemunculan diganti (order, kunci teachers, nickname, fullname); jadwal & data

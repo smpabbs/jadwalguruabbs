@@ -1481,6 +1481,8 @@ var pgInitDone=false;
 var pgACEl=null, pgChatEl=null, pgHURRUF=['A','B','C','D','E','F'], pgPickEl=null;
 var pgTL={t1:['T1','✅ KBM'],t2a:['T2a','🎯 Mapel'],t2b:['T2b','📚 Rumpun'],t3:['T3','👥 Lain']};
 var pgRUMP={Math:'MIPA',Sc:'MIPA',ICT:'MIPA',BI:'Bahasa',Eng:'Bahasa',Soc:'IPS & PPKn',Cv:'IPS & PPKn',IFE:'Agama',Quran:'Agama',Sprt:'Olahraga'};
+var pgMapelNama={Math:'Mathematics',Sc:'Science',ICT:'ICT',BI:'Bahasa Indonesia',Eng:'English',Soc:'Social',Cv:'Civics',IFE:'IFE',Quran:'Al-Quran',Sprt:'Sport'};
+function pgMapelTeks(arr){return (arr||[]).map(function(s){return pgMapelNama[s]||s;}).join(', ');}
 
 function pgJstr(){var n=new Date();return ('0'+n.getHours()).slice(-2)+':'+('0'+n.getMinutes()).slice(-2);}
 function pgLonggar(g,d,j){var c=teachers[g].cells[d+'|'+j];return !(c&&c.length);}
@@ -1667,27 +1669,31 @@ function pgRHasil(){if(pgHasilEl){var o=pgHasilEl.closest('.pg-msg');if(o&&o.par
   box.innerHTML='<div class="pg-bot-name">Asisten Pengganti <span class="pg-tag">klik guru di bawah</span></div><div id="pgHasil"></div><span class="pg-time">'+pgJstr()+'</span>';
   pgChatEl.appendChild(box);pgHasilEl=document.getElementById('pgHasil');pgRAll();pgSetChips(['Ganti guru','Ganti hari','Ganti jam','Mulai ulang']);pgScrollB();}
 function pgAggBySub(){var agg={};pgAbsenList.forEach(function(g){var t=teachers[g];
-    (pgBlok[g]||[]).forEach(function(b){var sub=pgSEL[g]&&pgSEL[g][b.key];if(!sub)return;
+    (pgBlok[g]||[]).forEach(function(b){var sub=pgSEL[g]&&pgSEL[g][b.key];if(!sub||pgIsLead(b))return;
       (agg[sub]=agg[sub]||[]).push({g:g,key:b.key,waktu:pgWaktuBlok(t,pgDSel,b),kelas:b.kelas,subjek:b.subjek});});});return agg;}
 function pgAggCardHtml(){var agg=pgAggBySub(),names=Object.keys(agg).sort();if(!names.length)return '';
   var h='<div class="pg-card pg-primary"><div class="pg-jam-head"><span class="pg-star">★</span> Rekap per Guru Pengganti</div>';
   names.forEach(function(sub){h+='<div class="pg-agg-sub"><div class="pg-agg-name">'+sub+'<span class="pg-agg-count"> ('+agg[sub].length+' blok)</span></div>';
-    agg[sub].forEach(function(it){h+='<div class="pg-agg-item">Jam '+it.key+' ('+it.waktu+') <b>'+it.kelas+'</b> · '+(it.subjek.join(', ')||'-')+' — gantiin '+it.g+'</div>';});
+    agg[sub].forEach(function(it){var mapel=it.subjek.join(', ');
+      h+='<div class="pg-agg-item">Jam '+it.key+' ('+it.waktu+') <b>'+it.kelas+'</b>'+(mapel?' · '+mapel:'')+' — gantiin '+it.g+'</div>';});
     h+='</div>';});return h+'</div>';}
 function pgTeks(){
   var l=["Assalamu'alaykum,",
     'mohon bantuan temen2 untuk menggantikan beberapa guru yang berhalangan hari '+dayId[pgDSel]+' ini nggih,',
-    'SOP seperti biasa, guru yg berhalangan silakan komunikasi dg guru yg bertugas menggantikan utk aktivitas KBM/Tugas. guru yg bertugas menggantikan stand by di kelas sampai akhir jam pelajaran.',
+    'SOP seperti biasa: guru yg berhalangan silakan komunikasi dg guru yg bertugas menggantikan utk aktivitas KBM/Tugas, dan guru yg bertugas menggantikan stand by di kelas sampai akhir jam pelajaran.',
     ''];
   pgAbsenList.forEach(function(g,i){var t=teachers[g];l.push((i+1)+'. '+g);
     (pgBlok[g]||[]).forEach(function(b){if(!(pgSEL[g]&&pgSEL[g][b.key]))return;
-      l.push('- jam ke '+b.key+' ('+pgWaktuBlok(t,pgDSel,b)+') di kelas '+b.kelas+' · '+(b.subjek.join(', ')||'-')+', digantikan oleh '+pgSEL[g][b.key]);});
+      var sub=pgSEL[g][b.key],mapel=pgMapelTeks(b.subjek),lead=pgIsLead(b),
+        gab=lead&&(pgLT[b.kelas]||[]).indexOf(sub)!==-1;
+      if(lead){
+        l.push('- jam ke '+b.key+' ('+pgWaktuBlok(t,pgDSel,b)+') Leadership kelas '+b.kelas.replace(/^Leadership\s*/,'')+' '+
+          (gab?'digabung dengan kelompok '+sub:'digantikan oleh '+sub)+'.');
+      }else{
+        l.push('- jam ke '+b.key+' ('+pgWaktuBlok(t,pgDSel,b)+') di kelas '+b.kelas+(mapel?' mapel '+mapel:'')+' digantikan oleh '+sub+'.');
+      }});
     l.push('');});
   l.push('Semoga dimudahkan.');
-  var agg=pgAggBySub(),names=Object.keys(agg).sort();
-  if(names.length){l.push('');l.push('=== REKAP PER GURU PENGGANTI ===');
-    names.forEach(function(sub){l.push('• '+sub+' meng-cover '+agg[sub].length+' blok:');
-      agg[sub].forEach(function(it){l.push('   - Jam '+it.key+' ('+it.waktu+') '+it.kelas+' · '+(it.subjek.join(', ')||'-')+' (gantiin '+it.g+')');});});}
   return l.join('\n');
 }
 function pgOk(){var belum=pgAbsenList.some(function(g){return (pgBlok[g]||[]).some(function(b){return !(pgSEL[g]&&pgSEL[g][b.key]);});});if(belum)return;
