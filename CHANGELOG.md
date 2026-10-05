@@ -1,6 +1,17 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.9.8 — Fix: Tanya AI selalu balas "Format pesan tidak valid"
+- **Bug (dilaporkan user)**: fitur Tanya AI gagal terus dgn error "Format pesan tidak valid."
+- **Akar masalah**: `api/ai.js` membatasi tiap pesan maks **4000 karakter**, sedangkan system
+  prompt klien (`aiSYS`/`aiSYS_A` + `aiKB` di index.html) sudah ~4700-5000 karakter sejak konten
+  aturan pengganti ditambah bertahap (v5.9.2, lalu v5.9.6) — sudah lewat ambang batas, jadi SETIAP
+  permintaan ditolak di server sebelum sempat sampai ke model AI.
+- **Fix**: naikkan cap per-pesan jadi 6000 & total percakapan jadi 16000 (masih jauh di bawah batas
+  keras ukuran body 20000 byte). Diverifikasi: replikasi logika validasi server dgn string prompt
+  asli dari index.html -> lolos; `test_pg_lead.mjs` 439 pass, `test_pg_ui.mjs` 21 pass (tidak
+  tersentuh, murni perbaikan backend).
+
 ## v5.9.7 — Fix: chat Cari Guru Pengganti kadang auto-scroll ke titik lain saat pilih pengganti
 - **Bug (dilaporkan user)**: klik nama pengganti di kartu rekomendasi kadang membuat chat tiba-tiba
   lompat scroll ke posisi lain yang tidak diminta.

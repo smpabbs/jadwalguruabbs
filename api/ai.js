@@ -161,15 +161,17 @@ module.exports = async function (req, res) {
     return sendJson(res, 400, { ok: false, error: 'Format pesan tidak valid.' });
   }
   var totalLen = 0;
+  // Cap per-pesan 6000: system prompt klien (aiSYS/aiSYS_A + aiKB di index.html) sendiri
+  // sudah ~4700-5000 karakter -- jaga margin kalau aiKB nanti ditambah lagi.
   for (var i = 0; i < msgs.length; i++) {
     var m = msgs[i];
     if (!m || (m.role !== 'system' && m.role !== 'user' && m.role !== 'assistant') ||
-        typeof m.content !== 'string' || !m.content.length || m.content.length > 4000) {
+        typeof m.content !== 'string' || !m.content.length || m.content.length > 6000) {
       return sendJson(res, 400, { ok: false, error: 'Format pesan tidak valid.' });
     }
     totalLen += m.content.length;
   }
-  if (totalLen > 12000) {
+  if (totalLen > 16000) {
     return sendJson(res, 400, { ok: false, error: 'Percakapan terlalu panjang, mulai ulang.' });
   }
 
