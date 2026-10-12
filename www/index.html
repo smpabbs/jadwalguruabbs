@@ -1559,8 +1559,10 @@ function pgSkKey(k,q){if(!k||!q)return 0;if(k===q)return 100;if(k.indexOf(q)===0
 var pgKeys=null;
 function pgBKeys(){pgKeys=[];order.forEach(function(n){var t=teachers[n],nk=pgNorm(n),f=pgNorm(t.fullname||''),k=[nk];if(f)k.push(f);(nk+' '+f).split(' ').forEach(function(tok){if(tok.length>=3&&k.indexOf(tok)===-1)k.push(tok);});pgKeys.push({nick:n,keys:k});});}
 function pgResGuru(t){if(!pgKeys)pgBKeys();var q=pgNorm(t);if(!q)return[];var sc=[];
-  pgKeys.forEach(function(e){var best=0;e.keys.forEach(function(k){var s=pgSkKey(k,q);if(s>best)best=s;});if(best>0)sc.push({nick:e.nick,score:best});});
-  sc.sort(function(a,b){return b.score-a.score;});return sc;}
+  pgKeys.forEach(function(e){var best=0;e.keys.forEach(function(k){var s=pgSkKey(k,q);if(s>best)best=s;});if(best>0)sc.push({nick:e.nick,score:best,nickScore:pgSkKey(e.keys[0],q)});});
+  // seri skor -> menangkan yg cocok lewat nickname sendiri, bukan sekadar token nama lengkap org lain
+  // (mis. cari "putri" jangan nyasar ke "Ms Leita" gara2 nama lengkapnya "Charlieta Nova Putri Fedito")
+  sc.sort(function(a,b){if(b.nickScore!==a.nickScore)return b.nickScore-a.nickScore;return b.score-a.score;});return sc;}
 function pgAmbil(t){var r=pgResGuru(t),best=null;r.forEach(function(x){if(!best||x.score>best.score)best=x;});
   var q=pgNorm(t);q.split(' ').forEach(function(tok){if(tok.length<3)return;var rr=pgResGuru(tok);if(rr.length&&rr[0].score>=75){if(!best||rr[0].score>best.score)best=rr[0];}});
   if(!best&&r.length&&r[0].score>=55)best=r[0];return best;}

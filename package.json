@@ -1,6 +1,6 @@
 {
   "name": "jadwal-guru",
-  "version": "5.9.9",
+  "version": "5.9.10",
   "private": true,
   "scripts": {
     "build": "echo static",

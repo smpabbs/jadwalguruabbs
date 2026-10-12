@@ -1,6 +1,18 @@
 # CHANGELOG — Jadwal Mengajar Guru SMP ABBS
 # File: /storage/emulated/0/Hermes Project/jadwal-guru/CHANGELOG.md
 
+## v5.9.10 — Fix: cari "Putri" di Cari Guru Pengganti nyasar ke Ms Leita
+- **Laporan user**: cari pengganti untuk Ms Putri, tapi sistem selalu mengalihkan ke Ms Leita.
+- **Akar masalah**: `pgResGuru` (pencocokan nama) juga mencocokkan ke nama lengkap, dan nama
+  lengkap Ms Leita adalah "Charlieta Nova Putri Fedito" — mengandung kata "Putri" persis. Ketik
+  "putri" menghasilkan skor 100 utk dua kandidat (Ms Putri via nickname, Ms Leita via token nama
+  lengkap); karena Ms Leita berada lebih dulu di urutan data guru, dialah yang menang saat skor
+  seri.
+- **Fix**: saat skor seri, menangkan kandidat yang cocok lewat nickname miliknya sendiri, bukan
+  yang cocok cuma lewat sepotong token nama lengkap orang lain. Diverifikasi: simulasi
+  `pgResGuru('putri')` kini mengurutkan Ms Putri (nickScore 100) di atas Ms Leita/Ms Syarah
+  (nickScore 0). `test_pg_lead.mjs` 439 pass.
+
 ## v5.9.9 — Tanya AI bisa cari jam kosong bareng per MAPEL (bukan cuma per nama)
 - **Laporan user**: tanya "cari jadwal kosong yang sama untuk guru ICT" dijawab tidak tahu siapa
   saja guru ICT. Bukan masalah memori/riwayat percakapan — tool `jam_kosong_bersama` sebelumnya
